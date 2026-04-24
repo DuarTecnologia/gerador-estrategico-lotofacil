@@ -14,7 +14,6 @@
 </head>
 <body class="flex items-center justify-center p-4">
     <div class="w-full max-w-4xl">
-        <!-- Logo -->
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-lg mb-3">
                 <i class="fas fa-chart-line text-3xl text-indigo-600"></i>
@@ -25,7 +24,6 @@
 
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
             <div class="grid md:grid-cols-2">
-                <!-- Formulário -->
                 <div class="p-6 md:p-8">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Dados para acesso</h2>
                     
@@ -60,13 +58,10 @@
                     </form>
                 </div>
 
-                <!-- Resumo do Pedido -->
                 <div class="bg-gray-50 p-6 md:p-8 border-l border-gray-200">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Resumo do Pedido</h2>
                     
-                    <div id="resumoPlano" class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl">
-                        <!-- Plano será inserido aqui via JS -->
-                    </div>
+                    <div id="resumoPlano" class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl"></div>
                     
                     <div class="border-t border-gray-200 pt-4 mt-4">
                         <div class="flex justify-between font-bold text-lg">
@@ -92,13 +87,11 @@
     </div>
 
     <script>
-        // Carregar dados do plano da URL
         const urlParams = new URLSearchParams(window.location.search);
         const plano = urlParams.get('plano');
         const preco = urlParams.get('preco');
         const nomePlano = urlParams.get('nome');
         
-        // Exibir resumo do plano
         if (nomePlano && preco) {
             document.getElementById('resumoPlano').innerHTML = `
                 <div class="flex justify-between items-center">
@@ -111,12 +104,10 @@
             `;
             document.getElementById('totalPreco').innerHTML = `R$ ${preco}`;
         } else {
-            // Se não veio da página inicial, redirecionar
             window.location.href = 'index.html';
         }
         
-        // Função para enviar dados
-        async function enviarDados() {
+        document.getElementById('btnFinalizar').addEventListener('click', async () => {
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('email').value;
             const telefone = document.getElementById('telefone').value;
@@ -124,47 +115,30 @@
             
             if (!nome || !email) {
                 alert('Preencha nome e e-mail');
-                return false;
+                return;
             }
             
-            // Validar email
             if (!email.includes('@') || !email.includes('.')) {
                 alert('E-mail inválido');
-                return false;
+                return;
             }
             
-            // Montar dados para enviar
             const dadosCompra = {
-                nome: nome,
-                email: email,
-                telefone: telefone,
-                origem: origem,
-                plano: plano,
-                preco: preco,
+                nome, email, telefone, origem,
+                plano, preco,
                 nomePlano: decodeURIComponent(nomePlano),
                 data: new Date().toLocaleString('pt-BR'),
                 status: 'aguardando_pagamento'
             };
             
-            // Aqui você pode integrar com Hotmart, Kiwify, etc.
-            // Por enquanto, vamos apenas simular e enviar email
-            
-            // Salvar localmente para demo
             localStorage.setItem('ultima_compra', JSON.stringify(dadosCompra));
             
-            // Mostrar mensagem de sucesso
-            alert(`✅ Compra simulada com sucesso!\n\nDados enviados para: ${email}\n\nApós a confirmação do pagamento, você receberá as credenciais de acesso.`);
+            alert(`✅ Pedido registrado!\n\nDados enviados para: ${email}\n\nApós a confirmação do pagamento, você receberá as credenciais de acesso por email.`);
             
-            // Simular envio para seu email
-            console.log('📧 Dados da compra:', dadosCompra);
+            console.log('📧 Nova compra:', dadosCompra);
             
-            // Redirecionar para página de confirmação
             window.location.href = 'obrigado.html';
-            
-            return false;
-        }
-        
-        document.getElementById('btnFinalizar').addEventListener('click', enviarDados);
+        });
     </script>
 </body>
 </html>
