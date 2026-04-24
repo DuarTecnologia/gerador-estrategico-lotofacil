@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Gerador Estratégico Lotofácil - Sistema Profissional de Geração de Jogos</title>
+    <title>Gerador Estratégico Lotofácil - Sistema Profissional</title>
     <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -67,37 +68,34 @@
         .bg-pos-0 { background-position: 0% 50%; }
         .hover\:bg-pos-100:hover { background-position: 100% 50%; }
         
-        .tooltip { position: relative; }
-        .tooltip:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 8px 12px;
-            background: #1f2937;
-            color: white;
-            border-radius: 6px;
-            font-size: 12px;
-            white-space: nowrap;
-            margin-bottom: 5px;
-            z-index: 1000;
-        }
-        
         .scroll-smooth { scroll-behavior: smooth; }
         
-        .numero-sorteado {
-            animation: pop 0.3s ease-out;
+        /* Botão sair flutuante */
+        .logout-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logout-float:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
         
-        @keyframes pop {
-            0% { transform: scale(0); opacity: 0; }
-            80% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        .dezena-destaque {
-            box-shadow: 0 0 0 3px #4f46e5, 0 0 0 6px rgba(79, 70, 229, 0.2);
+        @media (max-width: 640px) {
+            .logout-float { padding: 10px 16px; font-size: 14px; }
         }
     </style>
 </head>
@@ -119,11 +117,11 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <div class="help-tooltip relative">
-                        <div class="help-icon w-8 h-8 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center cursor-help text-sm">
+                    <div class="relative">
+                        <div class="w-8 h-8 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center cursor-help text-sm">
                             <i class="fas fa-question"></i>
                         </div>
-                        <div class="absolute top-full right-0 mt-2 w-64 bg-gray-800 text-white text-xs rounded-lg p-3 hidden z-50">
+                        <div class="absolute top-full right-0 mt-2 w-64 bg-gray-800 text-white text-xs rounded-lg p-3 hidden group-hover:block z-50">
                             Este sistema utiliza análise estatística dos últimos concursos para gerar combinações balanceadas. Os números são gerados com base em frequência, distribuição e tendências históricas.
                         </div>
                     </div>
@@ -153,7 +151,6 @@
             
             <!-- Controles de Geração -->
             <div class="space-y-6">
-                <!-- Seleção de Quantidade -->
                 <div class="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-xl p-5 border-2 border-indigo-200">
                     <label class="block text-sm font-bold text-gray-800 mb-4 flex items-center">
                         <div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-lg flex items-center justify-center mr-3 shadow-sm">
@@ -298,9 +295,45 @@
         </div>
     </footer>
 
+    <!-- Botão Sair -->
+    <button id="logoutBtn" class="logout-float">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Sair</span>
+    </button>
+
     <script>
+        // 🔐 CONFIGURAÇÃO DO SUPABASE
+        const SUPABASE_URL = 'https://zribuvfplkdxlemzkmma.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyaWJ1dmZwbGtkeGxlbXprbW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMzU3NjYsImV4cCI6MjA5MjYxMTc2Nn0.SQSe9WuXVjWkwGLqjZZOUgEtk1xIuVsKkr06q_JfDnY';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         // ============================================
-        // DADOS ESTATÍSTICOS SIMULADOS (Baseados em dados reais da Lotofácil)
+        // VERIFICAÇÃO DE AUTENTICAÇÃO
+        // ============================================
+        async function verificarAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                // Redirecionar para login
+                window.location.href = 'login.html';
+            } else {
+                // Mostrar email do usuário logado no console
+                console.log(`✅ Usuário logado: ${session.user.email}`);
+            }
+        }
+        
+        // LOGOUT
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
+        
+        // Executar verificação
+        verificarAuth();
+        
+        // ============================================
+        // DADOS ESTATÍSTICOS
         // ============================================
         
         const frequenciaDezenas = {
@@ -506,13 +539,7 @@
         document.getElementById('gerarBtn').addEventListener('click', gerarEstrategia);
         document.getElementById('exportarPdfBtn').addEventListener('click', exportarPDF);
         
-        document.querySelectorAll('.help-tooltip').forEach(el => {
-            el.addEventListener('mouseenter', () => { const t = el.querySelector('div:last-child'); if (t) t.classList.remove('hidden'); });
-            el.addEventListener('mouseleave', () => { const t = el.querySelector('div:last-child'); if (t) t.classList.add('hidden'); });
-        });
-        
-        // Página inicia 100% limpa - sem jogos, sem análises, sem nada
-        // Todas as seções já começam com a classe 'hidden' no HTML
+        // Mensagem no console
         console.log('✅ Página carregada - aguardando usuário clicar em "Gerar Estratégia"');
     </script>
 </body>
