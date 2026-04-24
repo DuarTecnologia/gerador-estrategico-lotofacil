@@ -2,545 +2,139 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador Estratégico Lotofácil - Sistema Profissional</title>
-    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-        
         * { font-family: 'Poppins', sans-serif; }
-        
-        body { background: #0f172a; }
-        
-        .dezena-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .dezena-card:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        .section-card {
-            animation: fadeInUp 0.5s ease-out;
-        }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .loading-spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid #ffffff;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .stat-card {
-            transition: all 0.3s ease;
-        }
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
-        
-        .jogo-card {
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        .jogo-card:hover {
-            border-left-color: #4f46e5;
-            transform: translateX(4px);
-        }
-        
-        .bg-size-200 { background-size: 200% 200%; }
-        .bg-pos-0 { background-position: 0% 50%; }
-        .hover\:bg-pos-100:hover { background-position: 100% 50%; }
-        
-        .scroll-smooth { scroll-behavior: smooth; }
-        
-        /* Botão sair flutuante */
-        .logout-float {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 999;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 12px 20px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .logout-float:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-        
-        @media (max-width: 640px) {
-            .logout-float { padding: 10px 16px; font-size: 14px; }
-        }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
     </style>
 </head>
-<body class="min-h-screen scroll-smooth">
-
+<body>
     <!-- Header -->
-    <header class="shadow-sm border-b border-gray-700 sticky top-0 z-50" style="background-color: #0f172a;">
-        <div class="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
-            <div class="flex justify-between items-center">
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-lg flex items-center justify-center shadow-md">
-                        <i class="fas fa-chart-line text-white text-lg"></i>
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white"></i>
                     </div>
-                    <div>
-                        <h1 class="text-base md:text-xl font-bold bg-gradient-to-r from-indigo-400 to-violet-300 bg-clip-text text-transparent">
-                            Gerador Estratégico Lotofácil
-                        </h1>
-                        <p class="text-xs text-gray-400 hidden sm:block">Sistema Inteligente de Geração Estatística</p>
-                    </div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-violet-500 bg-clip-text text-transparent">
+                        Gerador Estratégico Lotofácil
+                    </h1>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <div class="relative">
-                        <div class="w-8 h-8 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center cursor-help text-sm">
-                            <i class="fas fa-question"></i>
-                        </div>
-                        <div class="absolute top-full right-0 mt-2 w-64 bg-gray-800 text-white text-xs rounded-lg p-3 hidden group-hover:block z-50">
-                            Este sistema utiliza análise estatística dos últimos concursos para gerar combinações balanceadas. Os números são gerados com base em frequência, distribuição e tendências históricas.
-                        </div>
-                    </div>
-                </div>
+                <a href="login.html" class="px-4 py-2 text-indigo-600 font-semibold hover:bg-indigo-50 rounded-lg transition">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Entrar
+                </a>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 pb-24 sm:pb-8">
-        
-        <!-- Controles Principais -->
-        <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 mb-6 section-card border border-gray-100">
-            <div class="mb-6 pb-6 border-b border-gray-200">
-                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-                    <div class="flex-1">
-                        <h2 class="text-xl md:text-2xl font-bold text-gray-800 flex items-center mb-2">
-                            <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center mr-2 md:mr-3 shadow-md">
-                                <i class="fas fa-sliders-h text-white text-sm md:text-lg"></i>
-                            </div>
-                            <span>Configurações Estratégicas</span>
-                        </h2>
-                        <p class="text-sm text-gray-500 ml-0 md:ml-[52px]">Configure os parâmetros para gerar seus jogos com base em análise estatística</p>
-                    </div>
+    <main>
+        <!-- Hero Section -->
+        <section class="container mx-auto px-4 py-12 md:py-20">
+            <div class="max-w-4xl mx-auto text-center text-white">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl mb-6">
+                    <i class="fas fa-dice-d6 text-4xl"></i>
                 </div>
-            </div>
-            
-            <!-- Controles de Geração -->
-            <div class="space-y-6">
-                <div class="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-xl p-5 border-2 border-indigo-200">
-                    <label class="block text-sm font-bold text-gray-800 mb-4 flex items-center">
-                        <div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-lg flex items-center justify-center mr-3 shadow-sm">
-                            <i class="fas fa-hashtag text-white text-xs"></i>
-                        </div>
-                        <span>Configuração do Jogo</span>
-                    </label>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantidade de Dezenas</label>
-                            <select id="quantidadeDezenas" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white font-medium text-gray-800">
-                                <option value="15">15 dezenas (1 jogo - R$ 3,50)</option>
-                                <option value="16">16 dezenas (4 jogos - R$ 14,00)</option>
-                                <option value="17" selected>17 dezenas (7 jogos - R$ 24,50)</option>
-                                <option value="18">18 dezenas (12 jogos - R$ 42,00)</option>
-                                <option value="19">19 dezenas (21 jogos - R$ 73,50)</option>
-                                <option value="20">20 dezenas (28 jogos - R$ 98,00)</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Estratégia de Geração</label>
-                            <select id="estrategiaGeracao" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white font-medium text-gray-800">
-                                <option value="balanceada">⚖️ Balanceada (Recomendada)</option>
-                                <option value="quentes">🔥 Dezenas Quentes (Mais Sorteadas)</option>
-                                <option value="frias">❄️ Dezenas Frias (Menos Sorteadas)</option>
-                                <option value="parImpar">🔄 Pares x Ímpares Equilibrado</option>
-                                <option value="sequencial">📊 Sequencial Lógico</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4 flex items-start text-xs text-gray-600 bg-white/60 rounded-lg px-3 py-2">
-                        <i class="fas fa-chart-line text-indigo-500 mr-2 mt-0.5 flex-shrink-0"></i>
-                        <span>A estratégia <strong>Balanceada</strong> combina dezenas quentes, neutras e frias na proporção ideal baseada em análise dos últimos 200 concursos.</span>
-                    </div>
-                </div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">Sistema Inteligente de <span class="text-yellow-300">Geração Estatística</span></h1>
+                <p class="text-lg md:text-xl mb-8 text-indigo-100">Aumente suas chances com análise profissional de dados da Lotofácil</p>
                 
-                <div class="pt-2">
-                    <button id="gerarBtn" class="w-full min-h-[52px] bg-gradient-to-r from-indigo-600 via-violet-500 to-indigo-600 bg-size-200 bg-pos-0 hover:bg-pos-100 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl flex items-center justify-center space-x-3 text-base md:text-lg">
-                        <i class="fas fa-magic text-lg md:text-xl"></i>
-                        <span>Gerar Estratégia Inteligente</span>
-                        <i class="fas fa-arrow-right hidden sm:inline"></i>
-                    </button>
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-4 flex items-center gap-3">
+                        <i class="fas fa-chart-line text-2xl text-green-300"></i>
+                        <span>Análise de 200+ concursos</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-4 flex items-center gap-3">
+                        <i class="fas fa-fire text-2xl text-orange-300"></i>
+                        <span>Dezenas quentes e frias</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-4 flex items-center gap-3">
+                        <i class="fas fa-chart-pie text-2xl text-blue-300"></i>
+                        <span>Distribuição balanceada</span>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Análise Estatística -->
-        <div id="analiseEstatisticaSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 hidden section-card border border-gray-100">
-            <div class="flex items-center mb-6">
-                <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
-                    <i class="fas fa-chart-bar text-white text-sm md:text-base"></i>
-                </div>
-                <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Análise Estatística</h2>
-                    <p class="text-xs md:text-sm text-gray-500">Padrões identificados nos últimos concursos</p>
-                </div>
-            </div>
-            <div id="analiseEstatistica" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        </div>
+        <!-- Pricing Section -->
+        <section class="container mx-auto px-4 py-12">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-center text-white mb-12">Escolha seu Plano</h2>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Plano Mensal -->
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition">
+                        <div class="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white text-center">
+                            <h3 class="text-2xl font-bold">Plano Mensal</h3>
+                            <p class="text-blue-100">Acesso completo por 30 dias</p>
+                        </div>
+                        <div class="p-6 text-center">
+                            <div class="text-4xl font-bold text-gray-800">R$ 27<small class="text-sm text-gray-500">/mês</small></div>
+                            <ul class="mt-6 space-y-3 text-left">
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Gerador ilimitado de jogos</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Todas as estratégias disponíveis</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Exportação para PDF</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Suporte por 30 dias</li>
+                            </ul>
+                            <button onclick="comprar('mensal')" class="mt-8 w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold py-3 rounded-xl hover:shadow-lg transition">
+                                Comprar por R$ 27 →
+                            </button>
+                        </div>
+                    </div>
 
-        <!-- Classificação das Dezenas -->
-        <div id="classificacaoSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 hidden section-card border border-gray-100">
-            <div class="flex items-center mb-6">
-                <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
-                    <i class="fas fa-fire text-white text-sm md:text-base"></i>
-                </div>
-                <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Classificação das Dezenas</h2>
-                    <p class="text-xs md:text-sm text-gray-500">Baseado na frequência dos últimos 200 concursos</p>
+                    <!-- Plano Vitalício -->
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition ring-2 ring-yellow-400">
+                        <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-6 text-white text-center relative">
+                            <span class="absolute top-0 right-0 bg-red-500 text-white px-3 py-1 rounded-bl-xl text-sm font-bold">MAIS VENDIDO</span>
+                            <h3 class="text-2xl font-bold">Plano Vitalício</h3>
+                            <p class="text-yellow-100">Acesso permanente</p>
+                        </div>
+                        <div class="p-6 text-center">
+                            <div class="text-4xl font-bold text-gray-800">R$ 97<small class="text-sm text-gray-500">/único</small></div>
+                            <ul class="mt-6 space-y-3 text-left">
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Acesso vitalício</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Atualizações gratuitas</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Todos os recursos do sistema</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Suporte prioritário</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Bônus: E-book de estratégias</li>
+                            </ul>
+                            <button onclick="comprar('vitalicio')" class="mt-8 w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-3 rounded-xl hover:shadow-lg transition">
+                                Comprar por R$ 97 →
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl p-5 border-2 border-red-200">
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-fire text-red-600 text-xl mr-2"></i>
-                        <h3 class="text-lg font-bold text-red-700">Dezenas Quentes</h3>
-                    </div>
-                    <p class="text-xs text-red-600 mb-3">Mais frequentes (Top 33%)</p>
-                    <div id="quentes" class="flex flex-wrap gap-2"></div>
-                </div>
-                <div class="bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-5 border-2 border-gray-200">
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-equals text-gray-600 text-xl mr-2"></i>
-                        <h3 class="text-lg font-bold text-gray-700">Dezenas Neutras</h3>
-                    </div>
-                    <p class="text-xs text-gray-600 mb-3">Frequência média (34%)</p>
-                    <div id="neutras" class="flex flex-wrap gap-2"></div>
-                </div>
-                <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 border-2 border-blue-200">
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-snowflake text-blue-600 text-xl mr-2"></i>
-                        <h3 class="text-lg font-bold text-blue-700">Dezenas Frias</h3>
-                    </div>
-                    <p class="text-xs text-blue-600 mb-3">Menos frequentes (Bottom 33%)</p>
-                    <div id="frias" class="flex flex-wrap gap-2"></div>
-                </div>
-            </div>
-        </div>
+        </section>
 
-        <!-- Jogos Gerados -->
-        <div id="jogosSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 hidden section-card border border-gray-100">
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
-                        <i class="fas fa-ticket-alt text-white text-sm md:text-base"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-xl md:text-2xl font-bold text-gray-800">Jogos Gerados</h2>
-                        <p class="text-xs md:text-sm text-gray-500">Combinações otimizadas pela estratégia selecionada</p>
-                    </div>
-                </div>
-                <button id="exportarPdfBtn" class="md:w-auto px-4 md:px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl transition-all duration-200 text-sm md:text-base font-medium flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transform hover:scale-105 hidden">
-                    <i class="fas fa-file-pdf"></i>
-                    <span>Exportar PDF</span>
-                </button>
+        <!-- Depoimentos / Benefícios -->
+        <section class="container mx-auto px-4 py-12">
+            <div class="max-w-4xl mx-auto bg-white/10 backdrop-blur rounded-2xl p-8 text-white text-center">
+                <i class="fas fa-shield-alt text-4xl mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Garantia de 7 dias</h3>
+                <p class="text-indigo-100">Se não ficar satisfeito, devolvemos 100% do seu dinheiro.</p>
             </div>
-            <div id="jogosList" class="space-y-3"></div>
-        </div>
-
-        <!-- Simulação de Desempenho -->
-        <div id="simulacaoSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 hidden section-card border border-gray-100">
-            <div class="flex items-center mb-6">
-                <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
-                    <i class="fas fa-chart-line text-white text-sm md:text-base"></i>
-                </div>
-                <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Simulação de Desempenho</h2>
-                    <p class="text-xs md:text-sm text-gray-500">Projeção baseada em concursos anteriores</p>
-                </div>
-            </div>
-            <div id="resultadosSimulacao" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-        </div>
+        </section>
     </main>
 
-    <footer class="bg-gray-900 border-t border-gray-800 py-6 mt-8">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-gray-400 text-sm">© 2025 Gerador Estratégico Lotofácil - Sistema para Estudo e Análise Estatística</p>
-            <p class="text-gray-500 text-xs mt-2">Lotofácil é uma marca registrada da Caixa Econômica Federal. Este site é independente e não possui vínculo oficial.</p>
+    <footer class="bg-gray-900 text-gray-400 py-8 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>© 2025 Gerador Estratégico Lotofácil - Sistema para estudo e análise estatística</p>
+            <p class="mt-2">Lotofácil é marca registrada da Caixa Econômica Federal. Site independente.</p>
         </div>
     </footer>
 
-    <!-- Botão Sair -->
-    <button id="logoutBtn" class="logout-float">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Sair</span>
-    </button>
-
     <script>
-        // 🔐 CONFIGURAÇÃO DO SUPABASE
-        const SUPABASE_URL = 'https://zribuvfplkdxlemzkmma.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyaWJ1dmZwbGtkeGxlbXprbW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMzU3NjYsImV4cCI6MjA5MjYxMTc2Nn0.SQSe9WuXVjWkwGLqjZZOUgEtk1xIuVsKkr06q_JfDnY';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // ============================================
-        // VERIFICAÇÃO DE AUTENTICAÇÃO
-        // ============================================
-        async function verificarAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
+        function comprar(plano) {
+            const preco = plano === 'mensal' ? 27 : 97;
+            const nomePlano = plano === 'mensal' ? 'Plano Mensal' : 'Plano Vitalício';
             
-            if (!session) {
-                // Redirecionar para login
-                window.location.href = 'login.html';
-            } else {
-                // Mostrar email do usuário logado no console
-                console.log(`✅ Usuário logado: ${session.user.email}`);
-            }
+            // Redirecionar para checkout com dados do plano
+            window.location.href = `checkout.html?plano=${plano}&preco=${preco}&nome=${encodeURIComponent(nomePlano)}`;
         }
-        
-        // LOGOUT
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabase.auth.signOut();
-            window.location.href = 'login.html';
-        });
-        
-        // Executar verificação
-        verificarAuth();
-        
-        // ============================================
-        // DADOS ESTATÍSTICOS
-        // ============================================
-        
-        const frequenciaDezenas = {
-            1: 85, 2: 78, 3: 92, 4: 71, 5: 88,
-            6: 95, 7: 82, 8: 76, 9: 91, 10: 84,
-            11: 79, 12: 93, 13: 87, 14: 81, 15: 89,
-            16: 77, 17: 83, 18: 90, 19: 86, 20: 94,
-            21: 75, 22: 80, 23: 88, 24: 82, 25: 79
-        };
-        
-        function classificarDezenas() {
-            const entradas = Object.entries(frequenciaDezenas);
-            const ordenadas = entradas.sort((a,b) => b[1] - a[1]);
-            const total = ordenadas.length;
-            const qtdQuentes = Math.ceil(total * 0.33);
-            const qtdFrias = Math.floor(total * 0.33);
-            
-            const quentes = ordenadas.slice(0, qtdQuentes).map(([num]) => parseInt(num));
-            const neutras = ordenadas.slice(qtdQuentes, total - qtdFrias).map(([num]) => parseInt(num));
-            const frias = ordenadas.slice(total - qtdFrias).map(([num]) => parseInt(num));
-            
-            return { quentes, neutras, frias };
-        }
-        
-        function selecionarAleatorios(array, quantidade) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled.slice(0, quantidade);
-        }
-        
-        function gerarJogos(quantidadeDezenas, estrategia) {
-            const { quentes, neutras, frias } = classificarDezenas();
-            const totalJogos = quantidadeDezenas === 15 ? 1 :
-                              quantidadeDezenas === 16 ? 4 :
-                              quantidadeDezenas === 17 ? 7 :
-                              quantidadeDezenas === 18 ? 12 :
-                              quantidadeDezenas === 19 ? 21 : 28;
-            
-            const jogos = [];
-            
-            for (let i = 0; i < totalJogos; i++) {
-                let dezenas = [];
-                
-                switch(estrategia) {
-                    case 'balanceada':
-                        const qQuentes = Math.floor(quantidadeDezenas * 0.6);
-                        const qNeutras = Math.floor(quantidadeDezenas * 0.2);
-                        const qFrias = quantidadeDezenas - qQuentes - qNeutras;
-                        dezenas.push(...selecionarAleatorios(quentes, qQuentes));
-                        dezenas.push(...selecionarAleatorios(neutras, qNeutras));
-                        dezenas.push(...selecionarAleatorios(frias, qFrias));
-                        break;
-                    case 'quentes':
-                        dezenas.push(...selecionarAleatorios(quentes, quantidadeDezenas));
-                        break;
-                    case 'frias':
-                        dezenas.push(...selecionarAleatorios(frias, quantidadeDezenas));
-                        break;
-                    case 'parImpar':
-                        const qPares = Math.floor(quantidadeDezenas / 2);
-                        const qImpares = quantidadeDezenas - qPares;
-                        const todosNumeros = Array.from({length: 25}, (_, i) => i + 1);
-                        const pares = todosNumeros.filter(n => n % 2 === 0);
-                        const impares = todosNumeros.filter(n => n % 2 !== 0);
-                        dezenas.push(...selecionarAleatorios(pares, qPares));
-                        dezenas.push(...selecionarAleatorios(impares, qImpares));
-                        break;
-                    case 'sequencial':
-                        const passo = 25 / quantidadeDezenas;
-                        for (let j = 0; j < quantidadeDezenas; j++) {
-                            let num = Math.floor(j * passo) + 1;
-                            num = Math.min(25, Math.max(1, num + Math.floor(Math.random() * 3) - 1));
-                            dezenas.push(num);
-                        }
-                        break;
-                    default:
-                        dezenas = selecionarAleatorios(Array.from({length: 25}, (_, i) => i + 1), quantidadeDezenas);
-                }
-                
-                dezenas = [...new Set(dezenas)];
-                while (dezenas.length < quantidadeDezenas) {
-                    const novoNum = Math.floor(Math.random() * 25) + 1;
-                    if (!dezenas.includes(novoNum)) dezenas.push(novoNum);
-                }
-                dezenas.sort((a,b) => a-b);
-                jogos.push(dezenas);
-            }
-            return jogos;
-        }
-        
-        function renderizarClassificacao() {
-            const { quentes, neutras, frias } = classificarDezenas();
-            document.getElementById('quentes').innerHTML = quentes.map(n => 
-                `<span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 text-white font-bold rounded-lg shadow-md text-sm">${n.toString().padStart(2,'0')}</span>`
-            ).join('');
-            document.getElementById('neutras').innerHTML = neutras.map(n => 
-                `<span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 text-white font-bold rounded-lg shadow-md text-sm">${n.toString().padStart(2,'0')}</span>`
-            ).join('');
-            document.getElementById('frias').innerHTML = frias.map(n => 
-                `<span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-500 text-white font-bold rounded-lg shadow-md text-sm">${n.toString().padStart(2,'0')}</span>`
-            ).join('');
-        }
-        
-        function renderizarAnalise() {
-            const analiseDiv = document.getElementById('analiseEstatistica');
-            analiseDiv.innerHTML = `
-                <div class="stat-card bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4">
-                    <div class="flex items-center mb-2"><i class="fas fa-chart-line text-indigo-600 mr-2"></i><span class="font-bold text-gray-700">Média por Sorteio</span></div>
-                    <p class="text-2xl font-bold text-indigo-600">15 números</p>
-                    <p class="text-xs text-gray-500">Total de dezenas por concurso</p>
-                </div>
-                <div class="stat-card bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4">
-                    <div class="flex items-center mb-2"><i class="fas fa-chart-pie text-green-600 mr-2"></i><span class="font-bold text-gray-700">Pares x Ímpares</span></div>
-                    <p class="text-2xl font-bold text-green-600">7.5 / 7.5</p>
-                    <p class="text-xs text-gray-500">Média histórica de distribuição</p>
-                </div>
-                <div class="stat-card bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4">
-                    <div class="flex items-center mb-2"><i class="fas fa-calculator text-purple-600 mr-2"></i><span class="font-bold text-gray-700">Combinações Possíveis</span></div>
-                    <p class="text-2xl font-bold text-purple-600">3.268.760</p>
-                    <p class="text-xs text-gray-500">Total de combinações na Lotofácil</p>
-                </div>
-                <div class="stat-card bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4">
-                    <div class="flex items-center mb-2"><i class="fas fa-fire text-orange-600 mr-2"></i><span class="font-bold text-gray-700">Dezena Mais Frequente</span></div>
-                    <p class="text-2xl font-bold text-orange-600">06 e 12</p>
-                    <p class="text-xs text-gray-500">Aparecem em ~47% dos sorteios</p>
-                </div>
-            `;
-        }
-        
-        function renderizarJogos(jogos) {
-            const jogosDiv = document.getElementById('jogosList');
-            jogosDiv.innerHTML = jogos.map((jogo, idx) => `
-                <div class="jogo-card bg-gradient-to-r from-gray-50 to-white rounded-xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-lg flex items-center justify-center mr-3">
-                                <span class="text-white font-bold text-sm">${(idx+1).toString().padStart(2,'0')}</span>
-                            </div>
-                            <span class="font-bold text-gray-700">Jogo ${idx+1}</span>
-                        </div>
-                        <span class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${jogo.length} dezenas</span>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                        ${jogo.map(num => `
-                            <span class="dezena-card inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-500 text-white font-bold rounded-xl shadow-md text-base hover:shadow-lg cursor-default">
-                                ${num.toString().padStart(2,'0')}
-                            </span>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-            if (jogos.length > 0) document.getElementById('exportarPdfBtn').classList.remove('hidden');
-        }
-        
-        function simularDesempenho(jogos) {
-            const simulacaoDiv = document.getElementById('resultadosSimulacao');
-            const projecoes = [
-                { pontos: 15, chance: '1 em 3.268.760', cor: 'text-yellow-600' },
-                { pontos: 14, chance: '1 em 21.791', cor: 'text-blue-600' },
-                { pontos: 13, chance: '1 em 692', cor: 'text-green-600' },
-                { pontos: 12, chance: '1 em 59', cor: 'text-orange-600' },
-                { pontos: 11, chance: '1 em 11', cor: 'text-red-600' }
-            ];
-            simulacaoDiv.innerHTML = projecoes.map(p => `
-                <div class="stat-card bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 text-center">
-                    <div class="text-2xl font-bold ${p.cor} mb-1">${p.pontos}</div>
-                    <div class="text-xs text-gray-500 mb-2">pontos</div>
-                    <div class="text-sm font-semibold text-gray-700">${p.chance}</div>
-                    <div class="text-xs text-gray-400 mt-2">probabilidade média</div>
-                </div>
-            `).join('');
-        }
-        
-        async function gerarEstrategia() {
-            const quantidadeDezenas = parseInt(document.getElementById('quantidadeDezenas').value);
-            const estrategia = document.getElementById('estrategiaGeracao').value;
-            const btn = document.getElementById('gerarBtn');
-            const btnOriginalHtml = btn.innerHTML;
-            btn.innerHTML = '<div class="loading-spinner"></div><span>Gerando estratégia...</span>';
-            btn.disabled = true;
-            await new Promise(resolve => setTimeout(resolve, 800));
-            const jogos = gerarJogos(quantidadeDezenas, estrategia);
-            renderizarClassificacao();
-            renderizarAnalise();
-            renderizarJogos(jogos);
-            simularDesempenho(jogos);
-            document.getElementById('classificacaoSection').classList.remove('hidden');
-            document.getElementById('analiseEstatisticaSection').classList.remove('hidden');
-            document.getElementById('jogosSection').classList.remove('hidden');
-            document.getElementById('simulacaoSection').classList.remove('hidden');
-            setTimeout(() => document.getElementById('jogosSection').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-            btn.innerHTML = btnOriginalHtml;
-            btn.disabled = false;
-        }
-        
-        function exportarPDF() {
-            alert('📄 Função de exportação PDF em desenvolvimento.\n\nEm breve você poderá salvar seus jogos em PDF.');
-        }
-        
-        document.getElementById('gerarBtn').addEventListener('click', gerarEstrategia);
-        document.getElementById('exportarPdfBtn').addEventListener('click', exportarPDF);
-        
-        // Mensagem no console
-        console.log('✅ Página carregada - aguardando usuário clicar em "Gerar Estratégia"');
     </script>
 </body>
 </html>
