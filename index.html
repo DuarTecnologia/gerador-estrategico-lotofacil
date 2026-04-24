@@ -13,7 +13,6 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="bg-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
@@ -33,7 +32,6 @@
     </header>
 
     <main>
-        <!-- Hero Section -->
         <section class="container mx-auto px-4 py-12 md:py-20">
             <div class="max-w-4xl mx-auto text-center text-white">
                 <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl mb-6">
@@ -59,13 +57,11 @@
             </div>
         </section>
 
-        <!-- Pricing Section -->
         <section class="container mx-auto px-4 py-12">
             <div class="max-w-6xl mx-auto">
                 <h2 class="text-3xl font-bold text-center text-white mb-12">Escolha seu Plano</h2>
                 
                 <div class="grid md:grid-cols-2 gap-8">
-                    <!-- Plano Mensal -->
                     <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition">
                         <div class="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white text-center">
                             <h3 class="text-2xl font-bold">Plano Mensal</h3>
@@ -85,7 +81,6 @@
                         </div>
                     </div>
 
-                    <!-- Plano Vitalício -->
                     <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition ring-2 ring-yellow-400">
                         <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-6 text-white text-center relative">
                             <span class="absolute top-0 right-0 bg-red-500 text-white px-3 py-1 rounded-bl-xl text-sm font-bold">MAIS VENDIDO</span>
@@ -110,7 +105,6 @@
             </div>
         </section>
 
-        <!-- Depoimentos / Benefícios -->
         <section class="container mx-auto px-4 py-12">
             <div class="max-w-4xl mx-auto bg-white/10 backdrop-blur rounded-2xl p-8 text-white text-center">
                 <i class="fas fa-shield-alt text-4xl mb-4"></i>
@@ -131,8 +125,6 @@
         function comprar(plano) {
             const preco = plano === 'mensal' ? 27 : 97;
             const nomePlano = plano === 'mensal' ? 'Plano Mensal' : 'Plano Vitalício';
-            
-            // Redirecionar para checkout com dados do plano
             window.location.href = `checkout.html?plano=${plano}&preco=${preco}&nome=${encodeURIComponent(nomePlano)}`;
         }
     </script>
