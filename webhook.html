@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><title>Webhook InfinitePay</title></head>
+<body>
+<?php
+// Se você tiver PHP no servidor, este arquivo recebe POST da InfinitePay
+// Quando um pagamento é confirmado, você recebe os dados aqui
+
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
+
+// Registrar recebimento
+file_put_contents('pagamentos_log.txt', date('Y-m-d H:i:s') . ' - ' . $input . PHP_EOL, FILE_APPEND);
+
+// Se for pagamento confirmado, data['capture_method'] indica como foi pago
+if (isset($data['capture_method'])) {
+    // Aqui você pode:
+    // 1. Enviar email para você avisando
+    // 2. Adicionar em uma lista para criar acesso manualmente
+}
+?>
+</body>
+</html>
