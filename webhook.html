@@ -1,23 +1,173 @@
 <!DOCTYPE html>
-<html>
-<head><title>Webhook InfinitePay</title></head>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Webhook - InfinitePay</title>
+</head>
 <body>
 <?php
-// Se você tiver PHP no servidor, este arquivo recebe POST da InfinitePay
-// Quando um pagamento é confirmado, você recebe os dados aqui
+// ============================================
+// Webhook para InfinitePay - Gerador Estratégico Lotofácil
+// ============================================
+// Este arquivo recebe notificações da InfinitePay quando um pagamento é confirmado
+// 
+// COMO CONFIGURAR:
+// 1. Coloque este arquivo na raiz do seu site GitHub Pages
+// 2. No Checkout da InfinitePay, configure webhook_url como:
+//    https://duartecnologia.github.io/gerador-estrategico-lotofacil/webhook.html
+// 3. OBS: GitHub Pages NÃO executa PHP, então você precisa de um servidor real
+//    Recomendo usar: https://webhook.site (gratuito) para testes
+// ============================================
 
+// LER DADOS ENVIADOS PELA INFINITEPAY
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
-// Registrar recebimento
-file_put_contents('pagamentos_log.txt', date('Y-m-d H:i:s') . ' - ' . $input . PHP_EOL, FILE_APPEND);
+// Registrar log para debug (cria arquivo pagamentos_log.txt)
+file_put_contents('pagamentos_log_' . date('Y-m-d') . '.txt', 
+    date('H:i:s') . ' - IP: ' . $_SERVER['REMOTE_ADDR'] . "\n" .
+    'Dados: ' . $input . "\n" .
+    '-------------------' . "\n", 
+    FILE_APPEND
+);
 
-// Se for pagamento confirmado, data['capture_method'] indica como foi pago
-if (isset($data['capture_method'])) {
-    // Aqui você pode:
-    // 1. Enviar email para você avisando
-    // 2. Adicionar em uma lista para criar acesso manualmente
+// ============================================
+// ENVIAR EMAIL DE NOTIFICAÇÃO PARA VOCÊ
+// ============================================
+function enviarEmailNotificacao($dados, $status) {
+    $para = "seu-email@dominio.com"; // ALTERE PARA SEU EMAIL
+    $assunto = "🟢 NOVA COMPRA - Gerador Lotofácil - " . date('d/m/Y H:i');
+    
+    // Montar corpo do email
+    $mensagem = "
+    <html>
+    <head>
+        <style>
+            body { font-family: Arial, sans-serif; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
+            .header { background: #4f46e5; color: white; padding: 15px; border-radius: 10px 10px 0 0; text-align: center; }
+            .content { padding: 20px; background: #f9fafb; }
+            .info { background: white; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #4f46e5; }
+            .status-aprovado { color: #16a34a; font-weight: bold; }
+            .footer { text-align: center; padding: 15px; font-size: 12px; color: #666; }
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>
+                <h2>🎯 NOVA COMPRA CONFIRMADA!</h2>
+            </div>
+            <div class='content'>
+                <h3>Dados do Cliente:</h3>
+                <div class='info'>
+                    <strong>Nome:</strong> " . ($dados['customer']['name'] ?? 'Não informado') . "<br>
+                    <strong>E-mail:</strong> " . ($dados['customer']['email'] ?? 'Não informado') . "<br>
+                    <strong>Telefone:</strong> " . ($dados['customer']['phone_number'] ?? 'Não informado') . "<br>
+                    <strong>Status:</strong> <span class='status-aprovado'>✅ " . $status . "</span>
+                </div>
+                
+                <h3>Produto:</h3>
+                <div class='info'>
+                    <strong>Descrição:</strong> " . ($dados['items'][0]['description'] ?? 'Plano Lotofácil') . "<br>
+                    <strong>Valor:</strong> R$ " . number_format(($dados['items'][0]['price'] ?? 0) / 100, 2, ',', '.') . "<br>
+                    <strong>Método:</strong> " . ($dados['capture_method'] ?? 'PIX/Cartão') . "
+                </div>
+                
+                <div style='background: #e0e7ff; padding: 15px; border-radius: 8px; margin-top: 20px;'>
+                    <strong>📋 PRÓXIMOS PASSOS:</strong><br><br>
+                    1. Acesse o Clerk: https://dashboard.clerk.com/apps/lotofacil-gerador<br>
+                    2. Clique em <strong>Users</strong> → <strong>Add user</strong><br>
+                    3. Crie o usuário com o e-mail acima<br>
+                    4. Envie as credenciais para o cliente
+                </div>
+            </div>
+            <div class='footer'>
+                Gerador Estratégico Lotofácil - Sistema Automático de Notificação<br>
+                Este email foi gerado automaticamente.
+            </div>
+        </div>
+    </body>
+    </html>
+    ";
+    
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $headers .= "From: notificacoes@lotofacil.com" . "\r\n";
+    
+    // Enviar email - EM PRODUÇÃO, ALTERE O MÉTODO PARA mail() OU USE UM SERVIÇO COMO SENDGRID
+    // mail($para, $assunto, $mensagem, $headers);
+    
+    // Para testar, vamos salvar em arquivo também
+    file_put_contents('emails_enviados_' . date('Y-m-d') . '.txt', 
+        date('H:i:s') . ' - Para: ' . $para . "\n" . $assunto . "\n" . $mensagem . "\n\n---\n\n", 
+        FILE_APPEND
+    );
+    
+    // Retornar para debug
+    return true;
 }
+
+// ============================================
+// PROCESSAR A NOTIFICAÇÃO
+// ============================================
+
+$status = "Processando...";
+$notificar = false;
+
+if ($data) {
+    // Verificar se é pagamento confirmado
+    if (isset($data['capture_method'])) {
+        $status = "PAGAMENTO CONFIRMADO - Método: " . ($data['capture_method'] ?? 'Desconhecido');
+        $notificar = true;
+    } elseif (isset($data['status']) && $data['status'] === 'approved') {
+        $status = "PAGAMENTO APROVADO";
+        $notificar = true;
+    } elseif (isset($data['payment_status']) && $data['payment_status'] === 'paid') {
+        $status = "PAGAMENTO REALIZADO";
+        $notificar = true;
+    } else {
+        $status = "Notificação recebida - Aguardando confirmação";
+    }
+    
+    // Enviar notificação por email
+    if ($notificar) {
+        enviarEmailNotificacao($data, $status);
+    }
+} else {
+    // Se chegou sem dados, pode ser teste
+    $status = "Webhook recebido sem dados - Método: " . $_SERVER['REQUEST_METHOD'];
+}
+
+// ============================================
+// RESPONDER PARA A INFINITEPAY
+// ============================================
+header('Content-Type: application/json');
+echo json_encode([
+    'status' => 'success',
+    'message' => $status,
+    'received_at' => date('Y-m-d H:i:s')
+]);
+
+// ============================================
+// NOTA IMPORTANTE
+// ============================================
+/*
+ * IMPORTANTE: GitHub Pages NÃO executa PHP!
+ * Para usar este webhook, você precisa:
+ * 
+ * 1. Um servidor com PHP (Hostinger, InfinityFree, etc.)
+ * 
+ * OU
+ * 
+ * 2. Serviço gratuito alternativo:
+ *    - https://webhook.site (cria URL para testes)
+ *    - https://hookdeck.com (plano grátis)
+ *    - https://pipedream.com (workflow gratuito)
+ * 
+ * Alternativa de integração mais simples:
+ *    - Use o Pipedream (gratuito) para receber webhooks e te enviar email
+ *    - Não precisa de servidor próprio
+ */
 ?>
 </body>
 </html>
