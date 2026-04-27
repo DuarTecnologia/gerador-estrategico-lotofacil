@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema - Gerador Estratégico Lotofácil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        * { font-family: 'Poppins', sans-serif; }
+        body { background: #0f172a; }
+        .dezena-card { transition: all 0.3s; }
+        .dezena-card:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
+            <div class="text-center mb-8">
+                <i class="fas fa-lock text-4xl text-indigo-600"></i>
+                <h2 class="text-2xl font-bold mt-3">Acesso ao Sistema</h2>
+                <p class="text-gray-500">Digite suas credenciais</p>
+            </div>
+            <input type="email" id="loginEmail" placeholder="E-mail" class="w-full p-3 border rounded-lg mb-3">
+            <input type="password" id="loginSenha" placeholder="Senha" class="w-full p-3 border rounded-lg mb-4">
+            <button onclick="fazerLogin()" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-bold hover:bg-indigo-700">Entrar</button>
+            <p class="text-center text-gray-500 text-sm mt-6">Ainda não tem acesso? <a href="index.html" class="text-indigo-600">Adquira seu plano →</a></p>
+            <div id="erroLogin" class="text-red-500 text-center text-sm mt-3 hidden"></div>
+        </div>
+    </div>
+
+    <div id="sistemaScreen" class="hidden min-h-screen">
+        <header class="bg-gray-900 shadow-lg sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-chart-line text-indigo-400 text-xl"></i>
+                    <h1 class="text-xl font-bold text-white">Gerador Estratégico Lotofácil</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="userNome" class="text-gray-300 text-sm"></span>
+                    <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700">Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 py-8">
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block font-bold mb-2">Quantidade de Dezenas</label>
+                        <select id="quantidadeDezenas" class="w-full p-3 border rounded-lg">
+                            <option value="15">15 dezenas (1 jogo - R$ 3,50)</option>
+                            <option value="16">16 dezenas (4 jogos - R$ 14,00)</option>
+                            <option value="17" selected>17 dezenas (7 jogos - R$ 24,50)</option>
+                            <option value="18">18 dezenas (12 jogos - R$ 36,00)</option>
+                            <option value="19">19 dezenas (21 jogos - R$ 63,00)</option>
+                            <option value="20">20 dezenas (28 jogos - R$ 84,00)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-2">Estratégia</label>
+                        <select id="estrategiaGeracao" class="w-full p-3 border rounded-lg">
+                            <option value="balanceada">⚖️ Balanceada (Recomendada)</option>
+                            <option value="quentes">🔥 Dezenas Quentes</option>
+                            <option value="frias">❄️ Dezenas Frias</option>
+                            <option value="parImpar">🔄 Pares x Ímpares</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="gerarBtn" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-bold hover:bg-indigo-700 transition">
+                    ✨ Gerar Estratégia Inteligente
+                </button>
+            </div>
+
+            <div id="resultados" class="space-y-3"></div>
+        </main>
+    </div>
+
+    <script>
+        const STORAGE_USERS = 'usuarios_autorizados';
+        
+        function getUsuarios() {
+            const usuarios = localStorage.getItem(STORAGE_USERS);
+            return usuarios ? JSON.parse(usuarios) : [];
+        }
+        
+        function fazerLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+            const erroDiv = document.getElementById('erroLogin');
+            
+            const usuarios = getUsuarios();
+            const user = usuarios.find(u => u.email === email && u.senha === senha && u.ativo === true);
+            
+            if (user) {
+                localStorage.setItem('usuario_logado', JSON.stringify(user));
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('sistemaScreen').classList.remove('hidden');
+                document.getElementById('userNome').innerHTML = `👤 ${user.nome}`;
+            } else {
+                erroDiv.classList.remove('hidden');
+                erroDiv.innerText = 'E-mail ou senha inválidos';
+                setTimeout(() => erroDiv.classList.add('hidden'), 3000);
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('usuario_logado');
+            document.getElementById('sistemaScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginSenha').value = '';
+        }
+        
+        // Verificar se já está logado
+        const usuarioLogado = localStorage.getItem('usuario_logado');
+        if (usuarioLogado) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('sistemaScreen').classList.remove('hidden');
+            const user = JSON.parse(usuarioLogado);
+            document.getElementById('userNome').innerHTML = `👤 ${user.nome}`;
+        }
+        
+        // FUNÇÕES DO GERADOR
+        function gerarJogos(quantidadeDezenas, estrategia) {
+            const dezenasQuentes = [6, 12, 18, 20, 10, 15, 25, 3, 5, 9, 13, 14, 17, 19, 23];
+            const dezenasFrias = [1, 2, 4, 7, 8, 11, 16, 21, 22, 24];
+            
+            const totalJogos = quantidadeDezenas === 15 ? 1 :
+                              quantidadeDezenas === 16 ? 4 :
+                              quantidadeDezenas === 17 ? 7 :
+                              quantidadeDezenas === 18 ? 12 :
+                              quantidadeDezenas === 19 ? 21 : 28;
+            
+            const jogos = [];
+            
+            for (let i = 0; i < totalJogos; i++) {
+                let dezenas = [];
+                
+                if (estrategia === 'balanceada') {
+                    const qQuentes = Math.floor(quantidadeDezenas * 0.6);
+                    const qFrias = quantidadeDezenas - qQuentes;
+                    dezenas.push(...selecionarAleatorios(dezenasQuentes, qQuentes));
+                    dezenas.push(...selecionarAleatorios(dezenasFrias, qFrias));
+                } else if (estrategia === 'quentes') {
+                    dezenas.push(...selecionarAleatorios(dezenasQuentes, quantidadeDezenas));
+                } else if (estrategia === 'frias') {
+                    dezenas.push(...selecionarAleatorios(dezenasFrias, quantidadeDezenas));
+                } else if (estrategia === 'parImpar') {
+                    const pares = [2,4,6,8,10,12,14,16,18,20,22,24];
+                    const impares = [1,3,5,7,9,11,13,15,17,19,21,23,25];
+                    const qPares = Math.floor(quantidadeDezenas / 2);
+                    const qImpares = quantidadeDezenas - qPares;
+                    dezenas.push(...selecionarAleatorios(pares, qPares));
+                    dezenas.push(...selecionarAleatorios(impares, qImpares));
+                }
+                
+                dezenas = [...new Set(dezenas)];
+                while (dezenas.length < quantidadeDezenas) {
+                    const novoNum = Math.floor(Math.random() * 25) + 1;
+                    if (!dezenas.includes(novoNum)) dezenas.push(novoNum);
+                }
+                dezenas.sort((a,b) => a-b);
+                jogos.push(dezenas);
+            }
+            return jogos;
+        }
+        
+        function selecionarAleatorios(array, quantidade) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled.slice(0, quantidade);
+        }
+        
+        function exibirJogos(jogos) {
+            const container = document.getElementById('resultados');
+            container.innerHTML = jogos.map((jogo, idx) => `
+                <div class="bg-white rounded-xl p-4 shadow-md border border-gray-200">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-sm">${(idx+1).toString().padStart(2,'0')}</span>
+                            </div>
+                            <span class="font-bold text-gray-700">Jogo ${idx+1}</span>
+                        </div>
+                        <span class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${jogo.length} dezenas</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        ${jogo.map(num => `
+                            <span class="dezena-card w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-500 text-white font-bold rounded-xl flex items-center justify-center shadow-md">
+                                ${num.toString().padStart(2,'0')}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        document.getElementById('gerarBtn').addEventListener('click', () => {
+            const quantidade = parseInt(document.getElementById('quantidadeDezenas').value);
+            const estrategia = document.getElementById('estrategiaGeracao').value;
+            const jogos = gerarJogos(quantidade, estrategia);
+            exibirJogos(jogos);
+        });
+    </script>
+</body>
+</html>
