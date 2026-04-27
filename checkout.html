@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Gerador Estratégico Lotofácil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-indigo-600 to-purple-700 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
+        <div class="text-center mb-6">
+            <i class="fas fa-shopping-cart text-4xl text-indigo-600"></i>
+            <h1 class="text-2xl font-bold mt-2">Finalizar Compra</h1>
+        </div>
+        
+        <div id="resumo" class="bg-gray-50 p-4 rounded-lg mb-6 text-center">
+            <!-- Resumo será preenchido -->
+        </div>
+        
+        <input type="text" id="nome" placeholder="Nome completo" class="w-full p-3 border rounded-lg mb-3">
+        <input type="email" id="email" placeholder="E-mail" class="w-full p-3 border rounded-lg mb-3">
+        <input type="tel" id="telefone" placeholder="WhatsApp (opcional)" class="w-full p-3 border rounded-lg mb-4">
+        
+        <button onclick="finalizarCompra()" class="w-full bg-green-500 text-white p-3 rounded-lg font-bold hover:bg-green-600">
+            💰 Simular Compra (R$ 97)
+        </button>
+        
+        <p class="text-center text-gray-500 text-xs mt-6">
+            Após a simulação, você receberá um email para criar seu acesso.
+        </p>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const plano = urlParams.get('plano');
+        const preco = urlParams.get('preco');
+        const nomePlano = urlParams.get('nome');
+        
+        if (nomePlano && preco) {
+            document.getElementById('resumo').innerHTML = `
+                <p class="font-bold text-gray-800">${decodeURIComponent(nomePlano)}</p>
+                <p class="text-2xl font-bold text-indigo-600">R$ ${preco}</p>
+            `;
+        } else {
+            window.location.href = 'index.html';
+        }
+        
+        function finalizarCompra() {
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            
+            if (!nome || !email) {
+                alert('Preencha nome e e-mail');
+                return;
+            }
+            
+            // Salvar pedido no localStorage do admin
+            const pedido = {
+                id: Date.now(),
+                nome: nome,
+                email: email,
+                plano: decodeURIComponent(nomePlano),
+                valor: preco,
+                data: new Date().toISOString(),
+                status: 'pendente'
+            };
+            
+            let pedidos = JSON.parse(localStorage.getItem('pedidos_pendentes') || '[]');
+            pedidos.push(pedido);
+            localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
+            
+            alert(`✅ Pedido registrado!\n\nNome: ${nome}\nE-mail: ${email}\n\nEm breve você receberá as credenciais de acesso por email.`);
+            
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
