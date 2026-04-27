@@ -21,9 +21,10 @@
         
         /* Efeito de blur para números bloqueados */
         .blur-numbers {
-            filter: blur(6px);
+            filter: blur(8px);
             pointer-events: none;
             user-select: none;
+            transition: filter 0.3s ease;
         }
         
         /* Overlay de compra */
@@ -85,6 +86,21 @@
         .btn-cta:hover {
             transform: scale(1.05);
         }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -95,8 +111,8 @@
             <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl mb-4">
                 <i class="fas fa-lock text-white text-2xl"></i>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">🔒 Sistema Bloqueado</h2>
-            <p class="text-gray-600 mb-6">Adquira o plano completo para gerar jogos reais e ter acesso a todas as estratégias!</p>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">🔒 Acesso Bloqueado</h2>
+            <p class="text-gray-600 mb-6">Adquira o plano completo para desbloquear os números e ter acesso a todas as estratégias!</p>
             <div class="flex flex-col gap-3">
                 <button onclick="fecharOverlay()" class="bg-gray-200 text-gray-700 py-2 rounded-xl hover:bg-gray-300 transition">Voltar</button>
                 <a href="#planos" onclick="fecharOverlay()" class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition btn-cta">
@@ -136,11 +152,11 @@
             <i class="fas fa-info-circle text-amber-500 text-lg mt-0.5"></i>
             <div class="text-sm text-amber-800">
                 <strong>🔍 Modo Demonstração</strong><br>
-                Este é o sistema funcionando. Os números gerados ficarão bloqueados até você adquirir um plano.
+                Teste o sistema gratuitamente. Os números gerados ficarão bloqueados até você adquirir um plano.
             </div>
         </div>
 
-        <!-- Controles Principais (idêntico ao sistema real) -->
+        <!-- Controles Principais -->
         <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 mb-6 border border-gray-100">
             <div class="mb-6 pb-6 border-b border-gray-200">
                 <h2 class="text-xl md:text-2xl font-bold text-gray-800 flex items-center mb-2">
@@ -213,9 +229,7 @@
                     <p class="text-xs md:text-sm text-gray-500">Padrões identificados nos últimos concursos</p>
                 </div>
             </div>
-            <div id="analiseEstatistica" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Estatísticas serão inseridas via JS -->
-            </div>
+            <div id="analiseEstatistica" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
 
         <!-- Classificação das Dezenas -->
@@ -257,7 +271,7 @@
             </div>
         </div>
 
-        <!-- Jogos Gerados (com blur) -->
+        <!-- Jogos Gerados (inicialmente vazio) -->
         <div id="jogosSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 border border-gray-100">
             <div class="flex items-center mb-6">
                 <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
@@ -268,10 +282,16 @@
                     <p class="text-xs md:text-sm text-gray-500">Combinações otimizadas pela estratégia selecionada</p>
                 </div>
             </div>
-            <div id="jogosList" class="space-y-3"></div>
+            <div id="jogosList" class="space-y-3">
+                <!-- Mensagem inicial -->
+                <div class="text-center text-gray-500 py-8">
+                    <i class="fas fa-info-circle text-4xl mb-2"></i>
+                    <p>Clique em "Gerar Estratégia" para visualizar os jogos</p>
+                </div>
+            </div>
         </div>
 
-        <!-- Planos (âncora) -->
+        <!-- Planos -->
         <div id="planos" class="max-w-6xl mx-auto pt-8">
             <h2 class="text-3xl font-bold text-center text-white mb-12">💰 Adquira Acesso Completo</h2>
             
@@ -434,22 +454,22 @@
         function renderizarAnalise() {
             const analiseDiv = document.getElementById('analiseEstatistica');
             analiseDiv.innerHTML = `
-                <div class="stat-card bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4">
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4">
                     <div class="flex items-center mb-2"><i class="fas fa-chart-line text-indigo-600 mr-2"></i><span class="font-bold text-gray-700">Média por Sorteio</span></div>
                     <p class="text-2xl font-bold text-indigo-600">15 números</p>
                     <p class="text-xs text-gray-500">Total de dezenas por concurso</p>
                 </div>
-                <div class="stat-card bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4">
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4">
                     <div class="flex items-center mb-2"><i class="fas fa-chart-pie text-green-600 mr-2"></i><span class="font-bold text-gray-700">Pares x Ímpares</span></div>
                     <p class="text-2xl font-bold text-green-600">7.5 / 7.5</p>
                     <p class="text-xs text-gray-500">Média histórica de distribuição</p>
                 </div>
-                <div class="stat-card bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4">
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4">
                     <div class="flex items-center mb-2"><i class="fas fa-calculator text-purple-600 mr-2"></i><span class="font-bold text-gray-700">Combinações Possíveis</span></div>
                     <p class="text-2xl font-bold text-purple-600">3.268.760</p>
                     <p class="text-xs text-gray-500">Total de combinações na Lotofácil</p>
                 </div>
-                <div class="stat-card bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4">
+                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4">
                     <div class="flex items-center mb-2"><i class="fas fa-fire text-orange-600 mr-2"></i><span class="font-bold text-gray-700">Dezena Mais Frequente</span></div>
                     <p class="text-2xl font-bold text-orange-600">06 e 12</p>
                     <p class="text-xs text-gray-500">Aparecem em ~47% dos sorteios</p>
@@ -457,9 +477,20 @@
             `;
         }
         
-        // Renderizar jogos (COM BLUR nos números)
+        // Renderizar jogos COM BLUR (bloqueados)
         function renderizarJogosBloqueados(jogos) {
             const jogosDiv = document.getElementById('jogosList');
+            
+            if (!jogos || jogos.length === 0) {
+                jogosDiv.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-info-circle text-4xl mb-2"></i>
+                        <p>Clique em "Gerar Estratégia" para visualizar os jogos</p>
+                    </div>
+                `;
+                return;
+            }
+            
             jogosDiv.innerHTML = jogos.map((jogo, idx) => `
                 <div class="jogo-card bg-gradient-to-r from-gray-50 to-white rounded-xl p-4 shadow-sm border border-gray-200">
                     <div class="flex justify-between items-center mb-3">
@@ -479,7 +510,7 @@
                         `).join('')}
                     </div>
                     <div class="mt-3 text-center text-xs text-amber-600 bg-amber-50 rounded-lg py-2">
-                        <i class="fas fa-lock mr-1"></i> Adquira o plano para ver os números
+                        <i class="fas fa-lock mr-1"></i> Adquira o plano para desbloquear os números
                     </div>
                 </div>
             `).join('');
@@ -501,32 +532,36 @@
             const btn = document.getElementById('gerarBtn');
             const btnOriginalHtml = btn.innerHTML;
             
-            btn.innerHTML = '<div class="loading-spinner" style="border:3px solid rgba(255,255,255,0.3);border-top:3px solid #ffffff;border-radius:50%;width:20px;height:20px;animation:spin 1s linear infinite;display:inline-block;"></div><span>Gerando estratégia...</span>';
+            // Mostrar loading
+            btn.innerHTML = '<div class="loading-spinner"></div><span>Gerando estratégia...</span>';
             btn.disabled = true;
             
+            // Simular processamento
             await new Promise(resolve => setTimeout(resolve, 800));
             
+            // Gerar jogos
             const jogos = gerarJogos(quantidadeDezenas, estrategia);
             
+            // Renderizar jogos bloqueados (com blur)
+            renderizarJogosBloqueados(jogos);
+            
+            // Garantir que classificação e análise estão visíveis
             renderizarClassificacao();
             renderizarAnalise();
-            renderizarJogosBloqueados(jogos);  // <-- Números bloqueados com blur
             
-            document.getElementById('jogosSection').classList.remove('hidden');
-            document.getElementById('classificacaoSection').classList.remove('hidden');
-            document.getElementById('analiseEstatisticaSection').classList.remove('hidden');
-            
+            // Mostrar overlay de compra
             setTimeout(() => {
-                document.getElementById('jogosSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
+                mostrarOverlay();
+            }, 300);
             
+            // Restaurar botão
             btn.innerHTML = btnOriginalHtml;
             btn.disabled = false;
             
-            // Mostrar overlay de compra após 1 segundo
+            // Scroll para os resultados
             setTimeout(() => {
-                mostrarOverlay();
-            }, 500);
+                document.getElementById('jogosSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
         
         function comprar(plano) {
@@ -535,28 +570,15 @@
             window.location.href = `checkout.html?plano=${plano}&preco=${preco}&nome=${encodeURIComponent(nomePlano)}`;
         }
         
+        // Event listeners
         document.getElementById('gerarBtn').addEventListener('click', gerarEstrategia);
         
-        // Renderização inicial
+        // Renderização inicial (classificação e análise visíveis, jogos vazio)
         renderizarClassificacao();
         renderizarAnalise();
         
-        // Gerar jogo inicial automaticamente (já bloqueado)
-        setTimeout(() => {
-            const jogos = gerarJogos(17, 'balanceada');
-            renderizarJogosBloqueados(jogos);
-            document.getElementById('jogosSection').classList.remove('hidden');
-        }, 300);
-        
-        // Adicionar estilo do loading
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
+        // Inicializar com mensagem de boas-vindas
+        renderizarJogosBloqueados([]);
     </script>
 </body>
 </html>
