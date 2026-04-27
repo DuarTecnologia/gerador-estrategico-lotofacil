@@ -125,7 +125,7 @@
 
     <script>
         // ============================================
-        // SEUS LINKS DE PAGAMENTO INFINITEPAY
+        // ✅ SEUS LINKS DE PAGAMENTO INFINITEPAY (JÁ CONFIGURADOS)
         // ============================================
         const LINKS_PAGAMENTO = {
             mensal: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-4nZ5DDuYn-19,90',
@@ -198,10 +198,10 @@
             const loading = document.getElementById('loading');
             loading.classList.add('active');
             
-            // Simular um breve processamento (só para a animação)
+            // Simular breve processamento
             await new Promise(resolve => setTimeout(resolve, 800));
             
-            // 1. Salvar pedido pendente no localStorage (para aparecer no admin.html)
+            // 1. Salvar pedido pendente no localStorage
             const pedido = {
                 id: Date.now(),
                 nome: nome,
@@ -218,17 +218,17 @@
             pedidos.push(pedido);
             localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
             
-            // 2. Redirecionar cliente para o link de pagamento correto
+            // 2. Redirecionar para o link de pagamento correto
             const linkPagamento = LINKS_PAGAMENTO[plano];
             
             if (linkPagamento) {
                 loading.classList.remove('active');
-                // Abre o link em uma nova aba
+                // Abrir o link de pagamento em uma nova aba
                 window.open(linkPagamento, '_blank');
-                alert(`✅ Link de pagamento gerado com sucesso!\n\nUma nova aba foi aberta para finalizar o pagamento.\n\n📧 Após a confirmação, você receberá o acesso por e-mail em até 24h.`);
+                alert(`✅ Link de pagamento gerado!\n\nUma nova aba foi aberta para finalizar o pagamento.\n\n📧 Após a confirmação, você receberá o acesso por e-mail em até 24h.`);
             } else {
                 loading.classList.remove('active');
-                alert(`❌ Erro: Link de pagamento não encontrado para o plano ${plano}. Entre em contato com o suporte.`);
+                alert(`❌ Erro: Link de pagamento não encontrado. Entre em contato com o suporte.`);
             }
         });
         
