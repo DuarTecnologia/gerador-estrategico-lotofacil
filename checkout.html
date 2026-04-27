@@ -47,7 +47,6 @@
     </div>
 
     <div class="w-full max-w-4xl">
-        <!-- Logo -->
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-lg mb-3">
                 <i class="fas fa-chart-line text-3xl text-indigo-600"></i>
@@ -58,20 +57,18 @@
 
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
             <div class="grid md:grid-cols-2">
-                <!-- Formulário -->
                 <div class="p-6 md:p-8">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Dados pessoais</h2>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">Nome completo *</label>
                         <input type="text" id="nome" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">Como deseja ser chamado</p>
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">E-mail *</label>
                         <input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">As credenciais de acesso serão enviadas para este e-mail</p>
+                        <p class="text-xs text-gray-500 mt-1">As credenciais serão enviadas para este e-mail</p>
                     </div>
                     
                     <div class="mb-4">
@@ -86,13 +83,11 @@
                             <option value="google">Google</option>
                             <option value="instagram">Instagram</option>
                             <option value="facebook">Facebook</option>
-                            <option value="indicacao">Indicação de amigo</option>
-                            <option value="outro">Outro</option>
+                            <option value="indicacao">Indicação</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Resumo do Pedido -->
                 <div class="bg-gray-50 p-6 md:p-8 border-l border-gray-200">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Resumo do Pedido</h2>
                     
@@ -109,35 +104,40 @@
                     
                     <div class="mt-6 p-3 bg-blue-50 rounded-lg">
                         <p class="text-xs text-blue-800 text-center">
-                            <i class="fas fa-lock mr-1"></i> Pagamento 100% seguro
+                            <i class="fas fa-lock mr-1"></i> Pagamento 100% seguro via <strong>InfinitePay</strong>
                         </p>
-                        <p class="text-xs text-blue-600 text-center mt-1">
-                            Aceitamos PIX, Cartão de Crédito e Débito
+                        <p class="text-xs text-gray-500 text-center mt-1">
+                            Aceita PIX, Cartão de Crédito e Débito
                         </p>
                     </div>
                     
                     <button id="btnFinalizar" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-credit-card"></i> Finalizar Compra
+                        <i class="fas fa-credit-card"></i> Gerar Pagamento
                     </button>
                     
                     <p class="text-center text-xs text-gray-500 mt-4">
-                        Após a confirmação do pagamento, você receberá o acesso por e-mail em até 24h.
+                        Você será redirecionado para o ambiente seguro da InfinitePay
                     </p>
                 </div>
             </div>
         </div>
-        
-        <p class="text-center text-indigo-200 text-xs mt-8">
-            Ao finalizar, você concorda com nossos termos de uso.<br>
-            Garantia de 7 dias: se não ficar satisfeito, devolvemos 100% do valor.
-        </p>
     </div>
 
     <script>
-        // Carregar dados do plano da URL
+        // ============================================
+        // SEUS LINKS DE PAGAMENTO INFINITEPAY
+        // ============================================
+        const LINKS_PAGAMENTO = {
+            mensal: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-4nZ5DDuYn-19,90',
+            anual: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-3zyEvRFIT-97,90'
+        };
+        
+        // ============================================
+        // CARREGAR DADOS DO PLANO VIA URL
+        // ============================================
         const urlParams = new URLSearchParams(window.location.search);
-        const plano = urlParams.get('plano');
-        const preco = urlParams.get('preco');
+        const plano = urlParams.get('plano'); // 'mensal' ou 'anual'
+        const preco = parseFloat(urlParams.get('preco'));
         const nomePlano = urlParams.get('nome');
         
         if (nomePlano && preco) {
@@ -145,18 +145,20 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="font-bold text-gray-800">${decodeURIComponent(nomePlano)}</p>
-                        <p class="text-sm text-gray-500">Acesso ${plano === 'mensal' ? '30 dias' : 'vitalício'}</p>
-                        <p class="text-xs text-gray-400 mt-1">Pagamento único</p>
+                        <p class="text-sm text-gray-500">Acesso ${plano === 'mensal' ? '30 dias' : '12 meses'}</p>
                     </div>
-                    <div class="text-xl font-bold text-indigo-600">R$ ${preco}</div>
+                    <div class="text-xl font-bold text-indigo-600">R$ ${preco.toFixed(2).replace('.', ',')}</div>
                 </div>
             `;
-            document.getElementById('totalPreco').innerHTML = `R$ ${preco}`;
+            document.getElementById('totalPreco').innerHTML = `R$ ${preco.toFixed(2).replace('.', ',')}`;
         } else {
+            // Se não veio da página de planos, volta para o início
             window.location.href = 'index.html';
         }
         
-        // Validar campos
+        // ============================================
+        // VALIDAR CAMPOS DO FORMULÁRIO
+        // ============================================
         function validarCampos() {
             let valido = true;
             const nome = document.getElementById('nome');
@@ -175,11 +177,12 @@
             } else {
                 email.classList.remove('input-erro');
             }
-            
             return valido;
         }
         
-        // Finalizar compra
+        // ============================================
+        // FINALIZAR COMPRA
+        // ============================================
         document.getElementById('btnFinalizar').addEventListener('click', async () => {
             if (!validarCampos()) {
                 alert('⚠️ Preencha corretamente nome e e-mail');
@@ -191,13 +194,14 @@
             const telefone = document.getElementById('telefone').value;
             const origem = document.getElementById('origem').value;
             
+            // Mostrar loading
             const loading = document.getElementById('loading');
             loading.classList.add('active');
             
-            // Simular processamento do pedido
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Simular um breve processamento (só para a animação)
+            await new Promise(resolve => setTimeout(resolve, 800));
             
-            // Criar pedido
+            // 1. Salvar pedido pendente no localStorage (para aparecer no admin.html)
             const pedido = {
                 id: Date.now(),
                 nome: nome,
@@ -210,20 +214,22 @@
                 status: 'pendente'
             };
             
-            // Salvar no localStorage (para aparecer no admin)
             let pedidos = JSON.parse(localStorage.getItem('pedidos_pendentes') || '[]');
             pedidos.push(pedido);
             localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
             
-            // Salvar dados do comprador para referência
-            console.log('📦 NOVO PEDIDO:', pedido);
+            // 2. Redirecionar cliente para o link de pagamento correto
+            const linkPagamento = LINKS_PAGAMENTO[plano];
             
-            loading.classList.remove('active');
-            
-            alert(`✅ Pedido registrado com sucesso!\n\n📋 Dados:\nNome: ${nome}\nE-mail: ${email}\nPlano: ${decodeURIComponent(nomePlano)}\nValor: R$ ${preco}\n\n⏳ Aguarde a confirmação do pagamento.\n📧 Você receberá as credenciais de acesso por e-mail em até 24h.`);
-            
-            // Redirecionar para página de obrigado
-            window.location.href = 'obrigado.html';
+            if (linkPagamento) {
+                loading.classList.remove('active');
+                // Abre o link em uma nova aba
+                window.open(linkPagamento, '_blank');
+                alert(`✅ Link de pagamento gerado com sucesso!\n\nUma nova aba foi aberta para finalizar o pagamento.\n\n📧 Após a confirmação, você receberá o acesso por e-mail em até 24h.`);
+            } else {
+                loading.classList.remove('active');
+                alert(`❌ Erro: Link de pagamento não encontrado para o plano ${plano}. Entre em contato com o suporte.`);
+            }
         });
         
         // Remover erro ao digitar
