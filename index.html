@@ -3,669 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Gerador Estratégico Lotofácil - Sistema Profissional</title>
+    <title>Checkout - Gerador Estratégico Lotofácil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         * { font-family: 'Poppins', sans-serif; }
-        body { background: #0f172a; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
         
-        .dezena-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .dezena-card:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Efeito de blur para números bloqueados */
-        .blur-numbers {
-            filter: blur(8px);
-            pointer-events: none;
-            user-select: none;
-            transition: filter 0.3s ease;
-        }
-        
-        /* Overlay de compra */
-        .overlay-compra {
+        .loading {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0,0,0,0.7);
             backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
+            z-index: 9999;
             justify-content: center;
-            z-index: 1000;
+            align-items: center;
+            flex-direction: column;
         }
-        
-        .overlay-compra.active {
-            display: flex;
-        }
-        
-        .modal-compra {
-            background: white;
-            border-radius: 24px;
-            padding: 32px;
-            max-width: 400px;
-            text-align: center;
-            animation: fadeInUp 0.4s ease-out;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .jogo-card {
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        
-        .jogo-card:hover {
-            border-left-color: #4f46e5;
-            transform: translateX(4px);
-        }
-        
-        .bg-size-200 { background-size: 200% 200%; }
-        .bg-pos-0 { background-position: 0% 50%; }
-        .hover\:bg-pos-100:hover { background-position: 100% 50%; }
-        
-        .btn-cta {
-            transition: all 0.3s ease;
-        }
-        .btn-cta:hover {
-            transform: scale(1.05);
-        }
-        
-        .loading-spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid #ffffff;
+        .loading.active { display: flex; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid white;
+            border-top-color: #667eea;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
             animation: spin 1s linear infinite;
-            display: inline-block;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Estilo para campos personalizados */
-        .campo-personalizado {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 12px;
-            padding: 12px;
-        }
+        .input-erro { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="flex items-center justify-center p-4">
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p class="text-white mt-4">Processando...</p>
+    </div>
 
-    <!-- Overlay de Compra -->
-    <div id="overlayCompra" class="overlay-compra">
-        <div class="modal-compra">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl mb-4">
-                <i class="fas fa-lock text-white text-2xl"></i>
+    <div class="w-full max-w-4xl">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-lg mb-3">
+                <i class="fas fa-chart-line text-3xl text-indigo-600"></i>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">🔒 Acesso Bloqueado</h2>
-            <p class="text-gray-600 mb-6">Adquira o plano completo para desbloquear os números e ter acesso a todas as estratégias!</p>
-            <div class="flex flex-col gap-3">
-                <button onclick="fecharOverlay()" class="bg-gray-200 text-gray-700 py-2 rounded-xl hover:bg-gray-300 transition">Voltar</button>
-                <a href="#planos" onclick="fecharOverlay()" class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition btn-cta">
-                    ⭐ Ver Planos
-                </a>
+            <h1 class="text-2xl font-bold text-white">Finalizar Compra</h1>
+            <p class="text-indigo-200">Preencha os dados abaixo para adquirir o acesso</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="grid md:grid-cols-2">
+                <div class="p-6 md:p-8">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">Dados pessoais</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Nome completo *</label>
+                        <input type="text" id="nome" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">E-mail *</label>
+                        <input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
+                        <p class="text-xs text-gray-500 mt-1">As credenciais serão enviadas para este e-mail</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Telefone (WhatsApp)</label>
+                        <input type="tel" id="telefone" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="(11) 99999-9999">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Como nos conheceu?</label>
+                        <select id="origem" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
+                            <option value="">Selecione...</option>
+                            <option value="google">Google</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="indicacao">Indicação</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 md:p-8 border-l border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">Resumo do Pedido</h2>
+                    
+                    <div id="resumoPlano" class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl"></div>
+                    
+                    <div class="border-t border-gray-200 pt-4 mt-4">
+                        <div class="flex justify-between font-bold text-lg">
+                            <span>Total</span>
+                            <span id="totalPreco" class="text-indigo-600">R$ 0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-3 bg-blue-50 rounded-lg">
+                        <p class="text-xs text-blue-800 text-center">
+                            <i class="fas fa-lock mr-1"></i> Pagamento 100% seguro via <strong>InfinitePay</strong>
+                        </p>
+                        <p class="text-xs text-gray-500 text-center mt-1">
+                            Aceita PIX, Cartão de Crédito e Débito
+                        </p>
+                    </div>
+                    
+                    <button id="btnFinalizar" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fas fa-credit-card"></i> Gerar Pagamento
+                    </button>
+                    
+                    <p class="text-center text-xs text-gray-500 mt-4">
+                        Você será redirecionado para o ambiente seguro da InfinitePay
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="shadow-sm border-b border-gray-700 sticky top-0 z-50" style="background-color: #0f172a;">
-        <div class="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-lg flex items-center justify-center shadow-md">
-                        <i class="fas fa-chart-line text-white text-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-base md:text-xl font-bold bg-gradient-to-r from-indigo-400 to-violet-300 bg-clip-text text-transparent">
-                            Gerador Estratégico Lotofácil
-                        </h1>
-                        <p class="text-xs text-gray-400 hidden sm:block">Sistema Inteligente de Geração Estatística</p>
-                    </div>
-                </div>
-                <a href="login.html" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition text-sm font-medium">
-                    <i class="fas fa-sign-in-alt mr-2"></i> Entrar
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 pb-24 sm:pb-8">
-        
-        <!-- Aviso de Demonstração -->
-        <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-4 mb-6 flex items-start gap-3">
-            <i class="fas fa-info-circle text-amber-500 text-lg mt-0.5"></i>
-            <div class="text-sm text-amber-800">
-                <strong>🔍 Modo Demonstração</strong><br>
-                Teste o sistema gratuitamente. Os números gerados ficarão bloqueados até você adquirir um plano.
-            </div>
-        </div>
-
-        <!-- Controles Principais -->
-        <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 mb-6 border border-gray-100">
-            <div class="mb-6 pb-6 border-b border-gray-200">
-                <h2 class="text-xl md:text-2xl font-bold text-gray-800 flex items-center mb-2">
-                    <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center mr-2 md:mr-3 shadow-md">
-                        <i class="fas fa-sliders-h text-white text-sm md:text-lg"></i>
-                    </div>
-                    <span>Configuração do Jogo</span>
-                </h2>
-                <p class="text-sm text-gray-500 ml-0 md:ml-[52px]">Configure a quantidade de dezenas e jogos</p>
-            </div>
-            
-            <div class="space-y-6">
-                <div class="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-xl p-5 border-2 border-indigo-200">
-                    
-                    <!-- Opção Padrão: 15 dezenas / 1 jogo -->
-                    <div class="mb-6">
-                        <label class="flex items-center gap-3 p-3 bg-white rounded-xl border-2 border-indigo-200 cursor-pointer hover:bg-indigo-50 transition">
-                            <input type="radio" name="tipoConfig" value="padrao" checked class="w-5 h-5 text-indigo-600">
-                            <div class="flex-1">
-                                <span class="font-bold text-gray-800">📌 Padrão</span>
-                                <p class="text-sm text-gray-500">15 dezenas (1 jogo) - R$ 3,50</p>
-                            </div>
-                        </label>
-                    </div>
-                    
-                    <!-- Opção Personalizada -->
-                    <div>
-                        <label class="flex items-center gap-3 p-3 bg-white rounded-xl border-2 border-gray-200 cursor-pointer hover:bg-gray-50 transition">
-                            <input type="radio" name="tipoConfig" value="personalizado" class="w-5 h-5 text-indigo-600">
-                            <div class="flex-1">
-                                <span class="font-bold text-gray-800">🎲 Personalizado</span>
-                                <p class="text-sm text-gray-500">Escolha quantidade de dezenas e jogos</p>
-                            </div>
-                        </label>
-                    </div>
-                    
-                    <!-- Campos Personalizados (inicialmente ocultos) -->
-                    <div id="camposPersonalizados" class="mt-4 hidden">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 campo-personalizado">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Quantidade de Dezenas</label>
-                                <select id="personalizarDezenas" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white font-medium text-gray-800">
-                                    <option value="15">15 dezenas</option>
-                                    <option value="16">16 dezenas</option>
-                                    <option value="17">17 dezenas</option>
-                                    <option value="18">18 dezenas</option>
-                                    <option value="19">19 dezenas</option>
-                                    <option value="20">20 dezenas</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Quantidade de Jogos</label>
-                                <input type="number" id="personalizarJogos" min="1" max="50" value="1" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white font-medium text-gray-800">
-                                <p class="text-xs text-gray-500 mt-1">Máximo de 50 jogos por vez</p>
-                            </div>
-                        </div>
-                        <div class="mt-3 p-3 bg-indigo-100 rounded-lg">
-                            <p class="text-sm text-indigo-800">
-                                <i class="fas fa-calculator mr-2"></i>
-                                Valor aproximado: <strong id="valorEstimado">R$ 3,50</strong>
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <!-- Estratégia -->
-                    <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Estratégia de Geração</label>
-                        <select id="estrategiaGeracao" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white font-medium text-gray-800">
-                            <option value="balanceada">⚖️ Balanceada (Recomendada)</option>
-                            <option value="quentes">🔥 Dezenas Quentes (Mais Sorteadas)</option>
-                            <option value="frias">❄️ Dezenas Frias (Menos Sorteadas)</option>
-                            <option value="parImpar">🔄 Pares x Ímpares Equilibrado</option>
-                            <option value="sequencial">📊 Sequencial Lógico</option>
-                        </select>
-                    </div>
-                    
-                    <div class="mt-4 flex items-start text-xs text-gray-600 bg-white/60 rounded-lg px-3 py-2">
-                        <i class="fas fa-chart-line text-indigo-500 mr-2 mt-0.5 flex-shrink-0"></i>
-                        <span>A estratégia <strong>Balanceada</strong> combina dezenas quentes, neutras e frias na proporção ideal baseada em análise dos últimos 200 concursos.</span>
-                    </div>
-                </div>
-                
-                <div class="pt-2">
-                    <button id="gerarBtn" class="w-full min-h-[52px] bg-gradient-to-r from-indigo-600 via-violet-500 to-indigo-600 bg-size-200 bg-pos-0 hover:bg-pos-100 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl flex items-center justify-center space-x-3 text-base md:text-lg">
-                        <i class="fas fa-magic text-lg md:text-xl"></i>
-                        <span>Gerar Estratégia Inteligente</span>
-                        <i class="fas fa-arrow-right hidden sm:inline"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Análise Estatística -->
-        <div id="analiseEstatisticaSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 border border-gray-100">
-            <div class="flex items-center mb-6">
-                <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
-                    <i class="fas fa-chart-bar text-white text-sm md:text-base"></i>
-                </div>
-                <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Análise Estatística</h2>
-                    <p class="text-xs md:text-sm text-gray-500">Padrões identificados nos últimos concursos</p>
-                </div>
-            </div>
-            <div id="analiseEstatistica" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        </div>
-
-        <!-- Classificação das Dezenas -->
-        <div id="classificacaoSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 border border-gray-100">
-            <div class="flex items-center mb-6">
-                <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
-                    <i class="fas fa-fire text-white text-sm md:text-base"></i>
-                </div>
-                <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Classificação das Dezenas</h2>
-                    <p class="text-xs md:text-sm text-gray-500">Baseado na frequência dos últimos 200 concursos</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl p-5 border-2 border-red-200">
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-fire text-red-600 text-xl mr-2"></i>
-                        <h3 class="text-lg font-bold text-red-700">Dezenas Quentes</h3>
-                    </div>
-                    <p class="text-xs text-red-600 mb-3">Mais frequentes (Top 33%)</p>
-                    <div id="quentes" class="flex flex-wrap gap-2"></div>
-                </div>
-                <div class="bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-5 border-2 border-gray-200">
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-equals text-gray-600 text-xl mr-2"></i>
-                        <h3 class="text-lg font-bold text-gray-700">Dezenas Neutras</h3>
-                    </div>
-                    <p class="text-xs text-gray-600 mb-3">Frequência média (34%)</p>
-                    <div id="neutras" class="flex flex-wrap gap-2"></div>
-                </div>
-                <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 border-2 border-blue-200">
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-snowflake text-blue-600 text-xl mr-2"></i>
-                        <h3 class="text-lg font-bold text-blue-700">Dezenas Frias</h3>
-                    </div>
-                    <p class="text-xs text-blue-600 mb-3">Menos frequentes (Bottom 33%)</p>
-                    <div id="frias" class="flex flex-wrap gap-2"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Jogos Gerados -->
-        <div id="jogosSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 border border-gray-100">
-            <div class="flex items-center mb-6">
-                <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
-                    <i class="fas fa-ticket-alt text-white text-sm md:text-base"></i>
-                </div>
-                <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Jogos Gerados</h2>
-                    <p class="text-xs md:text-sm text-gray-500">Combinações otimizadas pela estratégia selecionada</p>
-                </div>
-            </div>
-            <div id="jogosList" class="space-y-3">
-                <div class="text-center text-gray-500 py-8">
-                    <i class="fas fa-info-circle text-4xl mb-2"></i>
-                    <p>Clique em "Gerar Estratégia" para visualizar os jogos</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Planos -->
-        <div id="planos" class="max-w-6xl mx-auto pt-8">
-            <h2 class="text-3xl font-bold text-center text-white mb-12">💰 Adquira Acesso Completo</h2>
-            
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition">
-                    <div class="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white text-center">
-                        <h3 class="text-2xl font-bold">Plano Mensual</h3>
-                        <p class="text-blue-100">Acesso completo por 30 dias</p>
-                    </div>
-                    <div class="p-6 text-center">
-                        <div class="text-4xl font-bold text-gray-800">R$ 27<small class="text-sm text-gray-500">/mês</small></div>
-                        <ul class="mt-6 space-y-3 text-left">
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Gerador ilimitado</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Todas estratégias</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Exportação PDF</li>
-                        </ul>
-                        <button onclick="comprar('mensal')" class="mt-8 w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold py-3 rounded-xl hover:shadow-lg transition btn-cta">
-                            Comprar por R$ 27 →
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition ring-2 ring-yellow-400">
-                    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-6 text-white text-center relative">
-                        <span class="absolute top-0 right-0 bg-red-500 text-white px-3 py-1 rounded-bl-xl text-sm font-bold">MAIS VENDIDO</span>
-                        <h3 class="text-2xl font-bold">Plano Vitalicio</h3>
-                        <p class="text-yellow-100">Acesso permanente</p>
-                    </div>
-                    <div class="p-6 text-center">
-                        <div class="text-4xl font-bold text-gray-800">R$ 97<small class="text-sm text-gray-500">/único</small></div>
-                        <ul class="mt-6 space-y-3 text-left">
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Acesso vitalício</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Atualizações gratuitas</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Suporte prioritário</li>
-                        </ul>
-                        <button onclick="comprar('vitalicio')" class="mt-8 w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-3 rounded-xl hover:shadow-lg transition btn-cta">
-                            Comprar por R$ 97 →
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="bg-gray-900 border-t border-gray-800 py-6 mt-12">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-gray-400 text-sm">© 2025 Gerador Estratégico Lotofácil - Sistema para Estudo e Análise Estatística</p>
-            <p class="text-gray-500 text-xs mt-2">Lotofácil é uma marca registrada da Caixa Econômica Federal. Este site é independente.</p>
-        </div>
-    </footer>
-
     <script>
         // ============================================
-        // DADOS ESTATÍSTICOS
+        // CONFIGURAÇÃO INFINITEPAY
         // ============================================
-        
-        // Preços por quantidade de dezenas (para estimativa)
-        const precosPorDezena = {
-            15: 3.50,
-            16: 14.00,
-            17: 24.50,
-            18: 36.00,
-            19: 63.00,
-            20: 98.00
+        // ⚠️ SUBSTITUA PELOS SEUS LINKS INFINITEPAY
+        const LINKS_PAGAMENTO = {
+            mensal: 'https://checkout.infinitepay.io/seu_handle_aqui/link-plano-mensal',
+            anual: 'https://checkout.infinitepay.io/seu_handle_aqui/link-plano-anual'
         };
         
-        const frequenciaDezenas = {
-            1: 85, 2: 78, 3: 92, 4: 71, 5: 88,
-            6: 95, 7: 82, 8: 76, 9: 91, 10: 84,
-            11: 79, 12: 93, 13: 87, 14: 81, 15: 89,
-            16: 77, 17: 83, 18: 90, 19: 86, 20: 94,
-            21: 75, 22: 80, 23: 88, 24: 82, 25: 79
-        };
+        // ============================================
+        // CARREGAR DADOS DO PLANO
+        // ============================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const plano = urlParams.get('plano');
+        const preco = parseFloat(urlParams.get('preco'));
+        const nomePlano = urlParams.get('nome');
         
-        function classificarDezenas() {
-            const entradas = Object.entries(frequenciaDezenas);
-            const ordenadas = entradas.sort((a,b) => b[1] - a[1]);
-            const total = ordenadas.length;
-            const qtdQuentes = Math.ceil(total * 0.33);
-            const qtdFrias = Math.floor(total * 0.33);
-            const quentes = ordenadas.slice(0, qtdQuentes).map(([num]) => parseInt(num));
-            const neutras = ordenadas.slice(qtdQuentes, total - qtdFrias).map(([num]) => parseInt(num));
-            const frias = ordenadas.slice(total - qtdFrias).map(([num]) => parseInt(num));
-            return { quentes, neutras, frias };
-        }
-        
-        function selecionarAleatorios(array, quantidade) {
-            if (!array || array.length === 0) return [];
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled.slice(0, quantidade);
-        }
-        
-        function gerarJogos(quantidadeDezenas, quantidadeJogos, estrategia) {
-            const { quentes, neutras, frias } = classificarDezenas();
-            const jogos = [];
-            
-            for (let i = 0; i < quantidadeJogos; i++) {
-                let dezenas = [];
-                
-                switch(estrategia) {
-                    case 'balanceada':
-                        const qQuentes = Math.floor(quantidadeDezenas * 0.6);
-                        const qNeutras = Math.floor(quantidadeDezenas * 0.2);
-                        const qFrias = quantidadeDezenas - qQuentes - qNeutras;
-                        dezenas.push(...selecionarAleatorios(quentes, qQuentes));
-                        dezenas.push(...selecionarAleatorios(neutras, qNeutras));
-                        dezenas.push(...selecionarAleatorios(frias, qFrias));
-                        break;
-                    case 'quentes':
-                        dezenas.push(...selecionarAleatorios(quentes, quantidadeDezenas));
-                        break;
-                    case 'frias':
-                        dezenas.push(...selecionarAleatorios(frias, quantidadeDezenas));
-                        break;
-                    case 'parImpar':
-                        const qPares = Math.floor(quantidadeDezenas / 2);
-                        const qImpares = quantidadeDezenas - qPares;
-                        const pares = [2,4,6,8,10,12,14,16,18,20,22,24];
-                        const impares = [1,3,5,7,9,11,13,15,17,19,21,23,25];
-                        dezenas.push(...selecionarAleatorios(pares, qPares));
-                        dezenas.push(...selecionarAleatorios(impares, qImpares));
-                        break;
-                    case 'sequencial':
-                        const passo = 25 / quantidadeDezenas;
-                        for (let j = 0; j < quantidadeDezenas; j++) {
-                            let num = Math.floor(j * passo) + 1;
-                            num = Math.min(25, Math.max(1, num + Math.floor(Math.random() * 3) - 1));
-                            dezenas.push(num);
-                        }
-                        break;
-                    default:
-                        dezenas = selecionarAleatorios(Array.from({length: 25}, (_, i) => i + 1), quantidadeDezenas);
-                }
-                
-                dezenas = [...new Set(dezenas)];
-                while (dezenas.length < quantidadeDezenas) {
-                    const novoNum = Math.floor(Math.random() * 25) + 1;
-                    if (!dezenas.includes(novoNum)) dezenas.push(novoNum);
-                }
-                dezenas.sort((a,b) => a-b);
-                jogos.push(dezenas);
-            }
-            return jogos;
-        }
-        
-        function renderizarClassificacao() {
-            const { quentes, neutras, frias } = classificarDezenas();
-            document.getElementById('quentes').innerHTML = quentes.map(n => 
-                `<span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 text-white font-bold rounded-lg shadow-md text-sm">${n.toString().padStart(2,'0')}</span>`
-            ).join('');
-            document.getElementById('neutras').innerHTML = neutras.map(n => 
-                `<span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 text-white font-bold rounded-lg shadow-md text-sm">${n.toString().padStart(2,'0')}</span>`
-            ).join('');
-            document.getElementById('frias').innerHTML = frias.map(n => 
-                `<span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-500 text-white font-bold rounded-lg shadow-md text-sm">${n.toString().padStart(2,'0')}</span>`
-            ).join('');
-        }
-        
-        function renderizarAnalise() {
-            const analiseDiv = document.getElementById('analiseEstatistica');
-            analiseDiv.innerHTML = `
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4">
-                    <div class="flex items-center mb-2"><i class="fas fa-chart-line text-indigo-600 mr-2"></i><span class="font-bold text-gray-700">Média por Sorteio</span></div>
-                    <p class="text-2xl font-bold text-indigo-600">15 números</p>
-                    <p class="text-xs text-gray-500">Total de dezenas por concurso</p>
-                </div>
-                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4">
-                    <div class="flex items-center mb-2"><i class="fas fa-chart-pie text-green-600 mr-2"></i><span class="font-bold text-gray-700">Pares x Ímpares</span></div>
-                    <p class="text-2xl font-bold text-green-600">7.5 / 7.5</p>
-                    <p class="text-xs text-gray-500">Média histórica de distribuição</p>
-                </div>
-                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4">
-                    <div class="flex items-center mb-2"><i class="fas fa-calculator text-purple-600 mr-2"></i><span class="font-bold text-gray-700">Combinações Possíveis</span></div>
-                    <p class="text-2xl font-bold text-purple-600">3.268.760</p>
-                    <p class="text-xs text-gray-500">Total de combinações na Lotofácil</p>
-                </div>
-                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4">
-                    <div class="flex items-center mb-2"><i class="fas fa-fire text-orange-600 mr-2"></i><span class="font-bold text-gray-700">Dezena Mais Frequente</span></div>
-                    <p class="text-2xl font-bold text-orange-600">06 e 12</p>
-                    <p class="text-xs text-gray-500">Aparecem em ~47% dos sorteios</p>
+        if (nomePlano && preco) {
+            document.getElementById('resumoPlano').innerHTML = `
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-gray-800">${decodeURIComponent(nomePlano)}</p>
+                        <p class="text-sm text-gray-500">Acesso ${plano === 'mensal' ? '30 dias' : '12 meses'}</p>
+                    </div>
+                    <div class="text-xl font-bold text-indigo-600">R$ ${preco.toFixed(2).replace('.', ',')}</div>
                 </div>
             `;
+            document.getElementById('totalPreco').innerHTML = `R$ ${preco.toFixed(2).replace('.', ',')}`;
+        } else {
+            window.location.href = 'index.html';
         }
         
-        // Renderizar jogos COM BLUR (bloqueados)
-        function renderizarJogosBloqueados(jogos) {
-            const jogosDiv = document.getElementById('jogosList');
+        // ============================================
+        // VALIDAR CAMPOS
+        // ============================================
+        function validarCampos() {
+            let valido = true;
+            const nome = document.getElementById('nome');
+            const email = document.getElementById('email');
             
-            if (!jogos || jogos.length === 0) {
-                jogosDiv.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-info-circle text-4xl mb-2"></i>
-                        <p>Clique em "Gerar Estratégia" para visualizar os jogos</p>
-                    </div>
-                `;
+            if (!nome.value.trim()) {
+                nome.classList.add('input-erro');
+                valido = false;
+            } else {
+                nome.classList.remove('input-erro');
+            }
+            
+            if (!email.value.trim() || !email.value.includes('@') || !email.value.includes('.')) {
+                email.classList.add('input-erro');
+                valido = false;
+            } else {
+                email.classList.remove('input-erro');
+            }
+            
+            return valido;
+        }
+        
+        // ============================================
+        // FINALIZAR COMPRA
+        // ============================================
+        document.getElementById('btnFinalizar').addEventListener('click', async () => {
+            if (!validarCampos()) {
+                alert('⚠️ Preencha corretamente nome e e-mail');
                 return;
             }
             
-            jogosDiv.innerHTML = jogos.map((jogo, idx) => `
-                <div class="jogo-card bg-gradient-to-r from-gray-50 to-white rounded-xl p-4 shadow-sm border border-gray-200">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-lg flex items-center justify-center mr-3">
-                                <span class="text-white font-bold text-sm">${(idx+1).toString().padStart(2,'0')}</span>
-                            </div>
-                            <span class="font-bold text-gray-700">Jogo ${idx+1}</span>
-                        </div>
-                        <span class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${jogo.length} dezenas</span>
-                    </div>
-                    <div class="flex flex-wrap gap-2 blur-numbers">
-                        ${jogo.map(num => `
-                            <span class="dezena-card inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-500 text-white font-bold rounded-xl shadow-md text-base">
-                                ${num.toString().padStart(2,'0')}
-                            </span>
-                        `).join('')}
-                    </div>
-                    <div class="mt-3 text-center text-xs text-amber-600 bg-amber-50 rounded-lg py-2">
-                        <i class="fas fa-lock mr-1"></i> Adquira o plano para desbloquear os números
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        function atualizarValorEstimado() {
-            const isPersonalizado = document.querySelector('input[name="tipoConfig"]:checked').value === 'personalizado';
-            let dezenas, jogos;
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const telefone = document.getElementById('telefone').value;
+            const origem = document.getElementById('origem').value;
             
-            if (isPersonalizado) {
-                dezenas = parseInt(document.getElementById('personalizarDezenas').value);
-                jogos = parseInt(document.getElementById('personalizarJogos').value);
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Salvar pedido pendente
+            const pedido = {
+                id: Date.now(),
+                nome: nome,
+                email: email,
+                telefone: telefone,
+                origem: origem,
+                plano: decodeURIComponent(nomePlano),
+                valor: preco,
+                data: new Date().toISOString(),
+                status: 'pendente'
+            };
+            
+            let pedidos = JSON.parse(localStorage.getItem('pedidos_pendentes') || '[]');
+            pedidos.push(pedido);
+            localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
+            
+            // Redirecionar para InfinitePay
+            const linkPagamento = LINKS_PAGAMENTO[plano];
+            
+            if (linkPagamento && linkPagamento !== 'https://checkout.infinitepay.io/seu_handle_aqui/link-plano-mensal') {
+                loading.classList.remove('active');
+                window.open(linkPagamento, '_blank');
+                alert(`✅ Link de pagamento gerado!\n\nUma nova aba foi aberta para finalizar o pagamento.\n\nApós a confirmação, você receberá o acesso por e-mail em até 24h.`);
             } else {
-                dezenas = 15;
-                jogos = 1;
+                loading.classList.remove('active');
+                alert(`✅ Pedido registrado!\n\n📋 Dados:\nNome: ${nome}\nE-mail: ${email}\nPlano: ${decodeURIComponent(nomePlano)}\nValor: R$ ${preco.toFixed(2).replace('.', ',')}\n\n⏳ Para testes, não há link de pagamento configurado.\nConfigure os links da InfinitePay no arquivo checkout.html`);
             }
-            
-            const precoUnitario = precosPorDezena[dezenas] || 3.50;
-            const valorTotal = precoUnitario * jogos;
-            document.getElementById('valorEstimado').innerHTML = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
-        }
-        
-        function mostrarOverlay() {
-            document.getElementById('overlayCompra').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function fecharOverlay() {
-            document.getElementById('overlayCompra').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-        
-        async function gerarEstrategia() {
-            const isPersonalizado = document.querySelector('input[name="tipoConfig"]:checked').value === 'personalizado';
-            let quantidadeDezenas, quantidadeJogos;
-            
-            if (isPersonalizado) {
-                quantidadeDezenas = parseInt(document.getElementById('personalizarDezenas').value);
-                quantidadeJogos = parseInt(document.getElementById('personalizarJogos').value);
-                if (isNaN(quantidadeJogos) || quantidadeJogos < 1) quantidadeJogos = 1;
-                if (quantidadeJogos > 50) quantidadeJogos = 50;
-            } else {
-                quantidadeDezenas = 15;
-                quantidadeJogos = 1;
-            }
-            
-            const estrategia = document.getElementById('estrategiaGeracao').value;
-            const btn = document.getElementById('gerarBtn');
-            const btnOriginalHtml = btn.innerHTML;
-            
-            // Mostrar loading
-            btn.innerHTML = '<div class="loading-spinner"></div><span>Gerando estratégia...</span>';
-            btn.disabled = true;
-            
-            // Simular processamento
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            // Gerar jogos
-            const jogos = gerarJogos(quantidadeDezenas, quantidadeJogos, estrategia);
-            
-            // Renderizar jogos bloqueados (com blur)
-            renderizarJogosBloqueados(jogos);
-            
-            // Mostrar overlay de compra
-            setTimeout(() => {
-                mostrarOverlay();
-            }, 300);
-            
-            // Restaurar botão
-            btn.innerHTML = btnOriginalHtml;
-            btn.disabled = false;
-            
-            // Scroll para os resultados
-            setTimeout(() => {
-                document.getElementById('jogosSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-        }
-        
-        function comprar(plano) {
-            const preco = plano === 'mensal' ? 27 : 97;
-            const nomePlano = plano === 'mensal' ? 'Plano Mensal' : 'Plano Vitalício';
-            window.location.href = `checkout.html?plano=${plano}&preco=${preco}&nome=${encodeURIComponent(nomePlano)}`;
-        }
-        
-        // Event listeners
-        document.getElementById('gerarBtn').addEventListener('click', gerarEstrategia);
-        
-        // Mostrar/esconder campos personalizados
-        const radios = document.querySelectorAll('input[name="tipoConfig"]');
-        const camposPersonalizados = document.getElementById('camposPersonalizados');
-        
-        radios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === 'personalizado') {
-                    camposPersonalizados.classList.remove('hidden');
-                } else {
-                    camposPersonalizados.classList.add('hidden');
-                }
-                atualizarValorEstimado();
-            });
         });
         
-        // Atualizar valor estimado quando mudar dezenas ou jogos
-        document.getElementById('personalizarDezenas').addEventListener('change', atualizarValorEstimado);
-        document.getElementById('personalizarJogos').addEventListener('input', atualizarValorEstimado);
-        
-        // Renderização inicial (classificação e análise visíveis, jogos vazio)
-        renderizarClassificacao();
-        renderizarAnalise();
-        
-        // Inicializar valor estimado
-        atualizarValorEstimado();
-        
-        // Inicializar com mensagem de boas-vindas
-        renderizarJogosBloqueados([]);
+        document.getElementById('nome').addEventListener('input', function() {
+            this.classList.remove('input-erro');
+        });
+        document.getElementById('email').addEventListener('input', function() {
+            this.classList.remove('input-erro');
+        });
     </script>
 </body>
 </html>
