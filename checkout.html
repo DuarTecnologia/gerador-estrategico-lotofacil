@@ -2,78 +2,237 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Checkout - Gerador Estratégico Lotofácil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        * { font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .loading.active { display: flex; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid white;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .input-erro { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-600 to-purple-700 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
-        <div class="text-center mb-6">
-            <i class="fas fa-shopping-cart text-4xl text-indigo-600"></i>
-            <h1 class="text-2xl font-bold mt-2">Finalizar Compra</h1>
+<body class="flex items-center justify-center p-4">
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p class="text-white mt-4">Processando...</p>
+    </div>
+
+    <div class="w-full max-w-4xl">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-lg mb-3">
+                <i class="fas fa-chart-line text-3xl text-indigo-600"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-white">Finalizar Compra</h1>
+            <p class="text-indigo-200">Preencha os dados abaixo para adquirir o acesso</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="grid md:grid-cols-2">
+                <!-- Formulário -->
+                <div class="p-6 md:p-8">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">Dados pessoais</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Nome completo *</label>
+                        <input type="text" id="nome" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
+                        <p class="text-xs text-gray-500 mt-1">Como deseja ser chamado</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">E-mail *</label>
+                        <input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
+                        <p class="text-xs text-gray-500 mt-1">As credenciais de acesso serão enviadas para este e-mail</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Telefone (WhatsApp)</label>
+                        <input type="tel" id="telefone" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="(11) 99999-9999">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Como nos conheceu?</label>
+                        <select id="origem" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
+                            <option value="">Selecione...</option>
+                            <option value="google">Google</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="indicacao">Indicação de amigo</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Resumo do Pedido -->
+                <div class="bg-gray-50 p-6 md:p-8 border-l border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">Resumo do Pedido</h2>
+                    
+                    <div id="resumoPlano" class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl">
+                        <!-- Plano será inserido via JS -->
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4 mt-4">
+                        <div class="flex justify-between font-bold text-lg">
+                            <span>Total</span>
+                            <span id="totalPreco" class="text-indigo-600">R$ 0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-3 bg-blue-50 rounded-lg">
+                        <p class="text-xs text-blue-800 text-center">
+                            <i class="fas fa-lock mr-1"></i> Pagamento 100% seguro
+                        </p>
+                        <p class="text-xs text-blue-600 text-center mt-1">
+                            Aceitamos PIX, Cartão de Crédito e Débito
+                        </p>
+                    </div>
+                    
+                    <button id="btnFinalizar" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fas fa-credit-card"></i> Finalizar Compra
+                    </button>
+                    
+                    <p class="text-center text-xs text-gray-500 mt-4">
+                        Após a confirmação do pagamento, você receberá o acesso por e-mail em até 24h.
+                    </p>
+                </div>
+            </div>
         </div>
         
-        <div id="resumo" class="bg-gray-50 p-4 rounded-lg mb-6 text-center">
-            <!-- Resumo será preenchido -->
-        </div>
-        
-        <input type="text" id="nome" placeholder="Nome completo" class="w-full p-3 border rounded-lg mb-3">
-        <input type="email" id="email" placeholder="E-mail" class="w-full p-3 border rounded-lg mb-3">
-        <input type="tel" id="telefone" placeholder="WhatsApp (opcional)" class="w-full p-3 border rounded-lg mb-4">
-        
-        <button onclick="finalizarCompra()" class="w-full bg-green-500 text-white p-3 rounded-lg font-bold hover:bg-green-600">
-            💰 Simular Compra (R$ 97)
-        </button>
-        
-        <p class="text-center text-gray-500 text-xs mt-6">
-            Após a simulação, você receberá um email para criar seu acesso.
+        <p class="text-center text-indigo-200 text-xs mt-8">
+            Ao finalizar, você concorda com nossos termos de uso.<br>
+            Garantia de 7 dias: se não ficar satisfeito, devolvemos 100% do valor.
         </p>
     </div>
 
     <script>
+        // Carregar dados do plano da URL
         const urlParams = new URLSearchParams(window.location.search);
         const plano = urlParams.get('plano');
         const preco = urlParams.get('preco');
         const nomePlano = urlParams.get('nome');
         
         if (nomePlano && preco) {
-            document.getElementById('resumo').innerHTML = `
-                <p class="font-bold text-gray-800">${decodeURIComponent(nomePlano)}</p>
-                <p class="text-2xl font-bold text-indigo-600">R$ ${preco}</p>
+            document.getElementById('resumoPlano').innerHTML = `
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-gray-800">${decodeURIComponent(nomePlano)}</p>
+                        <p class="text-sm text-gray-500">Acesso ${plano === 'mensal' ? '30 dias' : 'vitalício'}</p>
+                        <p class="text-xs text-gray-400 mt-1">Pagamento único</p>
+                    </div>
+                    <div class="text-xl font-bold text-indigo-600">R$ ${preco}</div>
+                </div>
             `;
+            document.getElementById('totalPreco').innerHTML = `R$ ${preco}`;
         } else {
             window.location.href = 'index.html';
         }
         
-        function finalizarCompra() {
-            const nome = document.getElementById('nome').value;
-            const email = document.getElementById('email').value;
+        // Validar campos
+        function validarCampos() {
+            let valido = true;
+            const nome = document.getElementById('nome');
+            const email = document.getElementById('email');
             
-            if (!nome || !email) {
-                alert('Preencha nome e e-mail');
+            if (!nome.value.trim()) {
+                nome.classList.add('input-erro');
+                valido = false;
+            } else {
+                nome.classList.remove('input-erro');
+            }
+            
+            if (!email.value.trim() || !email.value.includes('@') || !email.value.includes('.')) {
+                email.classList.add('input-erro');
+                valido = false;
+            } else {
+                email.classList.remove('input-erro');
+            }
+            
+            return valido;
+        }
+        
+        // Finalizar compra
+        document.getElementById('btnFinalizar').addEventListener('click', async () => {
+            if (!validarCampos()) {
+                alert('⚠️ Preencha corretamente nome e e-mail');
                 return;
             }
             
-            // Salvar pedido no localStorage do admin
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const telefone = document.getElementById('telefone').value;
+            const origem = document.getElementById('origem').value;
+            
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            
+            // Simular processamento do pedido
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Criar pedido
             const pedido = {
                 id: Date.now(),
                 nome: nome,
                 email: email,
+                telefone: telefone,
+                origem: origem,
                 plano: decodeURIComponent(nomePlano),
                 valor: preco,
                 data: new Date().toISOString(),
                 status: 'pendente'
             };
             
+            // Salvar no localStorage (para aparecer no admin)
             let pedidos = JSON.parse(localStorage.getItem('pedidos_pendentes') || '[]');
             pedidos.push(pedido);
             localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
             
-            alert(`✅ Pedido registrado!\n\nNome: ${nome}\nE-mail: ${email}\n\nEm breve você receberá as credenciais de acesso por email.`);
+            // Salvar dados do comprador para referência
+            console.log('📦 NOVO PEDIDO:', pedido);
             
-            window.location.href = 'index.html';
-        }
+            loading.classList.remove('active');
+            
+            alert(`✅ Pedido registrado com sucesso!\n\n📋 Dados:\nNome: ${nome}\nE-mail: ${email}\nPlano: ${decodeURIComponent(nomePlano)}\nValor: R$ ${preco}\n\n⏳ Aguarde a confirmação do pagamento.\n📧 Você receberá as credenciais de acesso por e-mail em até 24h.`);
+            
+            // Redirecionar para página de obrigado
+            window.location.href = 'obrigado.html';
+        });
+        
+        // Remover erro ao digitar
+        document.getElementById('nome').addEventListener('input', function() {
+            this.classList.remove('input-erro');
+        });
+        document.getElementById('email').addEventListener('input', function() {
+            this.classList.remove('input-erro');
+        });
     </script>
 </body>
 </html>
