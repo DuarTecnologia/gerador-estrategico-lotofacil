@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gerador Estratégico Lotofácil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        * { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">👑 Painel Administrativo</h1>
+            <a href="index.html" class="text-indigo-600 hover:underline">← Voltar ao site</a>
+        </div>
+
+        <!-- Login do Admin (simples) -->
+        <div id="loginAdmin" class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-xl font-bold mb-4">Acesso Administrativo</h2>
+            <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full p-3 border rounded-lg mb-4">
+            <button onclick="logarAdmin()" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-bold">Entrar</button>
+            <p class="text-xs text-gray-500 mt-4 text-center">Senha padrão: admin123 (mude depois)</p>
+        </div>
+
+        <!-- Painel Admin (aparece após login) -->
+        <div id="painelAdmin" class="hidden">
+            <!-- Botão de logout -->
+            <div class="flex justify-end mb-4">
+                <button onclick="logoutAdmin()" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm">Sair</button>
+            </div>
+
+            <!-- Pedidos Pendentes -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-bold mb-4">📦 Pedidos Aguardando Aprovação</h2>
+                <div id="listaPedidos" class="space-y-3">
+                    <p class="text-gray-500 text-center py-8">Nenhum pedido pendente</p>
+                </div>
+            </div>
+
+            <!-- Formulário para criar novo usuário -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-bold mb-4">➕ Criar Novo Usuário (para cliente)</h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <input type="text" id="novoEmail" placeholder="E-mail do cliente" class="p-3 border rounded-lg">
+                    <input type="text" id="novoNome" placeholder="Nome do cliente" class="p-3 border rounded-lg">
+                </div>
+                <button onclick="criarUsuario()" class="mt-4 w-full bg-green-500 text-white p-3 rounded-lg font-bold hover:bg-green-600">
+                    Criar Acesso
+                </button>
+            </div>
+
+            <!-- Lista de Usuários Autorizados -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold mb-4">👥 Usuários com Acesso</h2>
+                <div id="listaUsuarios" class="space-y-2">
+                    <p class="text-gray-500 text-center py-8">Carregando...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chave para o localStorage
+        const STORAGE_USERS = 'usuarios_autorizados';
+        const STORAGE_PEDIDOS = 'pedidos_pendentes';
+        
+        // Usuário admin fixo (simples)
+        const ADMIN_SENHA = 'admin123';  // Você pode mudar
+        
+        // ==================== FUNÇÕES ADMIN ====================
+        function logarAdmin() {
+            const senha = document.getElementById('senhaAdmin').value;
+            if (senha === ADMIN_SENHA) {
+                document.getElementById('loginAdmin').classList.add('hidden');
+                document.getElementById('painelAdmin').classList.remove('hidden');
+                carregarDados();
+            } else {
+                alert('Senha incorreta!');
+            }
+        }
+        
+        function logoutAdmin() {
+            document.getElementById('painelAdmin').classList.add('hidden');
+            document.getElementById('loginAdmin').classList.remove('hidden');
+            document.getElementById('senhaAdmin').value = '';
+        }
+        
+        // ==================== GERENCIAR USUÁRIOS ====================
+        function getUsuarios() {
+            const usuarios = localStorage.getItem(STORAGE_USERS);
+            return usuarios ? JSON.parse(usuarios) : [];
+        }
+        
+        function salvarUsuarios(usuarios) {
+            localStorage.setItem(STORAGE_USERS, JSON.stringify(usuarios));
+        }
+        
+        function getPedidos() {
+            const pedidos = localStorage.getItem(STORAGE_PEDIDOS);
+            return pedidos ? JSON.parse(pedidos) : [];
+        }
+        
+        function salvarPedidos(pedidos) {
+            localStorage.setItem(STORAGE_PEDIDOS, JSON.stringify(pedidos));
+        }
+        
+        function criarUsuario() {
+            const email = document.getElementById('novoEmail').value;
+            const nome = document.getElementById('novoNome').value;
+            
+            if (!email || !nome) {
+                alert('Preencha e-mail e nome');
+                return;
+            }
+            
+            // Gerar senha aleatória
+            const senha = Math.random().toString(36).substring(2, 10) + '@Lotofacil';
+            
+            const usuarios = getUsuarios();
+            usuarios.push({
+                id: Date.now(),
+                email: email,
+                nome: nome,
+                senha: senha,
+                dataCriacao: new Date().toISOString(),
+                ativo: true
+            });
+            salvarUsuarios(usuarios);
+            
+            // Limpar campos
+            document.getElementById('novoEmail').value = '';
+            document.getElementById('novoNome').value = '';
+            
+            // Mostrar senha gerada
+            alert(`✅ Usuário criado!\n\nEmail: ${email}\nSenha: ${senha}\n\n📧 Envie estas credenciais para o cliente.`);
+            
+            // Enviar email manualmente (você copia e cola)
+            console.log('Enviar email para:', email);
+            console.log('Senha:', senha);
+            
+            carregarDados();
+        }
+        
+        function aprovarPedido(pedidoId) {
+            let pedidos = getPedidos();
+            const pedido = pedidos.find(p => p.id === pedidoId);
+            
+            if (pedido) {
+                // Remover da lista de pedidos
+                pedidos = pedidos.filter(p => p.id !== pedidoId);
+                salvarPedidos(pedidos);
+                
+                // Criar usuário automaticamente
+                const usuarios = getUsuarios();
+                const senha = Math.random().toString(36).substring(2, 10) + '@Lotofacil';
+                usuarios.push({
+                    id: Date.now(),
+                    email: pedido.email,
+                    nome: pedido.nome,
+                    senha: senha,
+                    plano: pedido.plano,
+                    dataCriacao: new Date().toISOString(),
+                    ativo: true
+                });
+                salvarUsuarios(usuarios);
+                
+                alert(`✅ Pedido aprovado!\n\nUsuário criado para: ${pedido.email}\nSenha: ${senha}\n\nEnvie as credenciais por email.`);
+                
+                carregarDados();
+            }
+        }
+        
+        function removerUsuario(id) {
+            if (confirm('Remover acesso deste usuário?')) {
+                let usuarios = getUsuarios();
+                usuarios = usuarios.filter(u => u.id !== id);
+                salvarUsuarios(usuarios);
+                carregarDados();
+            }
+        }
+        
+        // ==================== CARREGAR DADOS NA TELA ====================
+        function carregarDados() {
+            // Carregar pedidos pendentes
+            const pedidos = getPedidos();
+            const listaPedidos = document.getElementById('listaPedidos');
+            
+            if (pedidos.length === 0) {
+                listaPedidos.innerHTML = '<p class="text-gray-500 text-center py-8">✅ Nenhum pedido pendente</p>';
+            } else {
+                listaPedidos.innerHTML = pedidos.map(pedido => `
+                    <div class="border rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold">${pedido.nome}</p>
+                            <p class="text-sm text-gray-600">${pedido.email}</p>
+                            <p class="text-sm text-indigo-600 font-medium">${pedido.plano} - R$ ${pedido.valor}</p>
+                            <p class="text-xs text-gray-400">${new Date(pedido.data).toLocaleString()}</p>
+                        </div>
+                        <button onclick="aprovarPedido(${pedido.id})" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600">
+                            ✅ Criar Acesso
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            // Carregar usuários autorizados
+            const usuarios = getUsuarios();
+            const listaUsuarios = document.getElementById('listaUsuarios');
+            
+            if (usuarios.length === 0) {
+                listaUsuarios.innerHTML = '<p class="text-gray-500 text-center py-8">Nenhum usuário cadastrado</p>';
+            } else {
+                listaUsuarios.innerHTML = usuarios.map(user => `
+                    <div class="border rounded-lg p-3 flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">${user.nome}</p>
+                            <p class="text-sm text-gray-600">${user.email}</p>
+                            <p class="text-xs text-gray-400">Criado: ${new Date(user.dataCriacao).toLocaleDateString()}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="copiarCredenciais('${user.email}', '${user.senha}')" class="bg-gray-500 text-white px-3 py-1 rounded text-sm">📋 Copiar</button>
+                            <button onclick="removerUsuario(${user.id})" class="bg-red-500 text-white px-3 py-1 rounded text-sm">🗑️ Remover</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        function copiarCredenciais(email, senha) {
+            const texto = `Email: ${email}\nSenha: ${senha}\nLink: https://duartecnologia.github.io/gerador-estrategico-lotofacil/sistema.html`;
+            navigator.clipboard.writeText(texto);
+            alert('Credenciais copiadas!\nCole e envie para o cliente.');
+        }
+        
+        // Inicializar dados de exemplo (se vazio)
+        function initDados() {
+            if (getUsuarios().length === 0) {
+                // Criar um usuário admin de exemplo
+                salvarUsuarios([{
+                    id: 1,
+                    email: 'admin@exemplo.com',
+                    nome: 'Administrador',
+                    senha: 'admin123',
+                    ativo: true
+                }]);
+            }
+        }
+        
+        initDados();
+    </script>
+</body>
+</html>
