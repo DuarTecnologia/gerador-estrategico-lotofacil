@@ -101,11 +101,18 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Estilo para campos personalizados */
+        .campo-personalizado {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 12px;
+        }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <!-- Overlay de Compra (aparece quando tenta gerar) -->
+    <!-- Overlay de Compra -->
     <div id="overlayCompra" class="overlay-compra">
         <div class="modal-compra">
             <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl mb-4">
@@ -163,43 +170,74 @@
                     <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center mr-2 md:mr-3 shadow-md">
                         <i class="fas fa-sliders-h text-white text-sm md:text-lg"></i>
                     </div>
-                    <span>Configurações Estratégicas</span>
+                    <span>Configuração do Jogo</span>
                 </h2>
-                <p class="text-sm text-gray-500 ml-0 md:ml-[52px]">Configure os parâmetros para gerar seus jogos</p>
+                <p class="text-sm text-gray-500 ml-0 md:ml-[52px]">Configure a quantidade de dezenas e jogos</p>
             </div>
             
             <div class="space-y-6">
                 <div class="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-xl p-5 border-2 border-indigo-200">
-                    <label class="block text-sm font-bold text-gray-800 mb-4 flex items-center">
-                        <div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-lg flex items-center justify-center mr-3 shadow-sm">
-                            <i class="fas fa-hashtag text-white text-xs"></i>
-                        </div>
-                        <span>Configuração do Jogo</span>
-                    </label>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantidade de Dezenas</label>
-                            <select id="quantidadeDezenas" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white font-medium text-gray-800">
-                                <option value="15">15 dezenas (1 jogo - R$ 3,50)</option>
-                                <option value="16">16 dezenas (4 jogos - R$ 14,00)</option>
-                                <option value="17" selected>17 dezenas (7 jogos - R$ 24,50)</option>
-                                <option value="18">18 dezenas (12 jogos - R$ 36,00)</option>
-                                <option value="19">19 dezenas (21 jogos - R$ 63,00)</option>
-                                <option value="20">20 dezenas (28 jogos - R$ 84,00)</option>
-                            </select>
+                    <!-- Opção Padrão: 15 dezenas / 1 jogo -->
+                    <div class="mb-6">
+                        <label class="flex items-center gap-3 p-3 bg-white rounded-xl border-2 border-indigo-200 cursor-pointer hover:bg-indigo-50 transition">
+                            <input type="radio" name="tipoConfig" value="padrao" checked class="w-5 h-5 text-indigo-600">
+                            <div class="flex-1">
+                                <span class="font-bold text-gray-800">📌 Padrão</span>
+                                <p class="text-sm text-gray-500">15 dezenas (1 jogo) - R$ 3,50</p>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <!-- Opção Personalizada -->
+                    <div>
+                        <label class="flex items-center gap-3 p-3 bg-white rounded-xl border-2 border-gray-200 cursor-pointer hover:bg-gray-50 transition">
+                            <input type="radio" name="tipoConfig" value="personalizado" class="w-5 h-5 text-indigo-600">
+                            <div class="flex-1">
+                                <span class="font-bold text-gray-800">🎲 Personalizado</span>
+                                <p class="text-sm text-gray-500">Escolha quantidade de dezenas e jogos</p>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <!-- Campos Personalizados (inicialmente ocultos) -->
+                    <div id="camposPersonalizados" class="mt-4 hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 campo-personalizado">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Quantidade de Dezenas</label>
+                                <select id="personalizarDezenas" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white font-medium text-gray-800">
+                                    <option value="15">15 dezenas</option>
+                                    <option value="16">16 dezenas</option>
+                                    <option value="17">17 dezenas</option>
+                                    <option value="18">18 dezenas</option>
+                                    <option value="19">19 dezenas</option>
+                                    <option value="20">20 dezenas</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Quantidade de Jogos</label>
+                                <input type="number" id="personalizarJogos" min="1" max="50" value="1" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white font-medium text-gray-800">
+                                <p class="text-xs text-gray-500 mt-1">Máximo de 50 jogos por vez</p>
+                            </div>
                         </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Estratégia de Geração</label>
-                            <select id="estrategiaGeracao" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white font-medium text-gray-800">
-                                <option value="balanceada">⚖️ Balanceada (Recomendada)</option>
-                                <option value="quentes">🔥 Dezenas Quentes (Mais Sorteadas)</option>
-                                <option value="frias">❄️ Dezenas Frias (Menos Sorteadas)</option>
-                                <option value="parImpar">🔄 Pares x Ímpares Equilibrado</option>
-                                <option value="sequencial">📊 Sequencial Lógico</option>
-                            </select>
+                        <div class="mt-3 p-3 bg-indigo-100 rounded-lg">
+                            <p class="text-sm text-indigo-800">
+                                <i class="fas fa-calculator mr-2"></i>
+                                Valor aproximado: <strong id="valorEstimado">R$ 3,50</strong>
+                            </p>
                         </div>
+                    </div>
+                    
+                    <!-- Estratégia -->
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Estratégia de Geração</label>
+                        <select id="estrategiaGeracao" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white font-medium text-gray-800">
+                            <option value="balanceada">⚖️ Balanceada (Recomendada)</option>
+                            <option value="quentes">🔥 Dezenas Quentes (Mais Sorteadas)</option>
+                            <option value="frias">❄️ Dezenas Frias (Menos Sorteadas)</option>
+                            <option value="parImpar">🔄 Pares x Ímpares Equilibrado</option>
+                            <option value="sequencial">📊 Sequencial Lógico</option>
+                        </select>
                     </div>
                     
                     <div class="mt-4 flex items-start text-xs text-gray-600 bg-white/60 rounded-lg px-3 py-2">
@@ -271,7 +309,7 @@
             </div>
         </div>
 
-        <!-- Jogos Gerados (inicialmente vazio) -->
+        <!-- Jogos Gerados -->
         <div id="jogosSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 border border-gray-100">
             <div class="flex items-center mb-6">
                 <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
@@ -283,7 +321,6 @@
                 </div>
             </div>
             <div id="jogosList" class="space-y-3">
-                <!-- Mensagem inicial -->
                 <div class="text-center text-gray-500 py-8">
                     <i class="fas fa-info-circle text-4xl mb-2"></i>
                     <p>Clique em "Gerar Estratégia" para visualizar os jogos</p>
@@ -298,7 +335,7 @@
             <div class="grid md:grid-cols-2 gap-8">
                 <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition">
                     <div class="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white text-center">
-                        <h3 class="text-2xl font-bold">Plano Mensal</h3>
+                        <h3 class="text-2xl font-bold">Plano Mensual</h3>
                         <p class="text-blue-100">Acesso completo por 30 dias</p>
                     </div>
                     <div class="p-6 text-center">
@@ -307,7 +344,6 @@
                             <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Gerador ilimitado</li>
                             <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Todas estratégias</li>
                             <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Exportação PDF</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Análise estatística</li>
                         </ul>
                         <button onclick="comprar('mensal')" class="mt-8 w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold py-3 rounded-xl hover:shadow-lg transition btn-cta">
                             Comprar por R$ 27 →
@@ -318,7 +354,7 @@
                 <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition ring-2 ring-yellow-400">
                     <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-6 text-white text-center relative">
                         <span class="absolute top-0 right-0 bg-red-500 text-white px-3 py-1 rounded-bl-xl text-sm font-bold">MAIS VENDIDO</span>
-                        <h3 class="text-2xl font-bold">Plano Vitalício</h3>
+                        <h3 class="text-2xl font-bold">Plano Vitalicio</h3>
                         <p class="text-yellow-100">Acesso permanente</p>
                     </div>
                     <div class="p-6 text-center">
@@ -327,7 +363,6 @@
                             <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Acesso vitalício</li>
                             <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Atualizações gratuitas</li>
                             <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Suporte prioritário</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Bônus exclusivos</li>
                         </ul>
                         <button onclick="comprar('vitalicio')" class="mt-8 w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-3 rounded-xl hover:shadow-lg transition btn-cta">
                             Comprar por R$ 97 →
@@ -350,6 +385,16 @@
         // DADOS ESTATÍSTICOS
         // ============================================
         
+        // Preços por quantidade de dezenas (para estimativa)
+        const precosPorDezena = {
+            15: 3.50,
+            16: 14.00,
+            17: 24.50,
+            18: 36.00,
+            19: 63.00,
+            20: 98.00
+        };
+        
         const frequenciaDezenas = {
             1: 85, 2: 78, 3: 92, 4: 71, 5: 88,
             6: 95, 7: 82, 8: 76, 9: 91, 10: 84,
@@ -371,6 +416,7 @@
         }
         
         function selecionarAleatorios(array, quantidade) {
+            if (!array || array.length === 0) return [];
             const shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -379,17 +425,11 @@
             return shuffled.slice(0, quantidade);
         }
         
-        function gerarJogos(quantidadeDezenas, estrategia) {
+        function gerarJogos(quantidadeDezenas, quantidadeJogos, estrategia) {
             const { quentes, neutras, frias } = classificarDezenas();
-            const totalJogos = quantidadeDezenas === 15 ? 1 :
-                              quantidadeDezenas === 16 ? 4 :
-                              quantidadeDezenas === 17 ? 7 :
-                              quantidadeDezenas === 18 ? 12 :
-                              quantidadeDezenas === 19 ? 21 : 28;
-            
             const jogos = [];
             
-            for (let i = 0; i < totalJogos; i++) {
+            for (let i = 0; i < quantidadeJogos; i++) {
                 let dezenas = [];
                 
                 switch(estrategia) {
@@ -516,6 +556,23 @@
             `).join('');
         }
         
+        function atualizarValorEstimado() {
+            const isPersonalizado = document.querySelector('input[name="tipoConfig"]:checked').value === 'personalizado';
+            let dezenas, jogos;
+            
+            if (isPersonalizado) {
+                dezenas = parseInt(document.getElementById('personalizarDezenas').value);
+                jogos = parseInt(document.getElementById('personalizarJogos').value);
+            } else {
+                dezenas = 15;
+                jogos = 1;
+            }
+            
+            const precoUnitario = precosPorDezena[dezenas] || 3.50;
+            const valorTotal = precoUnitario * jogos;
+            document.getElementById('valorEstimado').innerHTML = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+        }
+        
         function mostrarOverlay() {
             document.getElementById('overlayCompra').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -527,7 +584,19 @@
         }
         
         async function gerarEstrategia() {
-            const quantidadeDezenas = parseInt(document.getElementById('quantidadeDezenas').value);
+            const isPersonalizado = document.querySelector('input[name="tipoConfig"]:checked').value === 'personalizado';
+            let quantidadeDezenas, quantidadeJogos;
+            
+            if (isPersonalizado) {
+                quantidadeDezenas = parseInt(document.getElementById('personalizarDezenas').value);
+                quantidadeJogos = parseInt(document.getElementById('personalizarJogos').value);
+                if (isNaN(quantidadeJogos) || quantidadeJogos < 1) quantidadeJogos = 1;
+                if (quantidadeJogos > 50) quantidadeJogos = 50;
+            } else {
+                quantidadeDezenas = 15;
+                quantidadeJogos = 1;
+            }
+            
             const estrategia = document.getElementById('estrategiaGeracao').value;
             const btn = document.getElementById('gerarBtn');
             const btnOriginalHtml = btn.innerHTML;
@@ -540,14 +609,10 @@
             await new Promise(resolve => setTimeout(resolve, 800));
             
             // Gerar jogos
-            const jogos = gerarJogos(quantidadeDezenas, estrategia);
+            const jogos = gerarJogos(quantidadeDezenas, quantidadeJogos, estrategia);
             
             // Renderizar jogos bloqueados (com blur)
             renderizarJogosBloqueados(jogos);
-            
-            // Garantir que classificação e análise estão visíveis
-            renderizarClassificacao();
-            renderizarAnalise();
             
             // Mostrar overlay de compra
             setTimeout(() => {
@@ -573,9 +638,31 @@
         // Event listeners
         document.getElementById('gerarBtn').addEventListener('click', gerarEstrategia);
         
+        // Mostrar/esconder campos personalizados
+        const radios = document.querySelectorAll('input[name="tipoConfig"]');
+        const camposPersonalizados = document.getElementById('camposPersonalizados');
+        
+        radios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'personalizado') {
+                    camposPersonalizados.classList.remove('hidden');
+                } else {
+                    camposPersonalizados.classList.add('hidden');
+                }
+                atualizarValorEstimado();
+            });
+        });
+        
+        // Atualizar valor estimado quando mudar dezenas ou jogos
+        document.getElementById('personalizarDezenas').addEventListener('change', atualizarValorEstimado);
+        document.getElementById('personalizarJogos').addEventListener('input', atualizarValorEstimado);
+        
         // Renderização inicial (classificação e análise visíveis, jogos vazio)
         renderizarClassificacao();
         renderizarAnalise();
+        
+        // Inicializar valor estimado
+        atualizarValorEstimado();
         
         // Inicializar com mensagem de boas-vindas
         renderizarJogosBloqueados([]);
