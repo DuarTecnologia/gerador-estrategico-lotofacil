@@ -187,8 +187,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Plano</label>
                         <select id="novoPlano" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
-                            <option value="mensal">Plano Mensal - R$ 27</option>
-                            <option value="vitalicio">Plano Vitalício - R$ 97</option>
+                            <option value="mensal">Plano Mensal - R$ 19,90</option>
+                            <option value="vitalicio">Plano Vitalício - R$ 97,90</option>
                         </select>
                     </div>
                     <div>
@@ -290,7 +290,7 @@
                 nome: nome,
                 email: email,
                 senha: senha,
-                plano: plano === 'mensal' ? 'Plano Mensal (R$27)' : 'Plano Vitalício (R$97)',
+                plano: plano === 'mensal' ? 'Plano Mensal (R$19,90)' : 'Plano Vitalício (R$97,90)',
                 dataCriacao: new Date().toISOString(),
                 ativo: true
             });
@@ -465,8 +465,8 @@
             const usuarios = getUsuarios();
             let total = 0;
             usuarios.forEach(user => {
-                if (user.plano?.includes('Mensal')) total += 27;
-                else if (user.plano?.includes('Vitalício')) total += 97;
+                if (user.plano?.includes('Mensal')) total += 19,90;
+                else if (user.plano?.includes('Vitalício')) total += 97,90;
             });
             document.getElementById('totalVendas').innerHTML = `R$ ${total.toFixed(2).replace('.', ',')}`;
         }
