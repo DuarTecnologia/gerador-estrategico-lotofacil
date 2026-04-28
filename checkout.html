@@ -6,6 +6,7 @@
     <title>Checkout - Gerador Estratégico Lotofácil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         * { font-family: 'Poppins', sans-serif; }
@@ -37,13 +38,45 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         
         .input-erro { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
+        
+        .payment-option {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid #e5e7eb;
+        }
+        .payment-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .selected-payment {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
+        
+        .pix-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            border: 2px solid #10b981;
+        }
+        
+        .chave-pix {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            word-break: break-all;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
     
     <div class="loading" id="loading">
         <div class="spinner"></div>
-        <p class="text-white mt-4">Gerando pagamento...</p>
+        <p class="text-white mt-4">Processando...</p>
     </div>
 
     <div class="w-full max-w-4xl">
@@ -68,7 +101,7 @@
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">E-mail *</label>
                         <input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">As credenciais serão enviadas para este e-mail após pagamento</p>
+                        <p class="text-xs text-gray-500 mt-1">As credenciais serão enviadas para este e-mail após confirmação</p>
                     </div>
                     
                     <div class="mb-4">
@@ -84,8 +117,7 @@
                             <option value="instagram">Instagram</option>
                             <option value="tiktok">TikTok</option>
                             <option value="facebook">Facebook</option>
-                            <option value="indicacao">Indicação de amigo</option>
-                            <option value="outro">Outro</option>
+                            <option value="indicacao">Indicação</option>
                         </select>
                     </div>
                 </div>
@@ -101,23 +133,47 @@
                             <span id="totalPreco" class="text-indigo-600">R$ 0</span>
                         </div>
                     </div>
-                    
-                    <div class="mt-6 p-3 bg-blue-50 rounded-lg">
-                        <p class="text-xs text-blue-800 text-center">
-                            <i class="fas fa-qrcode mr-1"></i> <strong>PIX:</strong> Taxa zero - pagamento na hora
-                        </p>
-                        <p class="text-xs text-blue-800 text-center mt-1">
-                            <i class="fas fa-credit-card mr-1"></i> <strong>Cartão:</strong> Parcelamento em até 12x
-                        </p>
+
+                    <!-- Opções de Pagamento -->
+                    <div class="mt-6">
+                        <label class="block text-sm font-bold text-gray-700 mb-3">Forma de pagamento</label>
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div id="opcaoPix" class="payment-option rounded-xl p-3 text-center cursor-pointer">
+                                <i class="fas fa-qrcode text-2xl text-green-600 mb-1"></i>
+                                <p class="text-sm font-medium">PIX</p>
+                                <p class="text-xs text-gray-500">Taxa zero</p>
+                            </div>
+                            <div id="opcaoCartao" class="payment-option rounded-xl p-3 text-center cursor-pointer selected-payment">
+                                <i class="fas fa-credit-card text-2xl text-indigo-600 mb-1"></i>
+                                <p class="text-sm font-medium">Cartão de Crédito</p>
+                                <p class="text-xs text-gray-500">Parcelamento em até 12x</p>
+                            </div>
+                        </div>
                     </div>
                     
-                    <button id="btnFinalizar" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-credit-card"></i> Pagar Agora
+                    <!-- Área PIX (inicialmente escondida) -->
+                    <div id="areaPix" class="hidden mt-4">
+                        <div class="pix-card">
+                            <i class="fas fa-qrcode text-4xl text-green-600 mb-3"></i>
+                            <h3 class="font-bold text-gray-800 mb-2">Pagamento via PIX</h3>
+                            <p class="text-sm text-gray-600 mb-3">Use o QR Code ou copie a chave:</p>
+                            <div id="qrCodePix" class="flex justify-center mb-3"></div>
+                            <div class="chave-pix" onclick="copiarChavePix()">
+                                <code id="chavePix">cff1a61d-2273-4e77-bc7c-1ca9cf351885</code>
+                            </div>
+                            <p class="text-xs text-green-600 mt-2">✅ Clique na chave para copiar</p>
+                            <button id="confirmarPixBtn" class="w-full mt-4 bg-green-500 text-white py-2 rounded-lg font-bold hover:bg-green-600 transition">
+                                Já paguei! Confirmar pedido
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button id="btnFinalizarCartao" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fas fa-credit-card"></i> Pagar com Cartão
                     </button>
                     
                     <p class="text-center text-xs text-gray-500 mt-4">
-                        🔒 Pagamento 100% seguro processado pela InfinitePay<br>
-                        Você será redirecionado para o ambiente seguro
+                        🔒 Pagamento 100% seguro
                     </p>
                 </div>
             </div>
@@ -126,19 +182,29 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÃO INFINITEPAY
+        // LINKS DE PAGAMENTO (CARTÃO)
         // ============================================
-        const INFINITE_HANDLE = 'edipo_';  // Sua InfiniteTag
+        const LINKS_PAGAMENTO = {
+            mensal: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-4nZ5DDuYn-19,90',
+            anual: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-3zyEvRFIT-97,90'
+        };
+        
+        // ============================================
+        // CHAVE PIX (COLOQUE SUA CHAVE AQUI)
+        // ============================================
+        const CHAVE_PIX = 'cff1a61d-2273-4e77-bc7c-1ca9cf351885';  // Substitua pela sua chave Pix
         
         // ============================================
         // CARREGAR DADOS DO PLANO
         // ============================================
         const urlParams = new URLSearchParams(window.location.search);
-        const plano = urlParams.get('plano'); // 'mensal' ou 'anual'
-        let preco = parseFloat(urlParams.get('preco'));
+        const plano = urlParams.get('plano');
+        const preco = parseFloat(urlParams.get('preco'));
         const nomePlano = urlParams.get('nome');
+        let formaPagamento = 'cartao';
+        let pedidoAtual = null;
         
-        if (nomePlano && preco && !isNaN(preco)) {
+        if (nomePlano && preco) {
             document.getElementById('resumoPlano').innerHTML = `
                 <div class="flex justify-between items-center">
                     <div>
@@ -151,6 +217,62 @@
             document.getElementById('totalPreco').innerHTML = `R$ ${preco.toFixed(2).replace('.', ',')}`;
         } else {
             window.location.href = 'index.html';
+        }
+        
+        // ============================================
+        // GERAR QR CODE PIX
+        // ============================================
+        function gerarQrCodePix() {
+            const valor = preco.toFixed(2);
+            const identificador = `PED-${Date.now()}`;
+            
+            // Payload PIX BR Code simplificado (para QR Code)
+            const payload = `00020101021126580014BR.GOV.BCB.PIX0136${CHAVE_PIX}5204000053039865404${valor}5802BR5915${document.getElementById('nome').value || 'Cliente'}6009SAO PAULO62260515${identificador}6304`;
+            
+            const qrcodeDiv = document.getElementById('qrCodePix');
+            qrcodeDiv.innerHTML = '';
+            new QRCode(qrcodeDiv, {
+                text: payload,
+                width: 180,
+                height: 180,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+        
+        function copiarChavePix() {
+            navigator.clipboard.writeText(CHAVE_PIX);
+            alert('✅ Chave PIX copiada! Cole no seu aplicativo bancário para pagar.');
+        }
+        
+        // ============================================
+        // SALVAR PEDIDO
+        // ============================================
+        function salvarPedido(status = 'pendente') {
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const telefone = document.getElementById('telefone').value;
+            const origem = document.getElementById('origem').value;
+            
+            const pedido = {
+                id: Date.now(),
+                nome: nome,
+                email: email,
+                telefone: telefone,
+                origem: origem,
+                plano: decodeURIComponent(nomePlano),
+                valor: preco,
+                data: new Date().toISOString(),
+                formaPagamento: formaPagamento,
+                status: status
+            };
+            
+            let pedidos = JSON.parse(localStorage.getItem('pedidos_pendentes') || '[]');
+            pedidos.push(pedido);
+            localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
+            
+            return pedido;
         }
         
         // ============================================
@@ -174,110 +296,77 @@
             } else {
                 email.classList.remove('input-erro');
             }
+            
             return valido;
         }
         
         // ============================================
-        // CRIAR COBRANÇA VIA API INFINITEPAY
+        // PAGAMENTO COM CARTÃO
         // ============================================
-        async function criarCobranca() {
-            const nome = document.getElementById('nome').value;
-            const email = document.getElementById('email').value;
-            const telefone = document.getElementById('telefone').value;
-            const origem = document.getElementById('origem').value;
-            
-            // 1. Salvar pedido pendente no localStorage
-            const pedido = {
-                id: Date.now(),
-                nome: nome,
-                email: email,
-                telefone: telefone,
-                origem: origem,
-                plano: decodeURIComponent(nomePlano),
-                valor: preco,
-                data: new Date().toISOString(),
-                status: 'aguardando_pagamento'
-            };
-            
-            let pedidos = JSON.parse(localStorage.getItem('pedidos_pendentes') || '[]');
-            pedidos.push(pedido);
-            localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
-            
-            // 2. Chamar a API da InfinitePay (SEM autenticação)
-            const precoCentavos = preco * 100; // Converte para centavos (ex: 19,90 = 1990)
-            
-            const payload = {
-                handle: INFINITE_HANDLE,
-                order_nsu: pedido.id.toString(),
-                customer: {
-                    name: nome,
-                    email: email,
-                    phone_number: telefone
-                },
-                items: [
-                    {
-                        description: decodeURIComponent(nomePlano) + ' - Gerador Estratégico Lotofácil',
-                        price: precoCentavos,
-                        quantity: 1
-                    }
-                ],
-                redirect_url: window.location.origin + '/obrigado.html'
-            };
-            
-            console.log('Enviando para InfinitePay:', payload);
-            
-            const response = await fetch('https://api.infinitepay.io/invoices/public/checkout/links', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-            
-            if (!response.ok) {
-                const erro = await response.text();
-                console.error('Erro da API:', erro);
-                throw new Error('Erro ao criar cobrança: ' + response.status);
-            }
-            
-            const resultado = await response.json();
-            console.log('Resposta da InfinitePay:', resultado);
-            
-            // Atualizar o pedido com o ID da cobrança
-            const pedidoAtualizado = pedidos[pedidos.length - 1];
-            pedidoAtualizado.paymentId = resultado.id;
-            localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
-            
-            return resultado;
-        }
-        
-        // ============================================
-        // BOTÃO PRINCIPAL
-        // ============================================
-        document.getElementById('btnFinalizar').addEventListener('click', async () => {
+        document.getElementById('btnFinalizarCartao').addEventListener('click', async () => {
             if (!validarCampos()) {
                 alert('⚠️ Preencha corretamente nome e e-mail');
                 return;
             }
             
+            formaPagamento = 'cartao';
             const loading = document.getElementById('loading');
             loading.classList.add('active');
             
-            try {
-                const cobranca = await criarCobranca();
-                
-                if (cobranca && cobranca.url) {
-                    // Redireciona para página de pagamento da InfinitePay
-                    // Lá o cliente vê PIX e Cartão parcelado
-                    window.location.href = cobranca.url;
-                } else {
-                    throw new Error('Resposta inválida da InfinitePay');
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                loading.classList.remove('active');
-                alert('❌ Erro ao gerar pagamento: ' + error.message + '\n\nTente novamente ou entre em contato com o suporte.');
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            const pedido = salvarPedido('pagamento_iniciado');
+            const linkPagamento = LINKS_PAGAMENTO[plano];
+            
+            loading.classList.remove('active');
+            
+            if (linkPagamento) {
+                window.open(linkPagamento, '_blank');
+                alert(`✅ Redirecionamos você para o pagamento com Cartão!\n\n💰 Valor: R$ ${preco.toFixed(2).replace('.', ',')}\n\nApós o pagamento, aguarde a confirmação e aprovação do acesso.`);
+            } else {
+                alert('❌ Erro ao gerar link de pagamento');
             }
+        });
+        
+        // ============================================
+        // PAGAMENTO COM PIX
+        // ============================================
+        document.getElementById('opcaoPix').addEventListener('click', () => {
+            formaPagamento = 'pix';
+            document.getElementById('opcaoPix').classList.add('selected-payment');
+            document.getElementById('opcaoCartao').classList.remove('selected-payment');
+            document.getElementById('areaPix').classList.remove('hidden');
+            document.getElementById('btnFinalizarCartao').classList.add('hidden');
+            gerarQrCodePix();
+        });
+        
+        document.getElementById('opcaoCartao').addEventListener('click', () => {
+            formaPagamento = 'cartao';
+            document.getElementById('opcaoCartao').classList.add('selected-payment');
+            document.getElementById('opcaoPix').classList.remove('selected-payment');
+            document.getElementById('areaPix').classList.add('hidden');
+            document.getElementById('btnFinalizarCartao').classList.remove('hidden');
+        });
+        
+        document.getElementById('confirmarPixBtn').addEventListener('click', () => {
+            if (!validarCampos()) {
+                alert('⚠️ Preencha corretamente nome e e-mail');
+                return;
+            }
+            
+            const pedido = salvarPedido('aguardando_pagamento_pix');
+            
+            alert(`✅ Pedido registrado! Aguardando confirmação do PIX.\n\n📧 Enviaremos o acesso para ${document.getElementById('email').value} assim que o pagamento for confirmado.\n\n💰 Valor: R$ ${preco.toFixed(2).replace('.', ',')}\n\nApós pagar, avise no WhatsApp para agilizar a liberação.`);
+            
+            // Limpar formulário e voltar ao início
+            document.getElementById('nome').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('telefone').value = '';
+            
+            // Esconder área PIX
+            document.getElementById('areaPix').classList.add('hidden');
+            document.getElementById('btnFinalizarCartao').classList.remove('hidden');
+            document.getElementById('opcaoCartao').click();
         });
         
         // Remover erro ao digitar
@@ -286,6 +375,11 @@
         });
         document.getElementById('email').addEventListener('input', function() {
             this.classList.remove('input-erro');
+        });
+        
+        // Atualizar QR Code quando nome mudar
+        document.getElementById('nome').addEventListener('input', () => {
+            if (formaPagamento === 'pix') gerarQrCodePix();
         });
     </script>
 </body>
