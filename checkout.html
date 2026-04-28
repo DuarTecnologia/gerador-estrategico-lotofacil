@@ -43,7 +43,7 @@
     
     <div class="loading" id="loading">
         <div class="spinner"></div>
-        <p class="text-white mt-4">Processando...</p>
+        <p class="text-white mt-4">Gerando pagamento...</p>
     </div>
 
     <div class="w-full max-w-4xl">
@@ -82,8 +82,10 @@
                             <option value="">Selecione...</option>
                             <option value="google">Google</option>
                             <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
                             <option value="facebook">Facebook</option>
-                            <option value="indicacao">Indicação</option>
+                            <option value="indicacao">Indicação de amigo</option>
+                            <option value="outro">Outro</option>
                         </select>
                     </div>
                 </div>
@@ -102,7 +104,7 @@
                     
                     <div class="mt-6 p-3 bg-blue-50 rounded-lg">
                         <p class="text-xs text-blue-800 text-center">
-                            <i class="fas fa-qrcode mr-1"></i> <strong>PIX:</strong> Taxa zero e pagamento na hora
+                            <i class="fas fa-qrcode mr-1"></i> <strong>PIX:</strong> Taxa zero - pagamento na hora
                         </p>
                         <p class="text-xs text-blue-800 text-center mt-1">
                             <i class="fas fa-credit-card mr-1"></i> <strong>Cartão:</strong> Parcelamento em até 12x
@@ -110,7 +112,7 @@
                     </div>
                     
                     <button id="btnFinalizar" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-credit-card"></i> Continuar para Pagamento
+                        <i class="fas fa-credit-card"></i> Pagar Agora
                     </button>
                     
                     <p class="text-center text-xs text-gray-500 mt-4">
@@ -124,22 +126,19 @@
 
     <script>
         // ============================================
-        // LINKS DE PAGAMENTO INFINITEPAY
+        // CONFIGURAÇÃO INFINITEPAY
         // ============================================
-        const LINKS_PAGAMENTO = {
-            mensal: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-4nZ5DDuYn-19,90',
-            anual: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-3zyEvRFIT-97,90'
-        };
+        const INFINITE_HANDLE = 'edipo_';  // Sua InfiniteTag
         
         // ============================================
         // CARREGAR DADOS DO PLANO
         // ============================================
         const urlParams = new URLSearchParams(window.location.search);
-        const plano = urlParams.get('plano');
-        const preco = parseFloat(urlParams.get('preco'));
+        const plano = urlParams.get('plano'); // 'mensal' ou 'anual'
+        let preco = parseFloat(urlParams.get('preco'));
         const nomePlano = urlParams.get('nome');
         
-        if (nomePlano && preco) {
+        if (nomePlano && preco && !isNaN(preco)) {
             document.getElementById('resumoPlano').innerHTML = `
                 <div class="flex justify-between items-center">
                     <div>
@@ -175,32 +174,19 @@
             } else {
                 email.classList.remove('input-erro');
             }
-            
             return valido;
         }
         
         // ============================================
-        // FINALIZAR COMPRA
+        // CRIAR COBRANÇA VIA API INFINITEPAY
         // ============================================
-        document.getElementById('btnFinalizar').addEventListener('click', async () => {
-            if (!validarCampos()) {
-                alert('⚠️ Preencha corretamente nome e e-mail');
-                return;
-            }
-            
+        async function criarCobranca() {
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('email').value;
             const telefone = document.getElementById('telefone').value;
             const origem = document.getElementById('origem').value;
             
-            // Mostrar loading
-            const loading = document.getElementById('loading');
-            loading.classList.add('active');
-            
-            // Simular breve processamento (só para a animação)
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            // 1. Salvar pedido pendente no localStorage (para aparecer no admin.html)
+            // 1. Salvar pedido pendente no localStorage
             const pedido = {
                 id: Date.now(),
                 nome: nome,
@@ -210,24 +196,87 @@
                 plano: decodeURIComponent(nomePlano),
                 valor: preco,
                 data: new Date().toISOString(),
-                status: 'pendente'
+                status: 'aguardando_pagamento'
             };
             
             let pedidos = JSON.parse(localStorage.getItem('pedidos_pendentes') || '[]');
             pedidos.push(pedido);
             localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
             
-            // 2. Redirecionar cliente para o link de pagamento correto
-            const linkPagamento = LINKS_PAGAMENTO[plano];
+            // 2. Chamar a API da InfinitePay (SEM autenticação)
+            const precoCentavos = preco * 100; // Converte para centavos (ex: 19,90 = 1990)
             
-            if (linkPagamento) {
+            const payload = {
+                handle: INFINITE_HANDLE,
+                order_nsu: pedido.id.toString(),
+                customer: {
+                    name: nome,
+                    email: email,
+                    phone_number: telefone
+                },
+                items: [
+                    {
+                        description: decodeURIComponent(nomePlano) + ' - Gerador Estratégico Lotofácil',
+                        price: precoCentavos,
+                        quantity: 1
+                    }
+                ],
+                redirect_url: window.location.origin + '/obrigado.html'
+            };
+            
+            console.log('Enviando para InfinitePay:', payload);
+            
+            const response = await fetch('https://api.infinitepay.io/invoices/public/checkout/links', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) {
+                const erro = await response.text();
+                console.error('Erro da API:', erro);
+                throw new Error('Erro ao criar cobrança: ' + response.status);
+            }
+            
+            const resultado = await response.json();
+            console.log('Resposta da InfinitePay:', resultado);
+            
+            // Atualizar o pedido com o ID da cobrança
+            const pedidoAtualizado = pedidos[pedidos.length - 1];
+            pedidoAtualizado.paymentId = resultado.id;
+            localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
+            
+            return resultado;
+        }
+        
+        // ============================================
+        // BOTÃO PRINCIPAL
+        // ============================================
+        document.getElementById('btnFinalizar').addEventListener('click', async () => {
+            if (!validarCampos()) {
+                alert('⚠️ Preencha corretamente nome e e-mail');
+                return;
+            }
+            
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            
+            try {
+                const cobranca = await criarCobranca();
+                
+                if (cobranca && cobranca.url) {
+                    // Redireciona para página de pagamento da InfinitePay
+                    // Lá o cliente vê PIX e Cartão parcelado
+                    window.location.href = cobranca.url;
+                } else {
+                    throw new Error('Resposta inválida da InfinitePay');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
                 loading.classList.remove('active');
-                // Abre o link em uma nova aba
-                window.open(linkPagamento, '_blank');
-                alert(`✅ Link de pagamento gerado com sucesso!\n\nUma nova aba foi aberta para finalizar o pagamento.\n\n📧 Após a confirmação do pagamento, você receberá o acesso por e-mail em até 24h.\n\n💰 Formas de pagamento: PIX (taxa zero) ou Cartão de Crédito (parcelado).`);
-            } else {
-                loading.classList.remove('active');
-                alert(`❌ Erro: Link de pagamento não encontrado para o plano ${plano}. Entre em contato com o suporte.`);
+                alert('❌ Erro ao gerar pagamento: ' + error.message + '\n\nTente novamente ou entre em contato com o suporte.');
             }
         });
         
