@@ -188,17 +188,18 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Plano</label>
                         <select id="novoPlano" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
                             <option value="mensal">Plano Mensal - R$ 19,90</option>
-                            <option value="vitalicio">Plano Vitalício - R$ 97,90</option>
+                            <option value="anual">Plano Anual - R$ 97,90</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Senha (opcional)</label>
                         <input type="text" id="novaSenha" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="Deixe em branco para gerar automaticamente">
+                        <p class="text-xs text-gray-400 mt-1">Se deixar vazio, gerará uma senha padrão: ClienteXXXX</p>
                     </div>
                 </div>
                 
                 <button onclick="criarUsuario()" class="btn-primary w-full text-white font-bold py-3 rounded-xl">
-                    <i class="fas fa-user-plus mr-2"></i> Criar Usuário e Enviar Credenciais
+                    <i class="fas fa-user-plus mr-2"></i> Criar Usuário
                 </button>
             </div>
         </div>
@@ -254,6 +255,18 @@
         }
         
         // ============================================
+        // GERAR SENHA PADRÃO SIMPLES
+        // ============================================
+        function gerarSenhaAleatoria() {
+            // Gera número aleatório de 4 dígitos (1000 a 9999)
+            const numero = Math.floor(Math.random() * 9000) + 1000;
+            
+            // Senha padrão fácil: "Cliente" + número
+            // Exemplo: Cliente4732
+            return `Cliente${numero}`;
+        }
+        
+        // ============================================
         // CRIAR USUÁRIO
         // ============================================
         function criarUsuario() {
@@ -290,7 +303,7 @@
                 nome: nome,
                 email: email,
                 senha: senha,
-                plano: plano === 'mensal' ? 'Plano Mensal (R$19,90)' : 'Plano Vitalício (R$97,90)',
+                plano: plano === 'mensal' ? 'Plano Mensal (R$19,90)' : 'Plano Anual (R$97,90)',
                 dataCriacao: new Date().toISOString(),
                 ativo: true
             });
@@ -303,23 +316,14 @@
             document.getElementById('novaSenha').value = '';
             
             // Mostrar credenciais
-            alert(`✅ Usuário criado com sucesso!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n📋 As credenciais foram copiadas para a área de transferência. Envie para o cliente.`);
+            alert(`✅ Usuário criado com sucesso!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nAs credenciais foram copiadas para a área de transferência. Envie para o cliente.`);
             
             // Copiar credenciais para clipboard
-            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://duartecnologia.github.io/gerador-estrategico-lotofacil/login.html`;
+            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://duartecnologia.github.io/gerador-estrategico-lotofacil/sistema.html`;
             navigator.clipboard.writeText(credenciais);
             
             carregarTodosOsDados();
             mostrarTab('usuarios');
-        }
-        
-        function gerarSenhaAleatoria() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let senha = '';
-            for (let i = 0; i < 10; i++) {
-                senha += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return senha + '@Lotofacil';
         }
         
         // ============================================
@@ -351,7 +355,7 @@
                 salvarUsuarios(usuarios);
                 
                 // Copiar credenciais
-                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${pedido.email}\nSenha: ${senha}\n\nLink: https://duartecnologia.github.io/gerador-estrategico-lotofacil/login.html`;
+                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\nSeu pagamento foi confirmado! Use as credenciais abaixo para acessar o sistema:\n\n📧 E-mail: ${pedido.email}\n🔑 Senha: ${senha}\n\n🔗 Link de acesso: https://duartecnologia.github.io/gerador-estrategico-lotofacil/sistema.html\n\nApós o primeiro acesso, recomendamos alterar sua senha.\n\nAtenciosamente,\nEquipe Gerador Estratégico Lotofácil`;
                 navigator.clipboard.writeText(credenciais);
                 
                 alert(`✅ Pedido aprovado!\n\nUsuário criado para: ${pedido.nome}\nE-mail: ${pedido.email}\nSenha: ${senha}\n\nAs credenciais foram copiadas. Envie para o cliente por e-mail.`);
@@ -383,7 +387,7 @@
         }
         
         function copiarCredenciais(email, senha, nome) {
-            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://duartecnologia.github.io/gerador-estrategico-lotofacil/login.html\n\nApós o primeiro acesso, recomendamos alterar sua senha.`;
+            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\nSeu acesso está liberado! Use as credenciais abaixo:\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://duartecnologia.github.io/gerador-estrategico-lotofacil/sistema.html\n\nRecomendamos alterar sua senha após o primeiro acesso.\n\nAtenciosamente,\nEquipe Gerador Estratégico Lotofácil`;
             navigator.clipboard.writeText(credenciais);
             alert('Credenciais copiadas para a área de transferência! Cole e envie para o cliente.');
         }
@@ -409,15 +413,15 @@
                         <div>
                             <p class="font-bold text-gray-800">${pedido.nome}</p>
                             <p class="text-sm text-gray-600">${pedido.email}</p>
-                            <p class="text-xs text-indigo-600 font-medium mt-1">${pedido.plano} - R$ ${pedido.valor}</p>
+                            <p class="text-xs text-indigo-600 font-medium mt-1">${pedido.plano} - R$ ${pedido.valor.toFixed(2).replace('.', ',')}</p>
                             <p class="text-xs text-gray-400">${new Date(pedido.data).toLocaleString()}</p>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="aprovarPedido(${pedido.id})" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">
                                 ✅ Aprovar
                             </button>
-                            <button onclick="removerPedido(${pedido.id})" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-400 transition">
-                                ❌ Remover
+                            <button onclick="removerPedido(${pedido.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm hover:bg-gray-400 transition">
+                                ❌
                             </button>
                         </div>
                     </div>
@@ -465,8 +469,8 @@
             const usuarios = getUsuarios();
             let total = 0;
             usuarios.forEach(user => {
-                if (user.plano?.includes('Mensal')) total += 19,90;
-                else if (user.plano?.includes('Vitalício')) total += 97,90;
+                if (user.plano?.includes('Mensal')) total += 19.90;
+                else if (user.plano?.includes('Anual')) total += 97.90;
             });
             document.getElementById('totalVendas').innerHTML = `R$ ${total.toFixed(2).replace('.', ',')}`;
         }
@@ -522,7 +526,6 @@
         // Inicializar dados padrão se vazio
         function initDados() {
             if (getUsuarios().length === 0) {
-                // Criar um usuário admin de exemplo
                 salvarUsuarios([{
                     id: 1,
                     nome: 'Administrador',
