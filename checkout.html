@@ -37,42 +37,13 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         
         .input-erro { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
-        
-        .payment-option {
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: 2px solid #e5e7eb;
-        }
-        .payment-option:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .selected-payment {
-            border-color: #10b981;
-            background-color: #f0fdf4;
-        }
-        
-        /* Estilo para opções de parcelamento */
-        .parcelamento-item {
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: 1px solid #e5e7eb;
-        }
-        .parcelamento-item:hover {
-            border-color: #4f46e5;
-            background-color: #f5f3ff;
-        }
-        .parcelamento-selecionado {
-            border-color: #4f46e5;
-            background-color: #e0e7ff;
-        }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
     
     <div class="loading" id="loading">
         <div class="spinner"></div>
-        <p class="text-white mt-4">Processando pagamento...</p>
+        <p class="text-white mt-4">Processando...</p>
     </div>
 
     <div class="w-full max-w-4xl">
@@ -86,7 +57,6 @@
 
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
             <div class="grid md:grid-cols-2">
-                <!-- Formulário -->
                 <div class="p-6 md:p-8">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Dados pessoais</h2>
                     
@@ -96,15 +66,9 @@
                     </div>
                     
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">CPF *</label>
-                        <input type="text" id="cpf" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="000.000.000-00">
-                        <p class="text-xs text-gray-500 mt-1">Necessário para gerar cobrança</p>
-                    </div>
-                    
-                    <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">E-mail *</label>
                         <input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">As credenciais serão enviadas para este e-mail</p>
+                        <p class="text-xs text-gray-500 mt-1">As credenciais serão enviadas para este e-mail após pagamento</p>
                     </div>
                     
                     <div class="mb-4">
@@ -122,16 +86,8 @@
                             <option value="indicacao">Indicação</option>
                         </select>
                     </div>
-                    
-                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
-                        <p class="text-xs text-gray-600 flex items-center gap-2">
-                            <i class="fas fa-lock text-green-600"></i>
-                            Dados seguros, utilizados apenas para processar o pagamento
-                        </p>
-                    </div>
                 </div>
 
-                <!-- Resumo do Pedido e Pagamento -->
                 <div class="bg-gray-50 p-6 md:p-8 border-l border-gray-200">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Resumo do Pedido</h2>
                     
@@ -143,39 +99,23 @@
                             <span id="totalPreco" class="text-indigo-600">R$ 0</span>
                         </div>
                     </div>
-
-                    <!-- Opções de Pagamento -->
-                    <div class="mt-6">
-                        <label class="block text-sm font-bold text-gray-700 mb-3">Forma de pagamento</label>
-                        <div class="grid grid-cols-2 gap-3 mb-4">
-                            <div id="opcaoPix" class="payment-option rounded-xl p-3 text-center cursor-pointer">
-                                <i class="fas fa-qrcode text-2xl text-green-600 mb-1"></i>
-                                <p class="text-sm font-medium">PIX</p>
-                                <p class="text-xs text-gray-500">Taxa zero</p>
-                            </div>
-                            <div id="opcaoCartao" class="payment-option rounded-xl p-3 text-center cursor-pointer selected-payment">
-                                <i class="fas fa-credit-card text-2xl text-indigo-600 mb-1"></i>
-                                <p class="text-sm font-medium">Cartão de Crédito</p>
-                                <p class="text-xs text-gray-500">Até 12x</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Opções de parcelamento (cartão) -->
-                        <div id="parcelamentoContainer" class="mt-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Número de parcelas</label>
-                            <div id="parcelamentoLista" class="grid grid-cols-3 gap-2">
-                                <!-- Parcelas serão inseridas via JS -->
-                            </div>
-                        </div>
+                    
+                    <div class="mt-6 p-3 bg-blue-50 rounded-lg">
+                        <p class="text-xs text-blue-800 text-center">
+                            <i class="fas fa-qrcode mr-1"></i> <strong>PIX:</strong> Taxa zero e pagamento na hora
+                        </p>
+                        <p class="text-xs text-blue-800 text-center mt-1">
+                            <i class="fas fa-credit-card mr-1"></i> <strong>Cartão:</strong> Parcelamento em até 12x
+                        </p>
                     </div>
                     
                     <button id="btnFinalizar" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-credit-card"></i> Pagar Agora
+                        <i class="fas fa-credit-card"></i> Continuar para Pagamento
                     </button>
                     
                     <p class="text-center text-xs text-gray-500 mt-4">
-                        🔒 Pagamento 100% seguro processado pelo Asaas<br>
-                        Aceita PIX, Cartão de Crédito
+                        🔒 Pagamento 100% seguro processado pela InfinitePay<br>
+                        Você será redirecionado para o ambiente seguro
                     </p>
                 </div>
             </div>
@@ -184,25 +124,22 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÃO ASAAS
+        // LINKS DE PAGAMENTO INFINITEPAY
         // ============================================
-        // ⚠️ SUBSTITUIA PELO SEU TOKEN API DO ASAAS
-        const ASAAS_API_TOKEN = 'aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjQyOGZhOWFkLTZhODAtNGU0My05ZmEwLWZjZmNmZTFkMWExYTo6JGFhY2hfMTdjNDUyOTQtZTY5NS00YTg0LTk4MmQtNjM3ZDY4YmVmYTM4';
-        const ASAAS_API_URL = 'https://api.asaas.com/v3';
+        const LINKS_PAGAMENTO = {
+            mensal: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-4nZ5DDuYn-19,90',
+            anual: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-3zyEvRFIT-97,90'
+        };
         
         // ============================================
         // CARREGAR DADOS DO PLANO
         // ============================================
         const urlParams = new URLSearchParams(window.location.search);
-        const plano = urlParams.get('plano'); // 'mensal' ou 'anual'
-        let preco = parseFloat(urlParams.get('preco'));
+        const plano = urlParams.get('plano');
+        const preco = parseFloat(urlParams.get('preco'));
         const nomePlano = urlParams.get('nome');
         
-        // Configurar parcelamento
-        let parcelasSelecionadas = 1;
-        let formaPagamento = 'cartao'; // 'pix' ou 'cartao'
-        
-        if (nomePlano && preco && !isNaN(preco)) {
+        if (nomePlano && preco) {
             document.getElementById('resumoPlano').innerHTML = `
                 <div class="flex justify-between items-center">
                     <div>
@@ -214,56 +151,16 @@
             `;
             document.getElementById('totalPreco').innerHTML = `R$ ${preco.toFixed(2).replace('.', ',')}`;
         } else {
-            alert('Erro: Plano não selecionado');
             window.location.href = 'index.html';
         }
         
         // ============================================
-        // GERAR OPÇÕES DE PARCELAMENTO
-        // ============================================
-        function gerarOpcoesParcelamento() {
-            const container = document.getElementById('parcelamentoLista');
-            const maxParcelas = 12;
-            let html = '';
-            
-            for (let i = 1; i <= maxParcelas; i++) {
-                const valorParcela = preco / i;
-                const valorFormatado = valorParcela.toFixed(2).replace('.', ',');
-                const selecionado = i === parcelasSelecionadas ? 'parcelamento-selecionado' : '';
-                
-                html += `
-                    <div class="parcelamento-item rounded-lg p-2 text-center cursor-pointer ${selecionado}" data-parcela="${i}">
-                        <p class="text-sm font-bold">${i}x</p>
-                        <p class="text-xs text-gray-600">R$ ${valorFormatado}</p>
-                    </div>
-                `;
-            }
-            
-            container.innerHTML = html;
-            
-            // Adicionar evento de clique nas parcelas
-            document.querySelectorAll('.parcelamento-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const parcela = parseInt(this.dataset.parcela);
-                    parcelasSelecionadas = parcela;
-                    
-                    // Remover seleção de todos
-                    document.querySelectorAll('.parcelamento-item').forEach(el => {
-                        el.classList.remove('parcelamento-selecionado');
-                    });
-                    this.classList.add('parcelamento-selecionado');
-                });
-            });
-        }
-        
-        // ============================================
-        // VALIDAR CAMPOS DO FORMULÁRIO
+        // VALIDAR CAMPOS
         // ============================================
         function validarCampos() {
             let valido = true;
             const nome = document.getElementById('nome');
             const email = document.getElementById('email');
-            const cpf = document.getElementById('cpf');
             
             if (!nome.value.trim()) {
                 nome.classList.add('input-erro');
@@ -279,164 +176,59 @@
                 email.classList.remove('input-erro');
             }
             
-            // Validação simples de CPF
-            const cpfValue = cpf.value.replace(/[^\d]/g, '');
-            if (cpfValue.length !== 11) {
-                cpf.classList.add('input-erro');
-                alert('CPF inválido. Digite um CPF válido (apenas números).');
-                valido = false;
-            } else {
-                cpf.classList.remove('input-erro');
-            }
-            
             return valido;
         }
         
         // ============================================
-        // CRIAR COBRANÇA NO ASAAS
+        // FINALIZAR COMPRA
         // ============================================
-        async function criarCobrancaAsaas() {
+        document.getElementById('btnFinalizar').addEventListener('click', async () => {
+            if (!validarCampos()) {
+                alert('⚠️ Preencha corretamente nome e e-mail');
+                return;
+            }
+            
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('email').value;
             const telefone = document.getElementById('telefone').value;
-            const cpf = document.getElementById('cpf').value.replace(/[^\d]/g, '');
             const origem = document.getElementById('origem').value;
             
-            // 1. Salvar pedido pendente no localStorage
+            // Mostrar loading
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            
+            // Simular breve processamento (só para a animação)
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // 1. Salvar pedido pendente no localStorage (para aparecer no admin.html)
             const pedido = {
                 id: Date.now(),
                 nome: nome,
                 email: email,
                 telefone: telefone,
-                cpf: cpf,
                 origem: origem,
                 plano: decodeURIComponent(nomePlano),
                 valor: preco,
-                parcelas: parcelasSelecionadas,
-                formaPagamento: formaPagamento,
                 data: new Date().toISOString(),
-                status: 'aguardando_pagamento'
+                status: 'pendente'
             };
             
             let pedidos = JSON.parse(localStorage.getItem('pedidos_pendentes') || '[]');
             pedidos.push(pedido);
             localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
             
-            // 2. Verificar token
-            if (!ASAAS_API_TOKEN || ASAAS_API_TOKEN === 'SEU_TOKEN_ASAAS_AQUI') {
-                alert('⚠️ Token do Asaas não configurado. Edite o arquivo checkout.html e cole seu token API.');
-                return null;
-            }
+            // 2. Redirecionar cliente para o link de pagamento correto
+            const linkPagamento = LINKS_PAGAMENTO[plano];
             
-            // 3. Criar cliente no Asaas
-            const clienteResponse = await fetch(`${ASAAS_API_URL}/customers`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'access_token': ASAAS_API_TOKEN
-                },
-                body: JSON.stringify({
-                    name: nome,
-                    email: email,
-                    phone: telefone.replace(/\D/g, ''),
-                    cpfCnpj: cpf
-                })
-            });
-            
-            const cliente = await clienteResponse.json();
-            
-            if (!clienteResponse.ok) {
-                console.error('Erro ao criar cliente:', cliente);
-                throw new Error(cliente.errors?.[0]?.description || 'Erro ao criar cliente');
-            }
-            
-            // 4. Criar cobrança
-            const cobrancaData = {
-                customer: cliente.id,
-                billingType: formaPagamento === 'pix' ? 'PIX' : 'CREDIT_CARD',
-                value: preco,
-                dueDate: new Date().toISOString().split('T')[0],
-                description: decodeURIComponent(nomePlano),
-                installmentCount: formaPagamento === 'cartao' ? parcelasSelecionadas : undefined,
-                installmentValue: formaPagamento === 'cartao' ? (preco / parcelasSelecionadas).toFixed(2) : undefined,
-                remoteIp: '127.0.0.1'
-            };
-            
-            const cobrancaResponse = await fetch(`${ASAAS_API_URL}/payments`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'access_token': ASAAS_API_TOKEN
-                },
-                body: JSON.stringify(cobrancaData)
-            });
-            
-            const cobranca = await cobrancaResponse.json();
-            
-            if (!cobrancaResponse.ok) {
-                console.error('Erro ao criar cobrança:', cobranca);
-                throw new Error(cobranca.errors?.[0]?.description || 'Erro ao criar cobrança');
-            }
-            
-            return cobranca;
-        }
-        
-        // ============================================
-        // FUNÇÃO PRINCIPAL
-        // ============================================
-        document.getElementById('btnFinalizar').addEventListener('click', async () => {
-            if (!validarCampos()) {
-                return;
-            }
-            
-            const loading = document.getElementById('loading');
-            loading.classList.add('active');
-            
-            try {
-                const cobranca = await criarCobrancaAsaas();
-                
-                if (cobranca) {
-                    if (formaPagamento === 'pix') {
-                        // Abrir o QR Code PIX
-                        window.open(cobranca.pixQrCodeUrl || cobranca.invoiceUrl, '_blank');
-                        alert(`✅ Cobrança PIX gerada!\n\nUma nova aba foi aberta com o QR Code para pagamento.\n\nApós a confirmação, você receberá o acesso por e-mail.`);
-                    } else {
-                        // Redirecionar para checkout do cartão
-                        window.location.href = cobranca.invoiceUrl;
-                    }
-                    
-                    // Atualizar status do pedido
-                    let pedidos = JSON.parse(localStorage.getItem('pedidos_pendentes') || '[]');
-                    const pedidoAtualizado = pedidos[pedidos.length - 1];
-                    pedidoAtualizado.status = 'pagamento_iniciado';
-                    pedidoAtualizado.paymentId = cobranca.id;
-                    localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
-                }
-                
+            if (linkPagamento) {
                 loading.classList.remove('active');
-                
-            } catch (error) {
-                console.error('Erro:', error);
+                // Abre o link em uma nova aba
+                window.open(linkPagamento, '_blank');
+                alert(`✅ Link de pagamento gerado com sucesso!\n\nUma nova aba foi aberta para finalizar o pagamento.\n\n📧 Após a confirmação do pagamento, você receberá o acesso por e-mail em até 24h.\n\n💰 Formas de pagamento: PIX (taxa zero) ou Cartão de Crédito (parcelado).`);
+            } else {
                 loading.classList.remove('active');
-                alert(`❌ Erro ao processar pagamento: ${error.message}\n\nTente novamente ou entre em contato com o suporte.`);
+                alert(`❌ Erro: Link de pagamento não encontrado para o plano ${plano}. Entre em contato com o suporte.`);
             }
-        });
-        
-        // ============================================
-        // EVENTOS DAS OPÇÕES DE PAGAMENTO
-        // ============================================
-        document.getElementById('opcaoPix').addEventListener('click', () => {
-            formaPagamento = 'pix';
-            document.getElementById('opcaoPix').classList.add('selected-payment');
-            document.getElementById('opcaoCartao').classList.remove('selected-payment');
-            document.getElementById('parcelamentoContainer').style.display = 'none';
-        });
-        
-        document.getElementById('opcaoCartao').addEventListener('click', () => {
-            formaPagamento = 'cartao';
-            document.getElementById('opcaoCartao').classList.add('selected-payment');
-            document.getElementById('opcaoPix').classList.remove('selected-payment');
-            document.getElementById('parcelamentoContainer').style.display = 'block';
         });
         
         // Remover erro ao digitar
@@ -446,56 +238,6 @@
         document.getElementById('email').addEventListener('input', function() {
             this.classList.remove('input-erro');
         });
-        document.getElementById('cpf').addEventListener('input', function() {
-            this.classList.remove('input-erro');
-            // Formatar CPF
-            let value = this.value.replace(/[^\d]/g, '');
-            if (value.length <= 11) {
-                if (value.length > 9) {
-                    value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
-                } else if (value.length > 6) {
-                    value = value.replace(/^(\d{3})(\d{3})(\d{1,3})$/, '$1.$2.$3');
-                } else if (value.length > 3) {
-                    value = value.replace(/^(\d{3})(\d{1,3})$/, '$1.$2');
-                }
-                this.value = value;
-            }
-        });
-        
-        // Inicializar parcelamento
-        gerarOpcoesParcelamento();
-        
-        // Inicializar com cartão selecionado
-        document.getElementById('parcelamentoContainer').style.display = 'block';
-        
-        // Validação de CPF ao enviar
-        function validarCPF(cpf) {
-            cpf = cpf.replace(/[^\d]/g, '');
-            if (cpf.length !== 11) return false;
-            
-            // Verificar se todos os dígitos são iguais
-            if (/^(\d)\1{10}$/.test(cpf)) return false;
-            
-            // Validar primeiro dígito
-            let sum = 0;
-            for (let i = 0; i < 9; i++) {
-                sum += parseInt(cpf.charAt(i)) * (10 - i);
-            }
-            let rev = 11 - (sum % 11);
-            if (rev === 10 || rev === 11) rev = 0;
-            if (rev !== parseInt(cpf.charAt(9))) return false;
-            
-            // Validar segundo dígito
-            sum = 0;
-            for (let i = 0; i < 10; i++) {
-                sum += parseInt(cpf.charAt(i)) * (11 - i);
-            }
-            rev = 11 - (sum % 11);
-            if (rev === 10 || rev === 11) rev = 0;
-            if (rev !== parseInt(cpf.charAt(10))) return false;
-            
-            return true;
-        }
     </script>
 </body>
 </html>
