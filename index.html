@@ -104,6 +104,16 @@
             border-radius: 12px;
             padding: 12px;
         }
+        
+        .selo-promocional {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -115,11 +125,11 @@
                 <i class="fas fa-lock text-white text-2xl"></i>
             </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-2">🔒 Acesso Bloqueado</h2>
-            <p class="text-gray-600 mb-6">Adquira o plano completo para desbloquear os números e ter acesso a todas as estratégias!</p>
+            <p class="text-gray-600 mb-6">Adquira o plano vitalício e tenha acesso completo ao sistema!</p>
             <div class="flex flex-col gap-3">
                 <button onclick="fecharOverlay()" class="bg-gray-200 text-gray-700 py-2 rounded-xl hover:bg-gray-300 transition">Voltar</button>
                 <a href="#planos" onclick="fecharOverlay()" class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition btn-cta">
-                    ⭐ Ver Planos
+                    ⭐ Ver Oferta
                 </a>
             </div>
         </div>
@@ -155,7 +165,7 @@
             <i class="fas fa-info-circle text-amber-500 text-lg mt-0.5"></i>
             <div class="text-sm text-amber-800">
                 <strong>🔍 Modo Demonstração</strong><br>
-                Teste o sistema gratuitamente. Os números gerados ficarão bloqueados até você adquirir um plano.
+                Teste o sistema gratuitamente. Os números gerados ficarão bloqueados até você adquirir o plano vitalício.
             </div>
         </div>
 
@@ -325,52 +335,43 @@
         </div>
 
         <!-- Planos -->
-        <div id="planos" class="max-w-6xl mx-auto pt-8">
-            <h2 class="text-3xl font-bold text-center text-white mb-12">💰 Adquira Acesso Completo</h2>
+        <div id="planos" class="max-w-4xl mx-auto pt-8">
+            <div class="text-center mb-4">
+                <span class="inline-block bg-red-500 text-white px-4 py-1 rounded-full text-sm font-bold animate-pulse">🔥 PROMOÇÃO DE LANÇAMENTO 🔥</span>
+            </div>
+            <h2 class="text-3xl font-bold text-center text-white mb-4">Acesso Vitalício</h2>
+            <p class="text-center text-indigo-200 mb-8">Por tempo limitado! Garanta seu acesso permanente com desconto especial</p>
             
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Plano Mensal - R$ 19,90 -->
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition">
-                    <div class="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white text-center">
-                        <h3 class="text-2xl font-bold">Plano Mensal</h3>
-                        <p class="text-blue-100">Acesso completo por 30 dias</p>
+            <div class="flex justify-center">
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition max-w-md w-full ring-4 ring-yellow-400">
+                    <div class="bg-gradient-to-r from-indigo-600 to-violet-600 p-6 text-white text-center relative">
+                        <span class="absolute top-0 right-0 bg-red-500 text-white px-3 py-1 rounded-bl-xl text-sm font-bold">-75% OFF</span>
+                        <h3 class="text-2xl font-bold">🎯 Plano Vitalício</h3>
+                        <p class="text-indigo-200">Acesso permanente ao sistema</p>
                     </div>
                     <div class="p-6 text-center">
-                        <div class="text-4xl font-bold text-gray-800">R$ 19,90<small class="text-sm text-gray-500">/mês</small></div>
-                        <ul class="mt-6 space-y-3 text-left">
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Gerador ilimitado</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Todas estratégias</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Exportação PDF</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Análise estatística</li>
-                        </ul>
-                        <button onclick="comprar('mensal', 19.90, 'Plano Mensal')" class="mt-8 w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold py-3 rounded-xl hover:shadow-lg transition btn-cta">
-                            Comprar por R$ 19,90 →
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Plano Anual - R$ 97,90 -->
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition ring-2 ring-yellow-400">
-                    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-6 text-white text-center relative">
-                        <span class="absolute top-0 right-0 bg-red-500 text-white px-3 py-1 rounded-bl-xl text-sm font-bold">MAIS VENDIDO</span>
-                        <h3 class="text-2xl font-bold">Plano Anual</h3>
-                        <p class="text-yellow-100">Acesso por 12 meses</p>
-                    </div>
-                    <div class="p-6 text-center">
-                        <div class="text-4xl font-bold text-gray-800">R$ 97,90<small class="text-sm text-gray-500">/ano</small></div>
-                        <div class="text-sm text-green-600 font-semibold mt-1">Economize R$ 140,90</div>
-                        <ul class="mt-6 space-y-3 text-left">
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Acesso por 12 meses</li>
+                        <div class="text-5xl font-bold text-gray-800">R$ 24,90<small class="text-sm text-gray-500">/único</small></div>
+                        <div class="text-sm text-red-500 line-through mb-2">De R$ 97,90</div>
+                        <div class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold mb-4">
+                            ⚡ Economize R$ 73,00
+                        </div>
+                        <ul class="mt-4 space-y-3 text-left">
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Acesso vitalício</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Gerador ilimitado de jogos</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Todas as estratégias disponíveis</li>
                             <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Atualizações gratuitas</li>
                             <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Suporte prioritário</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Bônus exclusivos</li>
                         </ul>
-                        <button onclick="comprar('anual', 97.90, 'Plano Anual')" class="mt-8 w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-3 rounded-xl hover:shadow-lg transition btn-cta">
-                            Comprar por R$ 97,90 →
+                        <button onclick="comprar()" class="mt-8 w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-3 rounded-xl hover:shadow-lg transition btn-cta text-lg">
+                            🔥 Garantir meu acesso por R$ 24,90 →
                         </button>
                     </div>
                 </div>
             </div>
+            
+            <p class="text-center text-indigo-200 text-sm mt-6">
+                ⏳ Promoção válida por tempo limitado. Após esse período, o valor voltará a ser R$ 97,90.
+            </p>
         </div>
     </main>
 
@@ -546,7 +547,7 @@
                         `).join('')}
                     </div>
                     <div class="mt-3 text-center text-xs text-amber-600 bg-amber-50 rounded-lg py-2">
-                        <i class="fas fa-lock mr-1"></i> Adquira o plano para desbloquear os números
+                        <i class="fas fa-lock mr-1"></i> Adquira o plano vitalício para desbloquear os números
                     </div>
                 </div>
             `).join('');
@@ -621,8 +622,8 @@
             }, 100);
         }
         
-        function comprar(plano, preco, nomePlano) {
-            window.location.href = `checkout.html?plano=${plano}&preco=${preco}&nome=${encodeURIComponent(nomePlano)}`;
+        function comprar() {
+            window.location.href = 'checkout.html?plano=vitalicio&preco=24.90&nome=' + encodeURIComponent('Plano Vitalício - Promoção');
         }
         
         document.getElementById('gerarBtn').addEventListener('click', gerarEstrategia);
