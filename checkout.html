@@ -85,7 +85,7 @@
                 <i class="fas fa-chart-line text-3xl text-indigo-600"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">Finalizar Compra</h1>
-            <p class="text-indigo-200">Preencha os dados abaixo para adquirir o acesso</p>
+            <p class="text-indigo-200">Preencha os dados abaixo para adquirir o acesso vitalício</p>
         </div>
 
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -101,7 +101,7 @@
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">E-mail *</label>
                         <input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">As credenciais serão enviadas para este e-mail após confirmação</p>
+                        <p class="text-xs text-gray-500 mt-1">As credenciais serão enviadas para este e-mail após pagamento</p>
                     </div>
                     
                     <div class="mb-4">
@@ -169,11 +169,12 @@
                     </div>
                     
                     <button id="btnFinalizarCartao" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-credit-card"></i> Pagar com Cartão
+                        <i class="fas fa-credit-card"></i> Pagar com Cartão (R$ 24,90)
                     </button>
                     
                     <p class="text-center text-xs text-gray-500 mt-4">
-                        🔒 Pagamento 100% seguro
+                        🔒 Pagamento 100% seguro<br>
+                        Acesso vitalício garantido
                     </p>
                 </div>
             </div>
@@ -182,17 +183,15 @@
 
     <script>
         // ============================================
-        // LINKS DE PAGAMENTO (CARTÃO)
+        // LINK DE PAGAMENTO INFINITEPAY (CARTÃO)
         // ============================================
-        const LINKS_PAGAMENTO = {
-            mensal: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-4nZ5DDuYn-19,90',
-            anual: 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-3zyEvRFIT-97,90'
-        };
+        const LINK_CARTAO = 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-e3g5keb4Z-24,90';
         
         // ============================================
-        // CHAVE PIX (COLOQUE SUA CHAVE AQUI)
+        // CHAVE PIX (ALEATÓRIA)
         // ============================================
-        const CHAVE_PIX = 'cff1a61d-2273-4e77-bc7c-1ca9cf351885';  // Substitua pela sua chave Pix
+        const CHAVE_PIX = 'cff1a61d-2273-4e77-bc7c-1ca9cf351885';
+        const VALOR_PIX = 24.90;
         
         // ============================================
         // CARREGAR DADOS DO PLANO
@@ -201,15 +200,14 @@
         const plano = urlParams.get('plano');
         const preco = parseFloat(urlParams.get('preco'));
         const nomePlano = urlParams.get('nome');
-        let formaPagamento = 'cartao';
-        let pedidoAtual = null;
         
         if (nomePlano && preco) {
             document.getElementById('resumoPlano').innerHTML = `
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="font-bold text-gray-800">${decodeURIComponent(nomePlano)}</p>
-                        <p class="text-sm text-gray-500">Acesso ${plano === 'mensal' ? '30 dias' : '12 meses'}</p>
+                        <p class="text-sm text-gray-500">Acesso vitalício - Pagamento único</p>
+                        <p class="text-xs text-green-600 mt-1">🔥 Oferta de lançamento</p>
                     </div>
                     <div class="text-xl font-bold text-indigo-600">R$ ${preco.toFixed(2).replace('.', ',')}</div>
                 </div>
@@ -219,15 +217,13 @@
             window.location.href = 'index.html';
         }
         
+        let formaPagamento = 'cartao';
+        
         // ============================================
         // GERAR QR CODE PIX
         // ============================================
         function gerarQrCodePix() {
-            const valor = preco.toFixed(2);
-            const identificador = `PED-${Date.now()}`;
-            
-            // Payload PIX BR Code simplificado (para QR Code)
-            const payload = `00020101021126580014BR.GOV.BCB.PIX0136${CHAVE_PIX}5204000053039865404${valor}5802BR5915${document.getElementById('nome').value || 'Cliente'}6009SAO PAULO62260515${identificador}6304`;
+            const payload = `00020101021226780014BR.GOV.BCB.PIX0136${CHAVE_PIX}0216Pagamento edipo_5204000053039865406${VALOR_PIX.toFixed(2).replace('.', '')}5802BR5923EDIPO DUARTE DOS SANTOS6006OSASCO62290525QRCCiOYpIyOYfLwHKCq4gt9ZD63047BAF`;
             
             const qrcodeDiv = document.getElementById('qrCodePix');
             qrcodeDiv.innerHTML = '';
@@ -262,7 +258,7 @@
                 telefone: telefone,
                 origem: origem,
                 plano: decodeURIComponent(nomePlano),
-                valor: preco,
+                valor: VALOR_PIX,
                 data: new Date().toISOString(),
                 formaPagamento: formaPagamento,
                 status: status
@@ -316,13 +312,12 @@
             await new Promise(resolve => setTimeout(resolve, 500));
             
             const pedido = salvarPedido('pagamento_iniciado');
-            const linkPagamento = LINKS_PAGAMENTO[plano];
             
             loading.classList.remove('active');
             
-            if (linkPagamento) {
-                window.open(linkPagamento, '_blank');
-                alert(`✅ Redirecionamos você para o pagamento com Cartão!\n\n💰 Valor: R$ ${preco.toFixed(2).replace('.', ',')}\n\nApós o pagamento, aguarde a confirmação e aprovação do acesso.`);
+            if (LINK_CARTAO) {
+                window.open(LINK_CARTAO, '_blank');
+                alert(`✅ Redirecionamos você para o pagamento com Cartão!\n\n💰 Valor: R$ 24,90\n\nApós o pagamento, aguarde a confirmação e aprovação do acesso.\n\nVocê receberá as credenciais por e-mail.`);
             } else {
                 alert('❌ Erro ao gerar link de pagamento');
             }
@@ -356,12 +351,13 @@
             
             const pedido = salvarPedido('aguardando_pagamento_pix');
             
-            alert(`✅ Pedido registrado! Aguardando confirmação do PIX.\n\n📧 Enviaremos o acesso para ${document.getElementById('email').value} assim que o pagamento for confirmado.\n\n💰 Valor: R$ ${preco.toFixed(2).replace('.', ',')}\n\nApós pagar, avise no WhatsApp para agilizar a liberação.`);
+            alert(`✅ Pedido registrado! Aguardando confirmação do PIX.\n\n📧 Enviaremos o acesso para ${document.getElementById('email').value} assim que o pagamento for confirmado.\n\n💰 Valor: R$ 24,90\n\nApós pagar, avise no WhatsApp para agilizar a liberação.`);
             
-            // Limpar formulário e voltar ao início
+            // Limpar formulário
             document.getElementById('nome').value = '';
             document.getElementById('email').value = '';
             document.getElementById('telefone').value = '';
+            document.getElementById('origem').value = '';
             
             // Esconder área PIX
             document.getElementById('areaPix').classList.add('hidden');
@@ -375,11 +371,6 @@
         });
         document.getElementById('email').addEventListener('input', function() {
             this.classList.remove('input-erro');
-        });
-        
-        // Atualizar QR Code quando nome mudar
-        document.getElementById('nome').addEventListener('input', () => {
-            if (formaPagamento === 'pix') gerarQrCodePix();
         });
     </script>
 </body>
