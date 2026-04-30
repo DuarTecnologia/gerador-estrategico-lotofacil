@@ -54,12 +54,6 @@
             padding: 12px;
         }
         
-        /* Preços por quantidade de dezenas */
-        .preco-dezena {
-            font-size: 11px;
-            color: #10b981;
-        }
-        
         .logout-btn {
             position: fixed;
             bottom: 20px;
@@ -121,7 +115,6 @@
     <!-- Sistema (aparece após login) -->
     <div id="sistemaScreen" class="hidden min-h-screen">
         
-        <!-- Header -->
         <header class="shadow-sm border-b border-gray-700 sticky top-0 z-50" style="background-color: #0f172a;">
             <div class="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
                 <div class="flex justify-between items-center">
@@ -143,10 +136,8 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="container mx-auto px-4 py-8 pb-24 sm:pb-8">
             
-            <!-- Controles Principais -->
             <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 mb-6 border border-gray-100">
                 <div class="mb-6 pb-6 border-b border-gray-200">
                     <h2 class="text-xl md:text-2xl font-bold text-gray-800 flex items-center mb-2">
@@ -161,7 +152,6 @@
                 <div class="space-y-6">
                     <div class="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-xl p-5 border-2 border-indigo-200">
                         
-                        <!-- Opção Padrão: 15 dezenas / 1 jogo -->
                         <div class="mb-6">
                             <label class="flex items-center gap-3 p-3 bg-white rounded-xl border-2 border-indigo-200 cursor-pointer hover:bg-indigo-50 transition">
                                 <input type="radio" name="tipoConfig" value="padrao" checked class="w-5 h-5 text-indigo-600">
@@ -172,7 +162,6 @@
                             </label>
                         </div>
                         
-                        <!-- Opção Personalizada -->
                         <div>
                             <label class="flex items-center gap-3 p-3 bg-white rounded-xl border-2 border-gray-200 cursor-pointer hover:bg-gray-50 transition">
                                 <input type="radio" name="tipoConfig" value="personalizado" class="w-5 h-5 text-indigo-600">
@@ -183,7 +172,6 @@
                             </label>
                         </div>
                         
-                        <!-- Campos Personalizados (inicialmente ocultos) -->
                         <div id="camposPersonalizados" class="mt-4 hidden">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 campo-personalizado">
                                 <div>
@@ -211,7 +199,6 @@
                             </div>
                         </div>
                         
-                        <!-- Estratégia -->
                         <div class="mt-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Estratégia de Geração</label>
                             <select id="estrategiaGeracao" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white font-medium text-gray-800">
@@ -239,7 +226,6 @@
                 </div>
             </div>
 
-            <!-- Análise Estatística -->
             <div id="analiseEstatisticaSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 border border-gray-100">
                 <div class="flex items-center mb-6">
                     <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
@@ -253,7 +239,6 @@
                 <div id="analiseEstatistica" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
 
-            <!-- Classificação das Dezenas -->
             <div id="classificacaoSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 border border-gray-100">
                 <div class="flex items-center mb-6">
                     <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
@@ -266,33 +251,23 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl p-5 border-2 border-red-200">
-                        <div class="flex items-center mb-4">
-                            <i class="fas fa-fire text-red-600 text-xl mr-2"></i>
-                            <h3 class="text-lg font-bold text-red-700">Dezenas Quentes</h3>
-                        </div>
+                        <div class="flex items-center mb-4"><i class="fas fa-fire text-red-600 text-xl mr-2"></i><h3 class="text-lg font-bold text-red-700">Dezenas Quentes</h3></div>
                         <p class="text-xs text-red-600 mb-3">Mais frequentes (Top 33%)</p>
                         <div id="quentes" class="flex flex-wrap gap-2"></div>
                     </div>
                     <div class="bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-5 border-2 border-gray-200">
-                        <div class="flex items-center mb-4">
-                            <i class="fas fa-equals text-gray-600 text-xl mr-2"></i>
-                            <h3 class="text-lg font-bold text-gray-700">Dezenas Neutras</h3>
-                        </div>
+                        <div class="flex items-center mb-4"><i class="fas fa-equals text-gray-600 text-xl mr-2"></i><h3 class="text-lg font-bold text-gray-700">Dezenas Neutras</h3></div>
                         <p class="text-xs text-gray-600 mb-3">Frequência média (34%)</p>
                         <div id="neutras" class="flex flex-wrap gap-2"></div>
                     </div>
                     <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 border-2 border-blue-200">
-                        <div class="flex items-center mb-4">
-                            <i class="fas fa-snowflake text-blue-600 text-xl mr-2"></i>
-                            <h3 class="text-lg font-bold text-blue-700">Dezenas Frias</h3>
-                        </div>
+                        <div class="flex items-center mb-4"><i class="fas fa-snowflake text-blue-600 text-xl mr-2"></i><h3 class="text-lg font-bold text-blue-700">Dezenas Frias</h3></div>
                         <p class="text-xs text-blue-600 mb-3">Menos frequentes (Bottom 33%)</p>
                         <div id="frias" class="flex flex-wrap gap-2"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Jogos Gerados -->
             <div id="jogosSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 border border-gray-100">
                 <div class="flex items-center mb-6">
                     <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center mr-3 md:mr-4 shadow-md">
@@ -320,44 +295,40 @@
 
     <script>
         // ============================================
-        // DADOS ESTATÍSTICOS
+        // CHAVE DO LOCALSTORAGE
         // ============================================
-        
         const STORAGE_USERS = 'usuarios_autorizados';
         
-        const precosPorDezena = {
-            15: 3.50,
-            16: 14.00,
-            17: 24.50,
-            18: 36.00,
-            19: 63.00,
-            20: 98.00
-        };
-        
-        const frequenciaDezenas = {
-            1: 85, 2: 78, 3: 92, 4: 71, 5: 88,
-            6: 95, 7: 82, 8: 76, 9: 91, 10: 84,
-            11: 79, 12: 93, 13: 87, 14: 81, 15: 89,
-            16: 77, 17: 83, 18: 90, 19: 86, 20: 94,
-            21: 75, 22: 80, 23: 88, 24: 82, 25: 79
-        };
-        
         // ============================================
-        // AUTENTICAÇÃO
+        // FUNÇÕES DE AUTENTICAÇÃO
         // ============================================
-        
         function getUsuarios() {
             const usuarios = localStorage.getItem(STORAGE_USERS);
-            return usuarios ? JSON.parse(usuarios) : [];
+            if (!usuarios) return [];
+            try {
+                return JSON.parse(usuarios);
+            } catch(e) {
+                console.error('Erro ao parsear usuários:', e);
+                return [];
+            }
         }
         
         function fazerLogin() {
-            const email = document.getElementById('loginEmail').value;
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const senha = document.getElementById('loginSenha').value;
             const erroDiv = document.getElementById('erroLogin');
             
+            if (!email || !senha) {
+                erroDiv.classList.remove('hidden');
+                erroDiv.innerText = 'Preencha e-mail e senha';
+                setTimeout(() => erroDiv.classList.add('hidden'), 3000);
+                return;
+            }
+            
             const usuarios = getUsuarios();
-            const user = usuarios.find(u => u.email === email && u.senha === senha && u.ativo === true);
+            console.log('Usuários cadastrados:', usuarios); // Debug
+            
+            const user = usuarios.find(u => u.email.toLowerCase() === email && u.senha === senha && u.ativo === true);
             
             if (user) {
                 localStorage.setItem('usuario_logado', JSON.stringify(user));
@@ -388,23 +359,37 @@
         // Verificar se já está logado
         const usuarioLogado = localStorage.getItem('usuario_logado');
         if (usuarioLogado) {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('sistemaScreen').classList.remove('hidden');
-            const user = JSON.parse(usuarioLogado);
-            document.getElementById('userNome').innerHTML = `👤 ${user.nome}`;
+            try {
+                const user = JSON.parse(usuarioLogado);
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('sistemaScreen').classList.remove('hidden');
+                document.getElementById('userNome').innerHTML = `👤 ${user.nome}`;
+            } catch(e) {
+                console.error('Erro ao restaurar sessão:', e);
+                localStorage.removeItem('usuario_logado');
+            }
         }
         
         document.getElementById('btnLogin').addEventListener('click', fazerLogin);
         document.getElementById('logoutBtn').addEventListener('click', logout);
         
-        // Enter key para login
         document.getElementById('loginSenha').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') fazerLogin();
         });
         
         // ============================================
-        // FUNÇÕES DO GERADOR
+        // FUNÇÕES DO GERADOR (mantidas do código original)
         // ============================================
+        
+        const precosPorDezena = {
+            15: 3.50, 16: 14.00, 17: 24.50, 18: 36.00, 19: 63.00, 20: 98.00
+        };
+        
+        const frequenciaDezenas = {
+            1:85,2:78,3:92,4:71,5:88,6:95,7:82,8:76,9:91,10:84,
+            11:79,12:93,13:87,14:81,15:89,16:77,17:83,18:90,19:86,20:94,
+            21:75,22:80,23:88,24:82,25:79
+        };
         
         function classificarDezenas() {
             const entradas = Object.entries(frequenciaDezenas);
@@ -495,8 +480,7 @@
         }
         
         function renderizarAnalise() {
-            const analiseDiv = document.getElementById('analiseEstatistica');
-            analiseDiv.innerHTML = `
+            document.getElementById('analiseEstatistica').innerHTML = `
                 <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4">
                     <div class="flex items-center mb-2"><i class="fas fa-chart-line text-indigo-600 mr-2"></i><span class="font-bold text-gray-700">Média por Sorteio</span></div>
                     <p class="text-2xl font-bold text-indigo-600">15 números</p>
@@ -521,35 +505,19 @@
         }
         
         function renderizarJogos(jogos) {
-            const jogosDiv = document.getElementById('jogosList');
-            
+            const container = document.getElementById('jogosList');
             if (!jogos || jogos.length === 0) {
-                jogosDiv.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-info-circle text-4xl mb-2"></i>
-                        <p>Clique em "Gerar Estratégia" para visualizar os jogos</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="text-center text-gray-500 py-8"><i class="fas fa-info-circle text-4xl mb-2"></i><p>Clique em "Gerar Estratégia" para visualizar os jogos</p></div>`;
                 return;
             }
-            
-            jogosDiv.innerHTML = jogos.map((jogo, idx) => `
+            container.innerHTML = jogos.map((jogo, idx) => `
                 <div class="jogo-card bg-gradient-to-r from-gray-50 to-white rounded-xl p-4 shadow-sm border border-gray-200">
                     <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-lg flex items-center justify-center mr-3">
-                                <span class="text-white font-bold text-sm">${(idx+1).toString().padStart(2,'0')}</span>
-                            </div>
-                            <span class="font-bold text-gray-700">Jogo ${idx+1}</span>
-                        </div>
+                        <div class="flex items-center"><div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-lg flex items-center justify-center mr-3"><span class="text-white font-bold text-sm">${(idx+1).toString().padStart(2,'0')}</span></div><span class="font-bold text-gray-700">Jogo ${idx+1}</span></div>
                         <span class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${jogo.length} dezenas</span>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        ${jogo.map(num => `
-                            <span class="dezena-card inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-500 text-white font-bold rounded-xl shadow-md text-base">
-                                ${num.toString().padStart(2,'0')}
-                            </span>
-                        `).join('')}
+                        ${jogo.map(num => `<span class="dezena-card inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-500 text-white font-bold rounded-xl shadow-md text-base">${num.toString().padStart(2,'0')}</span>`).join('')}
                     </div>
                 </div>
             `).join('');
@@ -558,7 +526,6 @@
         function atualizarValorEstimado() {
             const isPersonalizado = document.querySelector('input[name="tipoConfig"]:checked').value === 'personalizado';
             let dezenas, jogos;
-            
             if (isPersonalizado) {
                 dezenas = parseInt(document.getElementById('personalizarDezenas').value);
                 jogos = parseInt(document.getElementById('personalizarJogos').value);
@@ -567,16 +534,13 @@
                 dezenas = 15;
                 jogos = 1;
             }
-            
             const precoUnitario = precosPorDezena[dezenas] || 3.50;
-            const valorTotal = precoUnitario * jogos;
-            document.getElementById('valorEstimado').innerHTML = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('valorEstimado').innerHTML = `R$ ${(precoUnitario * jogos).toFixed(2).replace('.', ',')}`;
         }
         
         async function gerarEstrategia() {
             const isPersonalizado = document.querySelector('input[name="tipoConfig"]:checked').value === 'personalizado';
             let quantidadeDezenas, quantidadeJogos;
-            
             if (isPersonalizado) {
                 quantidadeDezenas = parseInt(document.getElementById('personalizarDezenas').value);
                 quantidadeJogos = parseInt(document.getElementById('personalizarJogos').value);
@@ -586,62 +550,39 @@
                 quantidadeDezenas = 15;
                 quantidadeJogos = 1;
             }
-            
             const estrategia = document.getElementById('estrategiaGeracao').value;
             const btn = document.getElementById('gerarBtn');
             const btnOriginalHtml = btn.innerHTML;
             
-            // Mostrar loading
-            btn.innerHTML = '<div class="loading-spinner"></div><span>Gerando estratégia...</span>';
+            btn.innerHTML = '<div class="loading-spinner"></div><span>Gerando...</span>';
             btn.disabled = true;
+            await new Promise(resolve => setTimeout(resolve, 500));
             
-            // Simular processamento
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            // Gerar jogos
             const jogos = gerarJogos(quantidadeDezenas, quantidadeJogos, estrategia);
-            
-            // Renderizar jogos (SEM blur, porque é o sistema real)
             renderizarJogos(jogos);
             
-            // Restaurar botão
             btn.innerHTML = btnOriginalHtml;
             btn.disabled = false;
-            
-            // Scroll para os resultados
-            setTimeout(() => {
-                document.getElementById('jogosSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
+            document.getElementById('jogosSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         
-        // Event listeners
         document.getElementById('gerarBtn').addEventListener('click', gerarEstrategia);
         
-        // Mostrar/esconder campos personalizados
         const radios = document.querySelectorAll('input[name="tipoConfig"]');
         const camposPersonalizados = document.getElementById('camposPersonalizados');
-        
         radios.forEach(radio => {
             radio.addEventListener('change', function() {
-                if (this.value === 'personalizado') {
-                    camposPersonalizados.classList.remove('hidden');
-                } else {
-                    camposPersonalizados.classList.add('hidden');
-                }
+                camposPersonalizados.classList.toggle('hidden', this.value !== 'personalizado');
                 atualizarValorEstimado();
             });
         });
         
-        // Atualizar valor estimado quando mudar dezenas ou jogos
         document.getElementById('personalizarDezenas').addEventListener('change', atualizarValorEstimado);
         document.getElementById('personalizarJogos').addEventListener('input', atualizarValorEstimado);
         
-        // Renderização inicial
         renderizarClassificacao();
         renderizarAnalise();
         atualizarValorEstimado();
-        
-        // Inicializar com jogos vazios
         renderizarJogos([]);
     </script>
 </body>
