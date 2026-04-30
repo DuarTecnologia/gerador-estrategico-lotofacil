@@ -300,7 +300,7 @@
         const STORAGE_USERS = 'usuarios_autorizados';
         
         // ============================================
-        // FUNÇÕES DE AUTENTICAÇÃO
+        // FUNÇÕES DE AUTENTICAÇÃO (CORRIGIDAS)
         // ============================================
         function getUsuarios() {
             const usuarios = localStorage.getItem(STORAGE_USERS);
@@ -313,10 +313,27 @@
             }
         }
         
+        // Função para debug - mostrar usuários no console
+        function mostrarUsuariosDebug() {
+            const usuarios = getUsuarios();
+            console.log('📋 Usuários cadastrados no sistema:', usuarios.map(u => ({
+                nome: u.nome,
+                email: u.email,
+                senha: u.senha,
+                ativo: u.ativo
+            })));
+        }
+        
         function fazerLogin() {
-            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-            const senha = document.getElementById('loginSenha').value;
+            const emailDigitado = document.getElementById('loginEmail').value;
+            const senhaDigitada = document.getElementById('loginSenha').value;
             const erroDiv = document.getElementById('erroLogin');
+            
+            // Remover espaços extras e converter para minúsculas
+            const email = emailDigitado.trim().toLowerCase();
+            const senha = senhaDigitada.trim();
+            
+            console.log('🔐 Tentando login com:', { email, senha });
             
             if (!email || !senha) {
                 erroDiv.classList.remove('hidden');
@@ -326,16 +343,24 @@
             }
             
             const usuarios = getUsuarios();
-            console.log('Usuários cadastrados:', usuarios); // Debug
+            console.log('📋 Total de usuários no sistema:', usuarios.length);
             
-            const user = usuarios.find(u => u.email.toLowerCase() === email && u.senha === senha && u.ativo === true);
+            // Buscar usuário comparando email e senha (case insensitive para email)
+            const user = usuarios.find(u => {
+                const emailUsuario = u.email?.trim().toLowerCase() || '';
+                return emailUsuario === email && u.senha === senha && u.ativo === true;
+            });
+            
+            console.log('👤 Usuário encontrado?', user ? 'SIM' : 'NÃO');
             
             if (user) {
+                console.log('✅ Login bem-sucedido para:', user.email);
                 localStorage.setItem('usuario_logado', JSON.stringify(user));
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('sistemaScreen').classList.remove('hidden');
                 document.getElementById('userNome').innerHTML = `👤 ${user.nome}`;
             } else {
+                console.log('❌ Falha no login');
                 erroDiv.classList.remove('hidden');
                 erroDiv.innerText = 'E-mail ou senha inválidos';
                 setTimeout(() => erroDiv.classList.add('hidden'), 3000);
@@ -364,11 +389,15 @@
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('sistemaScreen').classList.remove('hidden');
                 document.getElementById('userNome').innerHTML = `👤 ${user.nome}`;
+                console.log('🔄 Sessão restaurada para:', user.email);
             } catch(e) {
                 console.error('Erro ao restaurar sessão:', e);
                 localStorage.removeItem('usuario_logado');
             }
         }
+        
+        // Mostrar debug no console (abrir F12 para ver)
+        mostrarUsuariosDebug();
         
         document.getElementById('btnLogin').addEventListener('click', fazerLogin);
         document.getElementById('logoutBtn').addEventListener('click', logout);
@@ -378,7 +407,7 @@
         });
         
         // ============================================
-        // FUNÇÕES DO GERADOR (mantidas do código original)
+        // FUNÇÕES DO GERADOR
         // ============================================
         
         const precosPorDezena = {
