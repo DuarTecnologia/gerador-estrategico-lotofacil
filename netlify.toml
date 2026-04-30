@@ -1,22 +1,75 @@
 [build]
   publish = "."
 
-# Redirecionamento para proteger o admin
-[[redirects]]
-  from = "/admin"
-  to = "/admin.html"
-  status = 200
+# ============================================
+# REDIRECIONAMENTOS E SEGURANÇA
+# ============================================
 
-# Bloquear acesso a arquivos sensíveis
+# Proteger arquivos sensíveis
 [[redirects]]
-  from = "/admin-original/*"
+  from = "/.env"
   to = "/404.html"
   status = 404
 
-# Headers de segurança
+[[redirects]]
+  from = "/.git/*"
+  to = "/404.html"
+  status = 404
+
+# Garantir que admin.html seja sempre acessado via HTTPS
+[[redirects]]
+  from = "/admin.html"
+  to = "https://gerador-pro.netlify.app/admin.html"
+  status = 301
+  force = true
+
+# Redirecionar raiz para index.html
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# ============================================
+# HEADERS DE SEGURANÇA
+# ============================================
+
+# Headers para todas as páginas
 [[headers]]
-  for = "/admin.html"
+  for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "no-referrer"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Headers específicos para o admin (proteção extra)
+[[headers]]
+  for = "/admin.html"
+  [headers.values]
+    Cache-Control = "no-store, no-cache, must-revalidate"
+    Pragma = "no-cache"
+
+# ============================================
+# OTIMIZAÇÕES
+# ============================================
+
+# Compressão automática
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.images]
+  compress = true
+
+# ============================================
+# FUNÇÕES (caso use no futuro)
+# ============================================
+[functions]
+  directory = "netlify/functions"
