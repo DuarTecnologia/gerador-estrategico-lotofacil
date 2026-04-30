@@ -1,9 +1,22 @@
 [build]
   publish = "."
 
-[[plugins]]
-  package = "netlify-plugin-password-protection"
+# Redirecionamento para proteger o admin
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
 
-  [plugins.inputs]
-    paths = ["/admin.html"]
-    password = "{{env.ADMIN_PASSWORD}}"
+# Bloquear acesso a arquivos sensíveis
+[[redirects]]
+  from = "/admin-original/*"
+  to = "/404.html"
+  status = 404
+
+# Headers de segurança
+[[headers]]
+  for = "/admin.html"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
