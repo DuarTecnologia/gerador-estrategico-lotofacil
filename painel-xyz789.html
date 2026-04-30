@@ -10,45 +10,16 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         * { font-family: 'Poppins', sans-serif; }
         body { background: #0f172a; }
-        
-        .card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-        .btn-danger:hover {
-            transform: scale(1.02);
-        }
-        
-        .tab-active {
-            background: #4f46e5;
-            color: white;
-        }
-        
-        .tab-inactive {
-            background: #e2e8f0;
-            color: #64748b;
-        }
+        .card { background: white; border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .btn-primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+        .btn-primary:hover { transform: scale(1.02); }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .tab-active { background: #4f46e5; color: white; }
+        .tab-inactive { background: #e2e8f0; color: #64748b; }
     </style>
 </head>
 <body class="min-h-screen">
-    
     <div class="container mx-auto px-4 py-8">
-        <!-- Cabeçalho -->
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center shadow-md">
@@ -64,7 +35,6 @@
             </a>
         </div>
 
-        <!-- Login do Admin -->
         <div id="loginAdmin" class="max-w-md mx-auto card p-8">
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -73,149 +43,73 @@
                 <h2 class="text-2xl font-bold text-gray-800">Acesso Restrito</h2>
                 <p class="text-gray-500 text-sm">Digite a senha de administrador</p>
             </div>
-            
             <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none mb-4">
-            
             <button onclick="logarAdmin()" class="btn-primary w-full text-white font-bold py-3 rounded-xl">
                 <i class="fas fa-sign-in-alt mr-2"></i> Entrar
             </button>
         </div>
 
-        <!-- Painel Admin (aparece após login) -->
         <div id="painelAdmin" class="hidden">
-            
-            <!-- Stats Resumo -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="card p-6 flex items-center gap-4">
                     <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                         <i class="fas fa-shopping-cart text-blue-600 text-xl"></i>
                     </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Pedidos Pendentes</p>
-                        <p class="text-2xl font-bold text-gray-800" id="totalPendentes">0</p>
-                    </div>
+                    <div><p class="text-gray-500 text-sm">Pedidos Pendentes</p><p class="text-2xl font-bold text-gray-800" id="totalPendentes">0</p></div>
                 </div>
-                
                 <div class="card p-6 flex items-center gap-4">
                     <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                         <i class="fas fa-users text-green-600 text-xl"></i>
                     </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Usuários Ativos</p>
-                        <p class="text-2xl font-bold text-gray-800" id="totalUsuarios">0</p>
-                    </div>
+                    <div><p class="text-gray-500 text-sm">Usuários Ativos</p><p class="text-2xl font-bold text-gray-800" id="totalUsuarios">0</p></div>
                 </div>
-                
                 <div class="card p-6 flex items-center gap-4">
                     <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                         <i class="fas fa-chart-line text-purple-600 text-xl"></i>
                     </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Total de Vendas</p>
-                        <p class="text-2xl font-bold text-gray-800" id="totalVendas">R$ 0</p>
-                    </div>
+                    <div><p class="text-gray-500 text-sm">Total de Vendas</p><p class="text-2xl font-bold text-gray-800" id="totalVendas">R$ 0</p></div>
                 </div>
             </div>
             
-            <!-- Botão de Logout -->
             <div class="flex justify-end mb-4">
                 <button onclick="logoutAdmin()" class="btn-danger text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2">
                     <i class="fas fa-sign-out-alt"></i> Sair do Admin
                 </button>
             </div>
 
-            <!-- Tabs -->
             <div class="flex gap-2 mb-6">
-                <button onclick="mostrarTab('pedidos')" id="tabPedidosBtn" class="tab-active px-6 py-2 rounded-lg font-medium transition">
-                    📦 Pedidos Pendentes
-                </button>
-                <button onclick="mostrarTab('usuarios')" id="tabUsuariosBtn" class="tab-inactive px-6 py-2 rounded-lg font-medium transition">
-                    👥 Usuários Cadastrados
-                </button>
-                <button onclick="mostrarTab('criar')" id="tabCriarBtn" class="tab-inactive px-6 py-2 rounded-lg font-medium transition">
-                    ➕ Criar Usuário
-                </button>
+                <button onclick="mostrarTab('pedidos')" id="tabPedidosBtn" class="tab-active px-6 py-2 rounded-lg font-medium transition">📦 Pedidos Pendentes</button>
+                <button onclick="mostrarTab('usuarios')" id="tabUsuariosBtn" class="tab-inactive px-6 py-2 rounded-lg font-medium transition">👥 Usuários Cadastrados</button>
+                <button onclick="mostrarTab('criar')" id="tabCriarBtn" class="tab-inactive px-6 py-2 rounded-lg font-medium transition">➕ Criar Usuário</button>
             </div>
 
-            <!-- Conteúdo das Tabs -->
-            <div id="tabPedidos" class="card p-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">📦 Pedidos Aguardando Aprovação</h2>
-                <div id="listaPedidos" class="space-y-3">
-                    <p class="text-gray-500 text-center py-8">Carregando...</p>
-                </div>
-            </div>
-
-            <div id="tabUsuarios" class="card p-6 hidden">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários com Acesso ao Sistema</h2>
-                <div class="overflow-x-auto">
-                    <div id="listaUsuarios" class="space-y-2">
-                        <p class="text-gray-500 text-center py-8">Carregando...</p>
-                    </div>
-                </div>
-            </div>
-
+            <div id="tabPedidos" class="card p-6"><h2 class="text-xl font-bold text-gray-800 mb-4">📦 Pedidos Aguardando Aprovação</h2><div id="listaPedidos" class="space-y-3"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
+            <div id="tabUsuarios" class="card p-6 hidden"><h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários com Acesso ao Sistema</h2><div id="listaUsuarios" class="space-y-2"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
             <div id="tabCriar" class="card p-6 hidden">
                 <h2 class="text-xl font-bold text-gray-800 mb-4">➕ Criar Novo Usuário</h2>
                 <p class="text-gray-500 text-sm mb-6">Crie manualmente o acesso para o cliente após a confirmação do pagamento.</p>
-                
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nome completo *</label>
-                        <input type="text" id="novoNome" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="João Silva">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">E-mail *</label>
-                        <input type="email" id="novoEmail" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="cliente@email.com">
-                    </div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-2">Nome completo *</label><input type="text" id="novoNome" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="João Silva"></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-2">E-mail *</label><input type="email" id="novoEmail" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="cliente@email.com"></div>
                 </div>
-                
                 <div class="grid md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Plano</label>
-                        <select id="novoPlano" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
-                            <option value="vitalicio">Plano Vitalício - R$ 24,90</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Senha (opcional)</label>
-                        <input type="text" id="novaSenha" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="Deixe em branco para gerar automaticamente">
-                        <p class="text-xs text-gray-400 mt-1">Se deixar vazio, gerará uma senha padrão: ClienteXXXX</p>
-                    </div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-2">Plano</label><select id="novoPlano" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none"><option value="vitalicio">Plano Vitalício - R$ 24,90</option></select></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-2">Senha (opcional)</label><input type="text" id="novaSenha" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="Deixe em branco para gerar automaticamente"><p class="text-xs text-gray-400 mt-1">Se deixar vazio, gerará uma senha padrão: ClienteXXXX</p></div>
                 </div>
-                
-                <button onclick="criarUsuario()" class="btn-primary w-full text-white font-bold py-3 rounded-xl">
-                    <i class="fas fa-user-plus mr-2"></i> Criar Usuário
-                </button>
+                <button onclick="criarUsuario()" class="btn-primary w-full text-white font-bold py-3 rounded-xl"><i class="fas fa-user-plus mr-2"></i> Criar Usuário</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // CONFIGURAÇÃO DE SEGURANÇA
-        // ============================================
         const ADMIN_SENHA = '1357';
-        
-        // ============================================
-        // CHAVES DO LOCALSTORAGE
-        // ============================================
         const STORAGE_USERS = 'usuarios_autorizados';
         const STORAGE_PEDIDOS = 'pedidos_pendentes';
+        let tentativas = 0, bloqueado = false;
         
-        let tentativas = 0;
-        let bloqueado = false;
-        
-        // ============================================
-        // FUNÇÕES DE AUTENTICAÇÃO
-        // ============================================
         function logarAdmin() {
-            if (bloqueado) {
-                alert('❌ Muitas tentativas! Aguarde 15 minutos.');
-                return;
-            }
-            
+            if (bloqueado) { alert('❌ Muitas tentativas! Aguarde 15 minutos.'); return; }
             const senha = document.getElementById('senhaAdmin').value;
-            
             if (senha === ADMIN_SENHA) {
                 tentativas = 0;
                 sessionStorage.setItem('admin_logado', 'true');
@@ -225,16 +119,8 @@
             } else {
                 tentativas++;
                 const restantes = 5 - tentativas;
-                if (restantes <= 0) {
-                    bloqueado = true;
-                    alert('❌ Senha incorreta! Acesso bloqueado por 15 minutos.');
-                    setTimeout(() => {
-                        bloqueado = false;
-                        tentativas = 0;
-                    }, 900000);
-                } else {
-                    alert(`❌ Senha incorreta! Você tem mais ${restantes} tentativa(s).`);
-                }
+                if (restantes <= 0) { bloqueado = true; alert('❌ Senha incorreta! Acesso bloqueado por 15 minutos.'); setTimeout(() => { bloqueado = false; tentativas = 0; }, 900000); }
+                else { alert(`❌ Senha incorreta! Você tem mais ${restantes} tentativa(s).`); }
                 document.getElementById('senhaAdmin').value = '';
             }
         }
@@ -252,65 +138,26 @@
             carregarTodosOsDados();
         }
         
-        // ============================================
-        // GERENCIAR DADOS
-        // ============================================
-        function getUsuarios() {
-            const usuarios = localStorage.getItem(STORAGE_USERS);
-            return usuarios ? JSON.parse(usuarios) : [];
-        }
+        function getUsuarios() { const u = localStorage.getItem(STORAGE_USERS); return u ? JSON.parse(u) : []; }
+        function salvarUsuarios(u) { localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); }
+        function getPedidos() { const p = localStorage.getItem(STORAGE_PEDIDOS); return p ? JSON.parse(p) : []; }
+        function salvarPedidos(p) { localStorage.setItem(STORAGE_PEDIDOS, JSON.stringify(p)); }
         
-        function salvarUsuarios(usuarios) {
-            localStorage.setItem(STORAGE_USERS, JSON.stringify(usuarios));
-        }
+        function gerarSenhaAleatoria() { return `Cliente${Math.floor(Math.random() * 9000) + 1000}`; }
         
-        function getPedidos() {
-            const pedidos = localStorage.getItem(STORAGE_PEDIDOS);
-            return pedidos ? JSON.parse(pedidos) : [];
-        }
-        
-        function salvarPedidos(pedidos) {
-            localStorage.setItem(STORAGE_PEDIDOS, JSON.stringify(pedidos));
-        }
-        
-        // ============================================
-        // GERAR SENHA PADRÃO SIMPLES
-        // ============================================
-        function gerarSenhaAleatoria() {
-            const numero = Math.floor(Math.random() * 9000) + 1000;
-            return `Cliente${numero}`;
-        }
-        
-        // ============================================
-        // CRIAR USUÁRIO
-        // ============================================
         function criarUsuario() {
             const nome = document.getElementById('novoNome').value.trim();
             let email = document.getElementById('novoEmail').value.trim().toLowerCase();
             let senha = document.getElementById('novaSenha').value.trim();
             
-            if (!nome || !email) {
-                alert('Preencha nome e e-mail');
-                return;
-            }
-            
-            if (!email.includes('@') || !email.includes('.')) {
-                alert('E-mail inválido');
-                return;
-            }
-            
-            if (!senha) {
-                senha = gerarSenhaAleatoria();
-            }
+            if (!nome || !email) { alert('Preencha nome e e-mail'); return; }
+            if (!email.includes('@') || !email.includes('.')) { alert('E-mail inválido'); return; }
+            if (!senha) senha = gerarSenhaAleatoria();
             
             const usuarios = getUsuarios();
+            if (usuarios.find(u => u.email && u.email.toLowerCase() === email)) { alert('Este e-mail já está cadastrado!'); return; }
             
-            if (usuarios.find(u => u.email && u.email.toLowerCase() === email)) {
-                alert('Este e-mail já está cadastrado!');
-                return;
-            }
-            
-            const novoUsuario = {
+            usuarios.push({
                 id: Date.now(),
                 nome: nome,
                 email: email,
@@ -318,9 +165,7 @@
                 plano: 'Plano Vitalício (R$24,90)',
                 dataCriacao: new Date().toISOString(),
                 ativo: true
-            };
-            
-            usuarios.push(novoUsuario);
+            });
             salvarUsuarios(usuarios);
             
             document.getElementById('novoNome').value = '';
@@ -329,28 +174,20 @@
             
             const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://gerador-pro.netlify.app/sistema.html`;
             navigator.clipboard.writeText(credenciais);
-            
-            alert(`✅ Usuário criado com sucesso!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nCredenciais copiadas!`);
-            
+            alert(`✅ Usuário criado!\n\n📧 ${email}\n🔑 ${senha}\n\nCredenciais copiadas!`);
             carregarTodosOsDados();
             mostrarTab('usuarios');
         }
         
-        // ============================================
-        // APROVAR PEDIDO
-        // ============================================
         function aprovarPedido(pedidoId) {
             let pedidos = getPedidos();
             const pedido = pedidos.find(p => p.id === pedidoId);
-            
             if (pedido) {
                 pedidos = pedidos.filter(p => p.id !== pedidoId);
                 salvarPedidos(pedidos);
-                
                 const usuarios = getUsuarios();
                 const senha = gerarSenhaAleatoria();
                 const email = pedido.email.trim().toLowerCase();
-                
                 usuarios.push({
                     id: Date.now(),
                     nome: pedido.nome,
@@ -360,184 +197,47 @@
                     dataCriacao: new Date().toISOString(),
                     ativo: true
                 });
-                
                 salvarUsuarios(usuarios);
-                
-                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\nSeu pagamento foi confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://gerador-pro.netlify.app/sistema.html`;
+                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 ${email}\n🔑 ${senha}\n\n🔗 https://gerador-pro.netlify.app/sistema.html`;
                 navigator.clipboard.writeText(credenciais);
-                
-                alert(`✅ Pedido aprovado!\n\nUsuário criado para: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
-                
+                alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
                 carregarTodosOsDados();
             }
         }
         
-        function removerPedido(pedidoId) {
-            if (confirm('Remover este pedido?')) {
-                let pedidos = getPedidos();
-                pedidos = pedidos.filter(p => p.id !== pedidoId);
-                salvarPedidos(pedidos);
-                carregarTodosOsDados();
-            }
-        }
+        function removerPedido(pedidoId) { if (confirm('Remover este pedido?')) { let pedidos = getPedidos(); salvarPedidos(pedidos.filter(p => p.id !== pedidoId)); carregarTodosOsDados(); } }
+        function removerUsuario(id) { if (confirm('Remover acesso deste usuário?')) { let usuarios = getUsuarios(); salvarUsuarios(usuarios.filter(u => u.id !== id)); carregarTodosOsDados(); mostrarTab('usuarios'); } }
+        function copiarCredenciais(email, senha, nome) { const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 ${email}\n🔑 ${senha}\n\n🔗 https://gerador-pro.netlify.app/sistema.html`; navigator.clipboard.writeText(credenciais); alert('Credenciais copiadas!'); }
         
-        // ============================================
-        // GERENCIAR USUÁRIOS
-        // ============================================
-        function removerUsuario(id) {
-            if (confirm('Remover acesso deste usuário?')) {
-                let usuarios = getUsuarios();
-                usuarios = usuarios.filter(u => u.id !== id);
-                salvarUsuarios(usuarios);
-                carregarTodosOsDados();
-                mostrarTab('usuarios');
-            }
-        }
-        
-        function copiarCredenciais(email, senha, nome) {
-            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\nE-mail: ${email}\nSenha: ${senha}\n\n🔗 Link: https://gerador-pro.netlify.app/sistema.html`;
-            navigator.clipboard.writeText(credenciais);
-            alert('Credenciais copiadas!');
-        }
-        
-        // ============================================
-        // CARREGAR DADOS NA TELA
-        // ============================================
         function carregarPedidos() {
             const pedidos = getPedidos();
-            const listaPedidos = document.getElementById('listaPedidos');
-            
-            if (pedidos.length === 0) {
-                listaPedidos.innerHTML = `
-                    <div class="text-center text-green-600 py-8">
-                        <i class="fas fa-check-circle text-4xl mb-2"></i>
-                        <p>✅ Nenhum pedido pendente</p>
-                    </div>
-                `;
-            } else {
-                listaPedidos.innerHTML = pedidos.map(pedido => `
-                    <div class="border rounded-xl p-4 flex justify-between items-center hover:shadow-md transition">
-                        <div>
-                            <p class="font-bold text-gray-800">${pedido.nome}</p>
-                            <p class="text-sm text-gray-600">${pedido.email}</p>
-                            <p class="text-xs text-indigo-600 font-medium mt-1">${pedido.plano} - R$ ${pedido.valor.toFixed(2).replace('.', ',')}</p>
-                            <p class="text-xs text-gray-400">${new Date(pedido.data).toLocaleString()}</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="aprovarPedido(${pedido.id})" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">
-                                ✅ Aprovar
-                            </button>
-                            <button onclick="removerPedido(${pedido.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm hover:bg-gray-400 transition">
-                                ❌
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
+            document.getElementById('listaPedidos').innerHTML = pedidos.length === 0 ? '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>' : pedidos.map(p => `<div class="border rounded-xl p-4 flex justify-between items-center"><div><p class="font-bold">${p.nome}</p><p class="text-sm text-gray-600">${p.email}</p><p class="text-xs text-indigo-600">${p.plano} - R$ ${p.valor.toFixed(2).replace('.', ',')}</p><p class="text-xs text-gray-400">${new Date(p.data).toLocaleString()}</p></div><div class="flex gap-2"><button onclick="aprovarPedido(${p.id})" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button><button onclick="removerPedido(${p.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button></div></div>`).join('');
             document.getElementById('totalPendentes').innerText = pedidos.length;
         }
         
         function carregarUsuarios() {
             const usuarios = getUsuarios();
-            const listaUsuarios = document.getElementById('listaUsuarios');
-            
-            if (usuarios.length === 0) {
-                listaUsuarios.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-users text-4xl mb-2"></i>
-                        <p>Nenhum usuário cadastrado</p>
-                    </div>
-                `;
-            } else {
-                listaUsuarios.innerHTML = usuarios.map(user => `
-                    <div class="border rounded-xl p-4 flex justify-between items-center hover:shadow-md transition">
-                        <div>
-                            <p class="font-bold text-gray-800">${user.nome}</p>
-                            <p class="text-sm text-gray-600">${user.email}</p>
-                            <p class="text-xs text-indigo-600 mt-1">${user.plano}</p>
-                            <p class="text-xs text-gray-400">Criado: ${new Date(user.dataCriacao).toLocaleDateString()}</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="copiarCredenciais('${user.email}', '${user.senha}', '${user.nome}')" class="bg-indigo-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-indigo-600 transition">
-                                <i class="fas fa-copy"></i> Copiar
-                            </button>
-                            <button onclick="removerUsuario(${user.id})" class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-600 transition">
-                                <i class="fas fa-trash"></i> Remover
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
+            document.getElementById('listaUsuarios').innerHTML = usuarios.length === 0 ? '<div class="text-center text-gray-500 py-8"><i class="fas fa-users text-4xl mb-2"></i><p>Nenhum usuário cadastrado</p></div>' : usuarios.map(u => `<div class="border rounded-xl p-4 flex justify-between items-center"><div><p class="font-bold">${u.nome}</p><p class="text-sm text-gray-600">${u.email}</p><p class="text-xs text-indigo-600">${u.plano}</p><p class="text-xs text-gray-400">Criado: ${new Date(u.dataCriacao).toLocaleDateString()}</p></div><div class="flex gap-2"><button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-copy"></i> Copiar</button><button onclick="removerUsuario(${u.id})" class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-trash"></i> Remover</button></div></div>`).join('');
             document.getElementById('totalUsuarios').innerText = usuarios.length;
+            document.getElementById('totalVendas').innerHTML = `R$ ${(usuarios.length * 24.90).toFixed(2).replace('.', ',')}`;
         }
         
-        function calcularTotalVendas() {
-            const usuarios = getUsuarios();
-            const total = usuarios.length * 24.90;
-            document.getElementById('totalVendas').innerHTML = `R$ ${total.toFixed(2).replace('.', ',')}`;
-        }
+        function carregarTodosOsDados() { carregarPedidos(); carregarUsuarios(); }
         
-        function carregarTodosOsDados() {
-            carregarPedidos();
-            carregarUsuarios();
-            calcularTotalVendas();
-        }
-        
-        // ============================================
-        // TABS
-        // ============================================
         function mostrarTab(tab) {
-            const tabPedidos = document.getElementById('tabPedidos');
-            const tabUsuarios = document.getElementById('tabUsuarios');
-            const tabCriar = document.getElementById('tabCriar');
-            const btnPedidos = document.getElementById('tabPedidosBtn');
-            const btnUsuarios = document.getElementById('tabUsuariosBtn');
-            const btnCriar = document.getElementById('tabCriarBtn');
-            
-            tabPedidos.classList.add('hidden');
-            tabUsuarios.classList.add('hidden');
-            tabCriar.classList.add('hidden');
-            
-            btnPedidos.classList.remove('tab-active');
-            btnPedidos.classList.add('tab-inactive');
-            btnUsuarios.classList.remove('tab-active');
-            btnUsuarios.classList.add('tab-inactive');
-            btnCriar.classList.remove('tab-active');
-            btnCriar.classList.add('tab-inactive');
-            
-            if (tab === 'pedidos') {
-                tabPedidos.classList.remove('hidden');
-                btnPedidos.classList.remove('tab-inactive');
-                btnPedidos.classList.add('tab-active');
-                carregarPedidos();
-            } else if (tab === 'usuarios') {
-                tabUsuarios.classList.remove('hidden');
-                btnUsuarios.classList.remove('tab-inactive');
-                btnUsuarios.classList.add('tab-active');
-                carregarUsuarios();
-            } else if (tab === 'criar') {
-                tabCriar.classList.remove('hidden');
-                btnCriar.classList.remove('tab-inactive');
-                btnCriar.classList.add('tab-active');
-            }
+            document.getElementById('tabPedidos').classList.add('hidden');
+            document.getElementById('tabUsuarios').classList.add('hidden');
+            document.getElementById('tabCriar').classList.add('hidden');
+            document.getElementById('tabPedidosBtn').classList.remove('tab-active'); document.getElementById('tabPedidosBtn').classList.add('tab-inactive');
+            document.getElementById('tabUsuariosBtn').classList.remove('tab-active'); document.getElementById('tabUsuariosBtn').classList.add('tab-inactive');
+            document.getElementById('tabCriarBtn').classList.remove('tab-active'); document.getElementById('tabCriarBtn').classList.add('tab-inactive');
+            if (tab === 'pedidos') { document.getElementById('tabPedidos').classList.remove('hidden'); document.getElementById('tabPedidosBtn').classList.remove('tab-inactive'); document.getElementById('tabPedidosBtn').classList.add('tab-active'); carregarPedidos(); }
+            else if (tab === 'usuarios') { document.getElementById('tabUsuarios').classList.remove('hidden'); document.getElementById('tabUsuariosBtn').classList.remove('tab-inactive'); document.getElementById('tabUsuariosBtn').classList.add('tab-active'); carregarUsuarios(); }
+            else if (tab === 'criar') { document.getElementById('tabCriar').classList.remove('hidden'); document.getElementById('tabCriarBtn').classList.remove('tab-inactive'); document.getElementById('tabCriarBtn').classList.add('tab-active'); }
         }
         
-        function initDados() {
-            if (getUsuarios().length === 0) {
-                salvarUsuarios([{
-                    id: 1,
-                    nome: 'Administrador',
-                    email: 'admin@exemplo.com',
-                    senha: 'admin123',
-                    plano: 'Administrador',
-                    dataCriacao: new Date().toISOString(),
-                    ativo: true
-                }]);
-            }
-        }
-        
+        function initDados() { if (getUsuarios().length === 0) salvarUsuarios([{ id: 1, nome: 'Administrador', email: 'admin@exemplo.com', senha: 'admin123', plano: 'Administrador', dataCriacao: new Date().toISOString(), ativo: true }]); }
         initDados();
-        carregarTodosOsDados();
     </script>
 </body>
 </html>
