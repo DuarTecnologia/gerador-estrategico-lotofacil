@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+
+[[plugins]]
+  package = "netlify-plugin-password-protection"
+
+  [plugins.inputs]
+    paths = ["/admin.html"]
+    password = "{{env.ADMIN_PASSWORD}}"
