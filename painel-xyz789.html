@@ -52,8 +52,20 @@
                 <button onclick="mostrarTab('criar')" id="tabCriarBtn" class="tab-inactive px-6 py-2 rounded-lg font-medium transition">➕ Criar Usuário</button>
             </div>
 
-            <div id="tabPedidos" class="card p-6"><h2 class="text-xl font-bold text-gray-800 mb-4">📦 Pedidos Aguardando Aprovação</h2><div id="listaPedidos" class="space-y-3"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
-            <div id="tabUsuarios" class="card p-6 hidden"><h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários Cadastrados</h2><div id="listaUsuarios" class="space-y-2"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
+            <div id="tabPedidos" class="card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">📦 Pedidos Aguardando Aprovação</h2>
+                <div id="listaPedidos" class="space-y-3">
+                    <p class="text-gray-500 text-center py-8">Carregando...</p>
+                </div>
+            </div>
+
+            <div id="tabUsuarios" class="card p-6 hidden">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários Cadastrados</h2>
+                <div id="listaUsuarios" class="space-y-2">
+                    <p class="text-gray-500 text-center py-8">Carregando...</p>
+                </div>
+            </div>
+
             <div id="tabCriar" class="card p-6 hidden">
                 <h2 class="text-xl font-bold text-gray-800 mb-4">➕ Criar Novo Usuário</h2>
                 <p class="text-gray-500 text-sm mb-6">Crie manualmente o acesso para o cliente. A senha padrão será: <strong class="text-indigo-600">NOME123</strong></p>
@@ -106,7 +118,12 @@
         
         function getUsuarios() { const u = localStorage.getItem(STORAGE_USERS); return u ? JSON.parse(u) : []; }
         function salvarUsuarios(u) { localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); }
-        function getPedidos() { const p = localStorage.getItem(STORAGE_PEDIDOS); return p ? JSON.parse(p) : []; }
+        
+        function getPedidos() { 
+            const p = localStorage.getItem(STORAGE_PEDIDOS); 
+            console.log('📋 Lendo pedidos do localStorage:', p);
+            return p ? JSON.parse(p) : []; 
+        }
         function salvarPedidos(p) { localStorage.setItem(STORAGE_PEDIDOS, JSON.stringify(p)); }
         
         function gerarSenhaPorNome(nome) {
@@ -151,26 +168,36 @@
         function aprovarPedido(pedidoId) {
             let pedidos = getPedidos();
             const pedido = pedidos.find(p => p.id === pedidoId);
+            console.log('📦 Aprovando pedido:', pedido);
+            
             if (pedido) {
                 pedidos = pedidos.filter(p => p.id !== pedidoId);
                 salvarPedidos(pedidos);
+                
                 const usuarios = getUsuarios();
                 const senha = gerarSenhaPorNome(pedido.nome);
                 const email = pedido.email.trim().toLowerCase();
-                usuarios.push({
-                    id: Date.now(),
-                    nome: pedido.nome,
-                    email: email,
-                    senha: senha,
-                    plano: 'Plano Vitalício (R$24,90)',
-                    dataCriacao: new Date().toISOString(),
-                    ativo: true
-                });
-                salvarUsuarios(usuarios);
+                
+                // Verificar se e-mail já não existe
+                if (!usuarios.find(u => u.email === email)) {
+                    usuarios.push({
+                        id: Date.now(),
+                        nome: pedido.nome,
+                        email: email,
+                        senha: senha,
+                        plano: 'Plano Vitalício (R$24,90)',
+                        dataCriacao: new Date().toISOString(),
+                        ativo: true
+                    });
+                    salvarUsuarios(usuarios);
+                }
+                
                 const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://gerador-pro.netlify.app/sistema.html`;
                 navigator.clipboard.writeText(credenciais);
                 alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
                 carregarTodosOsDados();
+            } else {
+                console.log('❌ Pedido não encontrado para aprovação:', pedidoId);
             }
         }
         
@@ -180,6 +207,8 @@
         
         function carregarPedidos() {
             const pedidos = getPedidos();
+            console.log('📋 Carregando pedidos pendentes:', pedidos.length);
+            
             document.getElementById('listaPedidos').innerHTML = pedidos.length === 0 ? '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>' : pedidos.map(p => `<div class="border rounded-xl p-4 flex justify-between items-center"><div><p class="font-bold">${p.nome}</p><p class="text-sm text-gray-600">${p.email}</p><p class="text-xs text-indigo-600">${p.plano} - R$ ${p.valor.toFixed(2).replace('.', ',')}</p><p class="text-xs text-gray-400">${new Date(p.data).toLocaleString()}</p></div><div class="flex gap-2"><button onclick="aprovarPedido(${p.id})" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button><button onclick="removerPedido(${p.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button></div></div>`).join('');
             document.getElementById('totalPendentes').innerText = pedidos.length;
         }
@@ -207,6 +236,7 @@
         
         function initDados() { if (getUsuarios().length === 0) salvarUsuarios([{ id: 1, nome: 'Administrador', email: 'admin@exemplo.com', senha: 'admin123', plano: 'Administrador', dataCriacao: new Date().toISOString(), ativo: true }]); }
         initDados();
+        carregarTodosOsDados();
     </script>
 </body>
 </html>
