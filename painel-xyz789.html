@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         * { font-family: 'Poppins', sans-serif; }
         body { background: #0f172a; }
         .card { background: white; border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
@@ -22,60 +21,30 @@
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center shadow-md">
-                    <i class="fas fa-crown text-white text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-white">Painel Administrativo</h1>
-                    <p class="text-gray-400 text-sm">Gerencie clientes e acessos</p>
-                </div>
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center shadow-md"><i class="fas fa-crown text-white text-xl"></i></div>
+                <div><h1 class="text-2xl font-bold text-white">Painel Administrativo</h1><p class="text-gray-400 text-sm">Gerencie clientes e acessos</p></div>
             </div>
-            <a href="index.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm">
-                <i class="fas fa-arrow-left mr-2"></i> Voltar ao site
-            </a>
+            <a href="index.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm"><i class="fas fa-arrow-left mr-2"></i> Voltar ao site</a>
         </div>
 
         <div id="loginAdmin" class="max-w-md mx-auto card p-8">
             <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-lock text-white text-2xl"></i>
-                </div>
+                <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-lock text-white text-2xl"></i></div>
                 <h2 class="text-2xl font-bold text-gray-800">Acesso Restrito</h2>
                 <p class="text-gray-500 text-sm">Digite a senha de administrador</p>
             </div>
             <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none mb-4">
-            <button onclick="logarAdmin()" class="btn-primary w-full text-white font-bold py-3 rounded-xl">
-                <i class="fas fa-sign-in-alt mr-2"></i> Entrar
-            </button>
+            <button onclick="logarAdmin()" class="btn-primary w-full text-white font-bold py-3 rounded-xl"><i class="fas fa-sign-in-alt mr-2"></i> Entrar</button>
         </div>
 
         <div id="painelAdmin" class="hidden">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="card p-6 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-shopping-cart text-blue-600 text-xl"></i>
-                    </div>
-                    <div><p class="text-gray-500 text-sm">Pedidos Pendentes</p><p class="text-2xl font-bold text-gray-800" id="totalPendentes">0</p></div>
-                </div>
-                <div class="card p-6 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-users text-green-600 text-xl"></i>
-                    </div>
-                    <div><p class="text-gray-500 text-sm">Usuários Ativos</p><p class="text-2xl font-bold text-gray-800" id="totalUsuarios">0</p></div>
-                </div>
-                <div class="card p-6 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-chart-line text-purple-600 text-xl"></i>
-                    </div>
-                    <div><p class="text-gray-500 text-sm">Total de Vendas</p><p class="text-2xl font-bold text-gray-800" id="totalVendas">R$ 0</p></div>
-                </div>
+                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-shopping-cart text-blue-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Pedidos Pendentes</p><p class="text-2xl font-bold text-gray-800" id="totalPendentes">0</p></div></div>
+                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-green-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Usuários Ativos</p><p class="text-2xl font-bold text-gray-800" id="totalUsuarios">0</p></div></div>
+                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-purple-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Total de Vendas</p><p class="text-2xl font-bold text-gray-800" id="totalVendas">R$ 0</p></div></div>
             </div>
             
-            <div class="flex justify-end mb-4">
-                <button onclick="logoutAdmin()" class="btn-danger text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2">
-                    <i class="fas fa-sign-out-alt"></i> Sair do Admin
-                </button>
-            </div>
+            <div class="flex justify-end mb-4"><button onclick="logoutAdmin()" class="btn-danger text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i class="fas fa-sign-out-alt"></i> Sair do Admin</button></div>
 
             <div class="flex gap-2 mb-6">
                 <button onclick="mostrarTab('pedidos')" id="tabPedidosBtn" class="tab-active px-6 py-2 rounded-lg font-medium transition">📦 Pedidos Pendentes</button>
@@ -84,18 +53,15 @@
             </div>
 
             <div id="tabPedidos" class="card p-6"><h2 class="text-xl font-bold text-gray-800 mb-4">📦 Pedidos Aguardando Aprovação</h2><div id="listaPedidos" class="space-y-3"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
-            <div id="tabUsuarios" class="card p-6 hidden"><h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários com Acesso ao Sistema</h2><div id="listaUsuarios" class="space-y-2"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
+            <div id="tabUsuarios" class="card p-6 hidden"><h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários Cadastrados</h2><div id="listaUsuarios" class="space-y-2"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
             <div id="tabCriar" class="card p-6 hidden">
                 <h2 class="text-xl font-bold text-gray-800 mb-4">➕ Criar Novo Usuário</h2>
-                <p class="text-gray-500 text-sm mb-6">Crie manualmente o acesso para o cliente após a confirmação do pagamento.</p>
+                <p class="text-gray-500 text-sm mb-6">Crie manualmente o acesso para o cliente. A senha padrão será: <strong class="text-indigo-600">NOME123</strong></p>
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
                     <div><label class="block text-sm font-medium text-gray-700 mb-2">Nome completo *</label><input type="text" id="novoNome" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="João Silva"></div>
                     <div><label class="block text-sm font-medium text-gray-700 mb-2">E-mail *</label><input type="email" id="novoEmail" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="cliente@email.com"></div>
                 </div>
-                <div class="grid md:grid-cols-2 gap-4 mb-6">
-                    <div><label class="block text-sm font-medium text-gray-700 mb-2">Plano</label><select id="novoPlano" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none"><option value="vitalicio">Plano Vitalício - R$ 24,90</option></select></div>
-                    <div><label class="block text-sm font-medium text-gray-700 mb-2">Senha (opcional)</label><input type="text" id="novaSenha" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="Deixe em branco para gerar automaticamente"><p class="text-xs text-gray-400 mt-1">Se deixar vazio, gerará uma senha padrão: ClienteXXXX</p></div>
-                </div>
+                <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Plano</label><select id="novoPlano" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none"><option value="vitalicio">Plano Vitalício - R$ 24,90</option></select></div>
                 <button onclick="criarUsuario()" class="btn-primary w-full text-white font-bold py-3 rounded-xl"><i class="fas fa-user-plus mr-2"></i> Criar Usuário</button>
             </div>
         </div>
@@ -143,19 +109,23 @@
         function getPedidos() { const p = localStorage.getItem(STORAGE_PEDIDOS); return p ? JSON.parse(p) : []; }
         function salvarPedidos(p) { localStorage.setItem(STORAGE_PEDIDOS, JSON.stringify(p)); }
         
-        function gerarSenhaAleatoria() { return `Cliente${Math.floor(Math.random() * 9000) + 1000}`; }
+        function gerarSenhaPorNome(nome) {
+            const primeiroNome = nome.trim().split(' ')[0];
+            const nomeLimpo = primeiroNome.toLowerCase().replace(/[^a-z]/g, '');
+            return nomeLimpo + '123';
+        }
         
         function criarUsuario() {
             const nome = document.getElementById('novoNome').value.trim();
             let email = document.getElementById('novoEmail').value.trim().toLowerCase();
-            let senha = document.getElementById('novaSenha').value.trim();
             
             if (!nome || !email) { alert('Preencha nome e e-mail'); return; }
             if (!email.includes('@') || !email.includes('.')) { alert('E-mail inválido'); return; }
-            if (!senha) senha = gerarSenhaAleatoria();
+            
+            const senha = gerarSenhaPorNome(nome);
             
             const usuarios = getUsuarios();
-            if (usuarios.find(u => u.email && u.email.toLowerCase() === email)) { alert('Este e-mail já está cadastrado!'); return; }
+            if (usuarios.find(u => u.email === email)) { alert('Este e-mail já está cadastrado!'); return; }
             
             usuarios.push({
                 id: Date.now(),
@@ -170,11 +140,10 @@
             
             document.getElementById('novoNome').value = '';
             document.getElementById('novoEmail').value = '';
-            document.getElementById('novaSenha').value = '';
             
             const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://gerador-pro.netlify.app/sistema.html`;
             navigator.clipboard.writeText(credenciais);
-            alert(`✅ Usuário criado!\n\n📧 ${email}\n🔑 ${senha}\n\nCredenciais copiadas!`);
+            alert(`✅ Usuário criado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nCredenciais copiadas!`);
             carregarTodosOsDados();
             mostrarTab('usuarios');
         }
@@ -186,7 +155,7 @@
                 pedidos = pedidos.filter(p => p.id !== pedidoId);
                 salvarPedidos(pedidos);
                 const usuarios = getUsuarios();
-                const senha = gerarSenhaAleatoria();
+                const senha = gerarSenhaPorNome(pedido.nome);
                 const email = pedido.email.trim().toLowerCase();
                 usuarios.push({
                     id: Date.now(),
@@ -198,7 +167,7 @@
                     ativo: true
                 });
                 salvarUsuarios(usuarios);
-                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 ${email}\n🔑 ${senha}\n\n🔗 https://gerador-pro.netlify.app/sistema.html`;
+                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://gerador-pro.netlify.app/sistema.html`;
                 navigator.clipboard.writeText(credenciais);
                 alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
                 carregarTodosOsDados();
@@ -207,7 +176,7 @@
         
         function removerPedido(pedidoId) { if (confirm('Remover este pedido?')) { let pedidos = getPedidos(); salvarPedidos(pedidos.filter(p => p.id !== pedidoId)); carregarTodosOsDados(); } }
         function removerUsuario(id) { if (confirm('Remover acesso deste usuário?')) { let usuarios = getUsuarios(); salvarUsuarios(usuarios.filter(u => u.id !== id)); carregarTodosOsDados(); mostrarTab('usuarios'); } }
-        function copiarCredenciais(email, senha, nome) { const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 ${email}\n🔑 ${senha}\n\n🔗 https://gerador-pro.netlify.app/sistema.html`; navigator.clipboard.writeText(credenciais); alert('Credenciais copiadas!'); }
+        function copiarCredenciais(email, senha, nome) { const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 ${email}\n🔑 ${senha}\n\nLink: https://gerador-pro.netlify.app/sistema.html`; navigator.clipboard.writeText(credenciais); alert('Credenciais copiadas!'); }
         
         function carregarPedidos() {
             const pedidos = getPedidos();
