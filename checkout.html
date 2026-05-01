@@ -6,7 +6,6 @@
     <title>Checkout - Gerador Estratégico Lotofácil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         * { font-family: 'Poppins', sans-serif; }
@@ -156,8 +155,7 @@
                         <div class="pix-card">
                             <i class="fas fa-qrcode text-4xl text-green-600 mb-3"></i>
                             <h3 class="font-bold text-gray-800 mb-2">Pagamento via PIX</h3>
-                            <p class="text-sm text-gray-600 mb-3">Use o QR Code ou copie a chave:</p>
-                            <div id="qrCodePix" class="flex justify-center mb-3"></div>
+                            <p class="text-sm text-gray-600 mb-3">Use a chave PIX abaixo:</p>
                             <div class="chave-pix" onclick="copiarChavePix()">
                                 <code id="chavePix">cff1a61d-2273-4e77-bc7c-1ca9cf351885</code>
                             </div>
@@ -188,10 +186,9 @@
         const LINK_CARTAO = 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-e3g5keb4Z-24,90';
         
         // ============================================
-        // CHAVE PIX (ALEATÓRIA)
+        // CHAVE PIX
         // ============================================
         const CHAVE_PIX = 'cff1a61d-2273-4e77-bc7c-1ca9cf351885';
-        const VALOR_PIX = 24.90;
         
         // ============================================
         // CARREGAR DADOS DO PLANO
@@ -200,6 +197,8 @@
         const plano = urlParams.get('plano');
         const preco = parseFloat(urlParams.get('preco'));
         const nomePlano = urlParams.get('nome');
+        
+        let formaPagamento = 'cartao';
         
         if (nomePlano && preco) {
             document.getElementById('resumoPlano').innerHTML = `
@@ -215,26 +214,6 @@
             document.getElementById('totalPreco').innerHTML = `R$ ${preco.toFixed(2).replace('.', ',')}`;
         } else {
             window.location.href = 'index.html';
-        }
-        
-        let formaPagamento = 'cartao';
-        
-        // ============================================
-        // GERAR QR CODE PIX
-        // ============================================
-        function gerarQrCodePix() {
-            const payload = `00020101021226780014BR.GOV.BCB.PIX0136${CHAVE_PIX}0216Pagamento edipo_5204000053039865406${VALOR_PIX.toFixed(2).replace('.', '')}5802BR5923EDIPO DUARTE DOS SANTOS6006OSASCO62290525QRCCiOYpIyOYfLwHKCq4gt9ZD63047BAF`;
-            
-            const qrcodeDiv = document.getElementById('qrCodePix');
-            qrcodeDiv.innerHTML = '';
-            new QRCode(qrcodeDiv, {
-                text: payload,
-                width: 180,
-                height: 180,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.H
-            });
         }
         
         function copiarChavePix() {
@@ -258,15 +237,25 @@
                 telefone: telefone,
                 origem: origem,
                 plano: decodeURIComponent(nomePlano),
-                valor: VALOR_PIX,
+                valor: preco,
                 data: new Date().toISOString(),
                 formaPagamento: formaPagamento,
                 status: status
             };
             
-            let pedidos = JSON.parse(localStorage.getItem('pedidos_pendentes') || '[]');
+            // Pegar pedidos existentes
+            let pedidos = localStorage.getItem('pedidos_pendentes');
+            if (!pedidos) {
+                pedidos = [];
+            } else {
+                pedidos = JSON.parse(pedidos);
+            }
+            
             pedidos.push(pedido);
             localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
+            
+            console.log('✅ Pedido salvo:', pedido);
+            console.log('📋 Total de pedidos pendentes:', pedidos.length);
             
             return pedido;
         }
@@ -312,6 +301,7 @@
             await new Promise(resolve => setTimeout(resolve, 500));
             
             const pedido = salvarPedido('pagamento_iniciado');
+            console.log('📦 Pedido salvo para cartão:', pedido);
             
             loading.classList.remove('active');
             
@@ -332,7 +322,6 @@
             document.getElementById('opcaoCartao').classList.remove('selected-payment');
             document.getElementById('areaPix').classList.remove('hidden');
             document.getElementById('btnFinalizarCartao').classList.add('hidden');
-            gerarQrCodePix();
         });
         
         document.getElementById('opcaoCartao').addEventListener('click', () => {
@@ -350,6 +339,7 @@
             }
             
             const pedido = salvarPedido('aguardando_pagamento_pix');
+            console.log('📦 Pedido salvo para PIX:', pedido);
             
             alert(`✅ Pedido registrado! Aguardando confirmação do PIX.\n\n📧 Enviaremos o acesso para ${document.getElementById('email').value} assim que o pagamento for confirmado.\n\n💰 Valor: R$ 24,90\n\nApós pagar, avise no WhatsApp para agilizar a liberação.`);
             
