@@ -131,7 +131,6 @@
         
         async function aprovarPedido(id) {
             try {
-                // Buscar pedido
                 const response = await fetch(`${WORKER_URL}/pedidos`);
                 const data = await response.json();
                 const pedido = data.pedidos.find(p => p.id === id);
@@ -141,12 +140,10 @@
                     return;
                 }
                 
-                // Gerar senha (primeiro nome + 123)
                 const primeiroNome = pedido.nome.split(' ')[0].toLowerCase();
                 const senha = primeiroNome + '123';
                 const email = pedido.email.toLowerCase();
                 
-                // Criar usuário
                 const userResponse = await fetch(`${WORKER_URL}/usuarios`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -161,7 +158,6 @@
                 const userData = await userResponse.json();
                 
                 if (userData.success) {
-                    // Remover pedido
                     await fetch(`${WORKER_URL}/pedidos/${id}`, { method: 'DELETE' });
                     
                     const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
@@ -259,12 +255,10 @@
         }
         
         function mostrarTab(tab) {
-            // Esconder todas
             document.getElementById('pedidosTab').classList.add('hidden');
             document.getElementById('usuariosTab').classList.add('hidden');
             document.getElementById('criarTab').classList.add('hidden');
             
-            // Mudar estilos dos botões
             document.getElementById('tabPedidosBtn').classList.remove('bg-indigo-600');
             document.getElementById('tabPedidosBtn').classList.add('bg-gray-700');
             document.getElementById('tabUsuariosBtn').classList.remove('bg-indigo-600');
