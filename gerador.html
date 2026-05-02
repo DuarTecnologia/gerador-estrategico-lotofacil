@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador - Lotofácil Estratégico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 min-h-screen">
+    <header class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold text-white">Gerador Estratégico Lotofácil</h1>
+            <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-lg">Sair</button>
+        </div>
+    </header>
+    <main class="container mx-auto p-8">
+        <div class="bg-white rounded-xl p-6">
+            <h2 class="text-2xl font-bold mb-4">Bem-vindo ao Gerador!</h2>
+            <p class="text-gray-600">Aqui será o sistema completo de geração de jogos.</p>
+        </div>
+    </main>
+    <script>
+        // Verificar se está logado
+        const usuarioLogado = localStorage.getItem('usuario_logado');
+        if (!usuarioLogado) {
+            window.location.href = 'sistema.html';
+        }
+        
+        function logout() {
+            localStorage.removeItem('usuario_logado');
+            window.location.href = 'sistema.html';
+        }
+    </script>
+</body>
+</html>
