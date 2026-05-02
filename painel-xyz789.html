@@ -122,8 +122,17 @@
         function getPedidos() { 
             const p = localStorage.getItem(STORAGE_PEDIDOS); 
             console.log('📋 Lendo pedidos do localStorage:', p);
-            return p ? JSON.parse(p) : []; 
+            if (!p) return [];
+            try {
+                const pedidos = JSON.parse(p);
+                console.log('📋 Pedidos encontrados:', pedidos.length);
+                return pedidos;
+            } catch(e) {
+                console.error('Erro ao ler pedidos:', e);
+                return [];
+            }
         }
+        
         function salvarPedidos(p) { localStorage.setItem(STORAGE_PEDIDOS, JSON.stringify(p)); }
         
         function gerarSenhaPorNome(nome) {
@@ -158,7 +167,7 @@
             document.getElementById('novoNome').value = '';
             document.getElementById('novoEmail').value = '';
             
-            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://gerador-pro.netlify.app/sistema.html`;
+            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://gerador.xyz/sistema.html`;
             navigator.clipboard.writeText(credenciais);
             alert(`✅ Usuário criado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nCredenciais copiadas!`);
             carregarTodosOsDados();
@@ -178,7 +187,6 @@
                 const senha = gerarSenhaPorNome(pedido.nome);
                 const email = pedido.email.trim().toLowerCase();
                 
-                // Verificar se e-mail já não existe
                 if (!usuarios.find(u => u.email === email)) {
                     usuarios.push({
                         id: Date.now(),
@@ -192,7 +200,7 @@
                     salvarUsuarios(usuarios);
                 }
                 
-                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://gerador-pro.netlify.app/sistema.html`;
+                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://gerador.xyz/sistema.html`;
                 navigator.clipboard.writeText(credenciais);
                 alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
                 carregarTodosOsDados();
@@ -203,19 +211,53 @@
         
         function removerPedido(pedidoId) { if (confirm('Remover este pedido?')) { let pedidos = getPedidos(); salvarPedidos(pedidos.filter(p => p.id !== pedidoId)); carregarTodosOsDados(); } }
         function removerUsuario(id) { if (confirm('Remover acesso deste usuário?')) { let usuarios = getUsuarios(); salvarUsuarios(usuarios.filter(u => u.id !== id)); carregarTodosOsDados(); mostrarTab('usuarios'); } }
-        function copiarCredenciais(email, senha, nome) { const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 ${email}\n🔑 ${senha}\n\nLink: https://gerador-pro.netlify.app/sistema.html`; navigator.clipboard.writeText(credenciais); alert('Credenciais copiadas!'); }
+        function copiarCredenciais(email, senha, nome) { const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 ${email}\n🔑 ${senha}\n\nLink: https://gerador.xyz/sistema.html`; navigator.clipboard.writeText(credenciais); alert('Credenciais copiadas!'); }
         
         function carregarPedidos() {
             const pedidos = getPedidos();
             console.log('📋 Carregando pedidos pendentes:', pedidos.length);
             
-            document.getElementById('listaPedidos').innerHTML = pedidos.length === 0 ? '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>' : pedidos.map(p => `<div class="border rounded-xl p-4 flex justify-between items-center"><div><p class="font-bold">${p.nome}</p><p class="text-sm text-gray-600">${p.email}</p><p class="text-xs text-indigo-600">${p.plano} - R$ ${p.valor.toFixed(2).replace('.', ',')}</p><p class="text-xs text-gray-400">${new Date(p.data).toLocaleString()}</p></div><div class="flex gap-2"><button onclick="aprovarPedido(${p.id})" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button><button onclick="removerPedido(${p.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button></div></div>`).join('');
+            if (pedidos.length === 0) {
+                document.getElementById('listaPedidos').innerHTML = '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>';
+            } else {
+                document.getElementById('listaPedidos').innerHTML = pedidos.map(p => `
+                    <div class="border rounded-xl p-4 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold">${p.nome}</p>
+                            <p class="text-sm text-gray-600">${p.email}</p>
+                            <p class="text-xs text-indigo-600">${p.plano} - R$ ${p.valor.toFixed(2).replace('.', ',')}</p>
+                            <p class="text-xs text-gray-400">${new Date(p.data).toLocaleString()}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="aprovarPedido(${p.id})" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button>
+                            <button onclick="removerPedido(${p.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
             document.getElementById('totalPendentes').innerText = pedidos.length;
         }
         
         function carregarUsuarios() {
             const usuarios = getUsuarios();
-            document.getElementById('listaUsuarios').innerHTML = usuarios.length === 0 ? '<div class="text-center text-gray-500 py-8"><i class="fas fa-users text-4xl mb-2"></i><p>Nenhum usuário cadastrado</p></div>' : usuarios.map(u => `<div class="border rounded-xl p-4 flex justify-between items-center"><div><p class="font-bold">${u.nome}</p><p class="text-sm text-gray-600">${u.email}</p><p class="text-xs text-indigo-600">${u.plano}</p><p class="text-xs text-gray-400">Criado: ${new Date(u.dataCriacao).toLocaleDateString()}</p></div><div class="flex gap-2"><button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-copy"></i> Copiar</button><button onclick="removerUsuario(${u.id})" class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-trash"></i> Remover</button></div></div>`).join('');
+            if (usuarios.length === 0) {
+                document.getElementById('listaUsuarios').innerHTML = '<div class="text-center text-gray-500 py-8"><i class="fas fa-users text-4xl mb-2"></i><p>Nenhum usuário cadastrado</p></div>';
+            } else {
+                document.getElementById('listaUsuarios').innerHTML = usuarios.map(u => `
+                    <div class="border rounded-xl p-4 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold">${u.nome}</p>
+                            <p class="text-sm text-gray-600">${u.email}</p>
+                            <p class="text-xs text-indigo-600">${u.plano}</p>
+                            <p class="text-xs text-gray-400">Criado: ${new Date(u.dataCriacao).toLocaleDateString()}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-copy"></i> Copiar</button>
+                            <button onclick="removerUsuario(${u.id})" class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-trash"></i> Remover</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
             document.getElementById('totalUsuarios').innerText = usuarios.length;
             document.getElementById('totalVendas').innerHTML = `R$ ${(usuarios.length * 24.90).toFixed(2).replace('.', ',')}`;
         }
