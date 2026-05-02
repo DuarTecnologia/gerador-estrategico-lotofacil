@@ -108,18 +108,18 @@
         function salvarUsuarios(u) { localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); }
         
         function getPedidos() { 
-            const p = localStorage.getItem(STORAGE_PEDIDOS); 
-            console.log('📋 Lendo pedidos do localStorage:', p);
-            if (!p) return [];
-            try {
-                const pedidos = JSON.parse(p);
-                console.log('📋 Pedidos encontrados:', pedidos.length);
-                return pedidos;
-            } catch(e) {
-                console.error('❌ Erro ao ler pedidos:', e);
-                return [];
-            }
-        }
+    const p = localStorage.getItem('pedidos_pendentes'); 
+    console.log('📋 Lendo pedidos do localStorage:', p);
+    if (!p) return [];
+    try {
+        const pedidos = JSON.parse(p);
+        console.log('📋 Pedidos encontrados:', pedidos.length);
+        return pedidos;
+    } catch(e) {
+        console.error('❌ Erro ao parsear pedidos:', e);
+        return [];
+    }
+}
         function salvarPedidos(p) { localStorage.setItem(STORAGE_PEDIDOS, JSON.stringify(p)); }
         
         function gerarSenhaPorNome(nome) {
