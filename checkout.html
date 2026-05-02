@@ -2,80 +2,23 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Gerador Estratégico Lotofácil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-        * { font-family: 'Poppins', sans-serif; }
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-        
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
+        .loading { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .loading.active { display: flex; }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid white;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+        .spinner { width: 50px; height: 50px; border: 4px solid white; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .input-erro { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
-        
-        .payment-option {
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: 2px solid #e5e7eb;
-        }
-        .payment-option:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .selected-payment {
-            border-color: #10b981;
-            background-color: #f0fdf4;
-        }
-        
-        .pix-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: center;
-            border: 2px solid #10b981;
-        }
-        
-        .chave-pix {
-            background: #f3f4f6;
-            padding: 12px;
-            border-radius: 8px;
-            font-family: monospace;
-            word-break: break-all;
-            cursor: pointer;
-        }
+        .selected-payment { border: 2px solid #10b981 !important; background-color: #f0fdf4 !important; }
     </style>
 </head>
-<body class="flex items-center justify-center p-4">
-    
+<body class="bg-gradient-to-br from-indigo-600 to-purple-700 min-h-screen flex items-center justify-center p-4">
+
     <div class="loading" id="loading">
         <div class="spinner"></div>
-        <p class="text-white mt-4">Processando...</p>
+        <p class="text-white mt-4">Processando seu pedido...</p>
     </div>
 
     <div class="w-full max-w-4xl">
@@ -89,6 +32,7 @@
 
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
             <div class="grid md:grid-cols-2">
+                <!-- Dados Pessoais -->
                 <div class="p-6 md:p-8">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Dados pessoais</h2>
                     
@@ -121,15 +65,24 @@
                     </div>
                 </div>
 
+                <!-- Resumo e Pagamento -->
                 <div class="bg-gray-50 p-6 md:p-8 border-l border-gray-200">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Resumo do Pedido</h2>
                     
-                    <div id="resumoPlano" class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl"></div>
+                    <div id="resumoPlano" class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-gray-800">Plano Vitalício</p>
+                                <p class="text-sm text-gray-500">Acesso vitalício - Pagamento único</p>
+                            </div>
+                            <div class="text-xl font-bold text-indigo-600">R$ 24,90</div>
+                        </div>
+                    </div>
                     
                     <div class="border-t border-gray-200 pt-4 mt-4">
                         <div class="flex justify-between font-bold text-lg">
                             <span>Total</span>
-                            <span id="totalPreco" class="text-indigo-600">R$ 0</span>
+                            <span class="text-indigo-600">R$ 24,90</span>
                         </div>
                     </div>
 
@@ -137,12 +90,12 @@
                     <div class="mt-6">
                         <label class="block text-sm font-bold text-gray-700 mb-3">Forma de pagamento</label>
                         <div class="grid grid-cols-2 gap-3 mb-4">
-                            <div id="opcaoPix" class="payment-option rounded-xl p-3 text-center cursor-pointer">
+                            <div id="opcaoPix" class="payment-option rounded-xl p-3 text-center cursor-pointer border-2 border-gray-200 hover:border-green-500 transition">
                                 <i class="fas fa-qrcode text-2xl text-green-600 mb-1"></i>
                                 <p class="text-sm font-medium">PIX</p>
                                 <p class="text-xs text-gray-500">Taxa zero</p>
                             </div>
-                            <div id="opcaoCartao" class="payment-option rounded-xl p-3 text-center cursor-pointer selected-payment">
+                            <div id="opcaoCartao" class="payment-option rounded-xl p-3 text-center cursor-pointer border-2 border-indigo-200 selected-payment">
                                 <i class="fas fa-credit-card text-2xl text-indigo-600 mb-1"></i>
                                 <p class="text-sm font-medium">Cartão de Crédito</p>
                                 <p class="text-xs text-gray-500">Parcelamento em até 12x</p>
@@ -152,22 +105,22 @@
                     
                     <!-- Área PIX (inicialmente escondida) -->
                     <div id="areaPix" class="hidden mt-4">
-                        <div class="pix-card">
+                        <div class="bg-green-50 rounded-xl p-4 text-center border-2 border-green-200">
                             <i class="fas fa-qrcode text-4xl text-green-600 mb-3"></i>
                             <h3 class="font-bold text-gray-800 mb-2">Pagamento via PIX</h3>
-                            <p class="text-sm text-gray-600 mb-3">Use a chave PIX abaixo:</p>
-                            <div class="chave-pix" onclick="copiarChavePix()">
-                                <code id="chavePix">cff1a61d-2273-4e77-bc7c-1ca9cf351885</code>
+                            <p class="text-sm text-gray-600 mb-2">Use a chave PIX abaixo:</p>
+                            <div class="bg-white p-3 rounded-lg font-mono text-sm break-all cursor-pointer" onclick="copiarChavePix()">
+                                cff1a61d-2273-4e77-bc7c-1ca9cf351885
                             </div>
                             <p class="text-xs text-green-600 mt-2">✅ Clique na chave para copiar</p>
-                            <button id="confirmarPixBtn" class="w-full mt-4 bg-green-500 text-white py-2 rounded-lg font-bold hover:bg-green-600 transition">
-                                Já paguei! Confirmar pedido
+                            <button id="confirmarPixBtn" class="w-full mt-4 bg-green-500 text-white py-3 rounded-lg font-bold hover:bg-green-600 transition">
+                                ✅ Já paguei! Confirmar pedido
                             </button>
                         </div>
                     </div>
                     
-                    <button id="btnFinalizarCartao" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-credit-card"></i> Pagar com Cartão (R$ 24,90)
+                    <button id="btnFinalizarCartao" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition">
+                        <i class="fas fa-credit-card mr-2"></i> Pagar com Cartão (R$ 24,90)
                     </button>
                     
                     <p class="text-center text-xs text-gray-500 mt-4">
@@ -181,55 +134,32 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÃO DA API (WORKER)
+        // CONFIGURAÇÕES
         // ============================================
         const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev/pedidos';
-        
-        // ============================================
-        // LINK DE PAGAMENTO INFINITEPAY (CARTÃO)
-        // ============================================
         const LINK_CARTAO = 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-e3g5keb4Z-24,90';
-        
-        // ============================================
-        // CHAVE PIX
-        // ============================================
         const CHAVE_PIX = 'cff1a61d-2273-4e77-bc7c-1ca9cf351885';
-        
-        // ============================================
-        // CARREGAR DADOS DO PLANO
-        // ============================================
-        const urlParams = new URLSearchParams(window.location.search);
-        const plano = urlParams.get('plano');
-        const preco = parseFloat(urlParams.get('preco'));
-        const nomePlano = urlParams.get('nome');
         
         let formaPagamento = 'cartao';
         
-        if (nomePlano && preco) {
-            document.getElementById('resumoPlano').innerHTML = `
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-gray-800">${decodeURIComponent(nomePlano)}</p>
-                        <p class="text-sm text-gray-500">Acesso vitalício - Pagamento único</p>
-                        <p class="text-xs text-green-600 mt-1">🔥 Oferta de lançamento</p>
-                    </div>
-                    <div class="text-xl font-bold text-indigo-600">R$ ${preco.toFixed(2).replace('.', ',')}</div>
-                </div>
-            `;
-            document.getElementById('totalPreco').innerHTML = `R$ ${preco.toFixed(2).replace('.', ',')}`;
-        } else {
-            window.location.href = 'index.html';
-        }
-        
+        // ============================================
+        // FUNÇÕES
+        // ============================================
         function copiarChavePix() {
             navigator.clipboard.writeText(CHAVE_PIX);
             alert('✅ Chave PIX copiada! Cole no seu aplicativo bancário para pagar.');
         }
         
-        // ============================================
-        // FUNÇÃO PARA SALVAR PEDIDO NO WORKER
-        // ============================================
-        async function salvarPedidoNoWorker(status) {
+        function mostrarLoading(mostrar) {
+            const loading = document.getElementById('loading');
+            if (mostrar) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+        }
+        
+        function obterDadosCliente() {
             const nome = document.getElementById('nome').value.trim();
             const email = document.getElementById('email').value.trim().toLowerCase();
             const telefone = document.getElementById('telefone').value.trim();
@@ -237,27 +167,30 @@
             
             if (!nome || !email) {
                 alert('⚠️ Preencha nome e e-mail');
-                return false;
+                return null;
             }
             
             if (!email.includes('@') || !email.includes('.')) {
                 alert('⚠️ E-mail inválido');
-                return false;
+                return null;
             }
             
+            return { nome, email, telefone, origem, plano: 'Plano Vitalício', valor: 24.90 };
+        }
+        
+        async function salvarPedido(status) {
+            const dados = obterDadosCliente();
+            if (!dados) return false;
+            
             const pedido = {
-                nome: nome,
-                email: email,
-                telefone: telefone,
-                origem: origem,
-                plano: decodeURIComponent(nomePlano),
-                valor: preco,
+                ...dados,
+                id: Date.now(),
+                data: new Date().toISOString(),
                 formaPagamento: formaPagamento,
                 status: status
             };
             
-            const loading = document.getElementById('loading');
-            loading.classList.add('active');
+            mostrarLoading(true);
             
             try {
                 const response = await fetch(WORKER_URL, {
@@ -267,7 +200,7 @@
                 });
                 
                 const resultado = await response.json();
-                loading.classList.remove('active');
+                mostrarLoading(false);
                 
                 if (resultado.success) {
                     console.log('✅ Pedido salvo:', pedido);
@@ -278,9 +211,9 @@
                     return false;
                 }
             } catch(error) {
-                loading.classList.remove('active');
+                mostrarLoading(false);
                 console.error('❌ Erro de rede:', error);
-                alert('Erro ao conectar. Verifique sua internet e tente novamente.');
+                alert('Erro de conexão. Tente novamente.');
                 return false;
             }
         }
@@ -293,22 +226,10 @@
         }
         
         // ============================================
-        // PAGAMENTO COM CARTÃO
+        // EVENTOS
         // ============================================
-        document.getElementById('btnFinalizarCartao').addEventListener('click', async () => {
-            formaPagamento = 'cartao';
-            const salvou = await salvarPedidoNoWorker('pagamento_iniciado');
-            
-            if (salvou) {
-                window.open(LINK_CARTAO, '_blank');
-                alert(`✅ Pedido registrado!\n\n💰 Valor: R$ 24,90\n\nApós o pagamento, aguarde a confirmação.\n\nVocê receberá as credenciais por e-mail.`);
-                limparFormulario();
-            }
-        });
         
-        // ============================================
-        // PAGAMENTO COM PIX
-        // ============================================
+        // PIX
         document.getElementById('opcaoPix').addEventListener('click', () => {
             formaPagamento = 'pix';
             document.getElementById('opcaoPix').classList.add('selected-payment');
@@ -317,6 +238,7 @@
             document.getElementById('btnFinalizarCartao').classList.add('hidden');
         });
         
+        // Cartão
         document.getElementById('opcaoCartao').addEventListener('click', () => {
             formaPagamento = 'cartao';
             document.getElementById('opcaoCartao').classList.add('selected-payment');
@@ -325,27 +247,23 @@
             document.getElementById('btnFinalizarCartao').classList.remove('hidden');
         });
         
-        document.getElementById('confirmarPixBtn').addEventListener('click', async () => {
-            formaPagamento = 'pix';
-            const salvou = await salvarPedidoNoWorker('aguardando_pagamento_pix');
-            
-            if (salvou) {
-                alert(`✅ Pedido registrado! Aguardando confirmação do PIX.\n\n📧 Enviaremos o acesso para ${document.getElementById('email').value} assim que o pagamento for confirmado.\n\n💰 Valor: R$ 24,90`);
+        // Botão pagar com cartão
+        document.getElementById('btnFinalizarCartao').addEventListener('click', async () => {
+            if (await salvarPedido('aguardando_pagamento')) {
+                window.open(LINK_CARTAO, '_blank');
+                alert('✅ Pedido registrado! Link de pagamento aberto em nova aba.\n\n💰 Valor: R$ 24,90\n\nApós o pagamento, aguarde a confirmação.');
                 limparFormulario();
-                
-                // Esconder área PIX
-                document.getElementById('areaPix').classList.add('hidden');
-                document.getElementById('btnFinalizarCartao').classList.remove('hidden');
-                document.getElementById('opcaoCartao').click();
+                window.location.href = 'index.html';
             }
         });
         
-        // Remover erro ao digitar
-        document.getElementById('nome').addEventListener('input', function() {
-            this.classList.remove('input-erro');
-        });
-        document.getElementById('email').addEventListener('input', function() {
-            this.classList.remove('input-erro');
+        // Botão confirmar PIX
+        document.getElementById('confirmarPixBtn').addEventListener('click', async () => {
+            if (await salvarPedido('aguardando_pagamento_pix')) {
+                alert('✅ Pedido registrado! Aguardando confirmação do PIX.\n\n💰 Valor: R$ 24,90\n\nEnviaremos o acesso após a confirmação do pagamento.');
+                limparFormulario();
+                window.location.href = 'index.html';
+            }
         });
     </script>
 </body>
