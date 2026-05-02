@@ -222,12 +222,12 @@
         }
         
         // ============================================
-        // SALVAR PEDIDO
+        // SALVAR PEDIDO (COM VERIFICAÇÃO)
         // ============================================
         function salvarPedido(status = 'pendente') {
-            const nome = document.getElementById('nome').value;
-            const email = document.getElementById('email').value;
-            const telefone = document.getElementById('telefone').value;
+            const nome = document.getElementById('nome').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const telefone = document.getElementById('telefone').value.trim();
             const origem = document.getElementById('origem').value;
             
             const pedido = {
@@ -256,6 +256,7 @@
             
             console.log('✅ Pedido salvo:', pedido);
             console.log('📋 Total de pedidos pendentes:', pedidos.length);
+            console.log('📋 LocalStorage:', localStorage.getItem('pedidos_pendentes'));
             
             return pedido;
         }
