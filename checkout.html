@@ -14,7 +14,6 @@
         .selected-payment { border-color: #10b981; background-color: #f0fdf4; }
         .pix-card { background: white; border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center; border: 2px solid #10b981; }
         .chave-pix { background: #f3f4f6; padding: 12px; border-radius: 8px; font-family: monospace; word-break: break-all; cursor: pointer; }
-        .input-erro { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
@@ -64,6 +63,7 @@
     <script>
         const LINK_CARTAO = 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-e3g5keb4Z-24,90';
         const CHAVE_PIX = 'cff1a61d-2273-4e77-bc7c-1ca9cf351885';
+        const STORAGE_PEDIDOS = 'pedidos_pendentes';
         
         const urlParams = new URLSearchParams(window.location.search);
         const plano = urlParams.get('plano');
@@ -89,23 +89,55 @@
             if (!nome || !email) { alert('⚠️ Preencha nome e e-mail'); return null; }
             if (!email.includes('@')) { alert('⚠️ E-mail inválido'); return null; }
             
-            const pedido = { id: Date.now(), nome, email, telefone, origem, plano: decodeURIComponent(nomePlano), valor: preco, data: new Date().toISOString(), formaPagamento, status };
+            const pedido = {
+                id: Date.now(),
+                nome: nome,
+                email: email,
+                telefone: telefone,
+                origem: origem,
+                plano: decodeURIComponent(nomePlano),
+                valor: preco,
+                data: new Date().toISOString(),
+                formaPagamento: formaPagamento,
+                status: status
+            };
             
-            let pedidos = localStorage.getItem('pedidos_pendentes');
-            pedidos = pedidos ? JSON.parse(pedidos) : [];
+            // Ler pedidos existentes
+            let pedidos = localStorage.getItem(STORAGE_PEDIDOS);
+            console.log('📋 Pedidos antes de salvar:', pedidos);
+            
+            if (!pedidos) {
+                pedidos = [];
+            } else {
+                pedidos = JSON.parse(pedidos);
+            }
+            
             pedidos.push(pedido);
-            localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
+            localStorage.setItem(STORAGE_PEDIDOS, JSON.stringify(pedidos));
             
-            console.log('✅ Pedido salvo:', pedido);
-            console.log('📋 Total de pedidos:', pedidos.length);
-            alert(`✅ Pedido registrado!\n\nCliente: ${nome}\nE-mail: ${email}\nValor: R$ ${preco.toFixed(2).replace('.', ',')}\n\nAguardando confirmação do pagamento.`);
+            // Verificar se salvou
+            const verificar = localStorage.getItem(STORAGE_PEDIDOS);
+            console.log('✅ Pedido salvo! Verificação:', verificar);
+            console.log('📋 Total de pedidos agora:', pedidos.length);
+            
+            alert(`✅ Pedido registrado com sucesso!\n\nCliente: ${nome}\nE-mail: ${email}\nValor: R$ ${preco.toFixed(2).replace('.', ',')}\n\nAguardando confirmação do pagamento.`);
+            
+            // Limpar formulário
+            document.getElementById('nome').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('telefone').value = '';
+            document.getElementById('origem').value = '';
+            
             return pedido;
         }
         
         document.getElementById('btnFinalizarCartao').addEventListener('click', () => {
             formaPagamento = 'cartao';
             const pedido = salvarPedido('pagamento_iniciado');
-            if (pedido && LINK_CARTAO) { window.open(LINK_CARTAO, '_blank'); }
+            if (pedido && LINK_CARTAO) { 
+                window.open(LINK_CARTAO, '_blank');
+                alert('🔗 Link de pagamento aberto em nova aba!');
+            }
         });
         
         document.getElementById('opcaoPix').addEventListener('click', () => {
@@ -124,10 +156,12 @@
             document.getElementById('btnFinalizarCartao').classList.remove('hidden');
         });
         
-        document.getElementById('confirmarPixBtn').addEventListener('click', () => { salvarPedido('aguardando_pagamento_pix'); });
-        
-        document.getElementById('nome').addEventListener('input', function() { this.classList.remove('input-erro'); });
-        document.getElementById('email').addEventListener('input', function() { this.classList.remove('input-erro'); });
+        document.getElementById('confirmarPixBtn').addEventListener('click', () => { 
+            const pedido = salvarPedido('aguardando_pagamento_pix');
+            if (pedido) {
+                alert('💡 Após o pagamento, aguarde a confirmação e aprovação no admin.');
+            }
+        });
     </script>
 </body>
 </html>
