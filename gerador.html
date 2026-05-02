@@ -11,7 +11,8 @@
         .dezena-card:hover { transform: translateY(-3px) scale(1.05); }
         .jogo-card { border-left: 4px solid transparent; transition: all 0.3s; }
         .jogo-card:hover { border-left-color: #4f46e5; transform: translateX(4px); }
-        .logout-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 50px; padding: 12px 24px; cursor: pointer; }
+        .logout-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 50px; padding: 12px 24px; cursor: pointer; font-weight: bold; }
+        .logout-btn:hover { transform: scale(1.05); }
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen">
@@ -64,12 +65,22 @@
             window.location.href = 'sistema.html';
         }
         
-        const user = JSON.parse(usuarioLogado);
-        document.getElementById('userNome').innerHTML = `👤 ${user.nome}`;
+        try {
+            const user = JSON.parse(usuarioLogado);
+            document.getElementById('userNome').innerHTML = `👤 ${user.nome}`;
+        } catch(e) {}
         
-        // Funções do gerador
         const dezenasQuentes = [6, 12, 18, 20, 10, 15, 25, 3, 5, 9, 13, 14, 17, 19, 23];
         const dezenasFrias = [1, 2, 4, 7, 8, 11, 16, 21, 22, 24];
+        
+        function selecionarAleatorios(array, quantidade) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled.slice(0, quantidade);
+        }
         
         function gerarJogos(quantidadeDezenas, estrategia) {
             const totalJogos = quantidadeDezenas === 15 ? 1 : quantidadeDezenas === 16 ? 4 : quantidadeDezenas === 17 ? 7 : quantidadeDezenas === 18 ? 12 : quantidadeDezenas === 19 ? 21 : 28;
@@ -104,15 +115,6 @@
                 jogos.push(dezenas);
             }
             return jogos;
-        }
-        
-        function selecionarAleatorios(array, quantidade) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled.slice(0, quantidade);
         }
         
         function exibirJogos(jogos) {
