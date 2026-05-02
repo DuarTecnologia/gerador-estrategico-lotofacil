@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema - Gerador Estratégico Lotofácil</title>
+    <title>Login - Gerador Estratégico Lotofácil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -25,7 +25,7 @@
             <input type="password" id="senha" class="w-full p-3 border rounded-xl">
         </div>
         <button id="btnLogin" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700">
-            Entrar
+            <i class="fas fa-sign-in-alt mr-2"></i> Entrar
         </button>
         
         <div class="mt-6 text-center border-t pt-6">
@@ -42,7 +42,7 @@
         // Verificar se já está logado
         const usuarioLogado = localStorage.getItem('usuario_logado');
         if (usuarioLogado) {
-            window.location.href = 'https://sistema-gerador-estrategico.edipo-8aa.workers.dev/gerador.html';
+            window.location.href = 'index.html';
         }
         
         document.getElementById('btnLogin').addEventListener('click', async () => {
@@ -68,8 +68,7 @@
                 
                 if (data.success) {
                     localStorage.setItem('usuario_logado', JSON.stringify(data.user));
-                    // Redirecionar para o gerador real
-                    window.location.href = 'https://sistema-gerador-estrategico.edipo-8aa.workers.dev/gerador.html';
+                    window.location.href = 'index.html';
                 } else {
                     erroDiv.innerText = data.error || 'E-mail ou senha inválidos';
                     erroDiv.classList.remove('hidden');
