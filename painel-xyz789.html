@@ -15,36 +15,70 @@
         .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
         .tab-active { background: #4f46e5; color: white; }
         .tab-inactive { background: #e2e8f0; color: #64748b; }
+        .loading { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; }
+        .loading.active { display: flex; }
+        .spinner { width: 50px; height: 50px; border: 4px solid white; border-top-color: #4f46e5; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen">
+
+    <!-- Loading -->
+    <div id="loading" class="loading"><div class="spinner"></div><p class="text-white mt-4">Carregando...</p></div>
+
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center shadow-md"><i class="fas fa-crown text-white text-xl"></i></div>
-                <div><h1 class="text-2xl font-bold text-white">Painel Administrativo</h1><p class="text-gray-400 text-sm">Gerencie clientes e acessos</p></div>
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center shadow-md">
+                    <i class="fas fa-crown text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white">Painel Administrativo</h1>
+                    <p class="text-gray-400 text-sm">Gerencie clientes e acessos</p>
+                </div>
             </div>
-            <a href="index.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm"><i class="fas fa-arrow-left mr-2"></i> Voltar ao site</a>
+            <a href="index.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm">
+                <i class="fas fa-arrow-left mr-2"></i> Voltar ao site
+            </a>
         </div>
 
+        <!-- Login do Admin -->
         <div id="loginAdmin" class="max-w-md mx-auto card p-8">
             <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-lock text-white text-2xl"></i></div>
+                <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-lock text-white text-2xl"></i>
+                </div>
                 <h2 class="text-2xl font-bold text-gray-800">Acesso Restrito</h2>
                 <p class="text-gray-500 text-sm">Digite a senha de administrador</p>
             </div>
             <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none mb-4">
-            <button onclick="logarAdmin()" class="btn-primary w-full text-white font-bold py-3 rounded-xl"><i class="fas fa-sign-in-alt mr-2"></i> Entrar</button>
+            <button onclick="logarAdmin()" class="btn-primary w-full text-white font-bold py-3 rounded-xl">
+                <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+            </button>
         </div>
 
+        <!-- Painel Admin -->
         <div id="painelAdmin" class="hidden">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-shopping-cart text-blue-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Pedidos Pendentes</p><p class="text-2xl font-bold text-gray-800" id="totalPendentes">0</p></div></div>
-                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-green-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Usuários Ativos</p><p class="text-2xl font-bold text-gray-800" id="totalUsuarios">0</p></div></div>
-                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-purple-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Total de Vendas</p><p class="text-2xl font-bold text-gray-800" id="totalVendas">R$ 0</p></div></div>
+                <div class="card p-6 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-shopping-cart text-blue-600 text-xl"></i></div>
+                    <div><p class="text-gray-500 text-sm">Pedidos Pendentes</p><p class="text-2xl font-bold text-gray-800" id="totalPendentes">0</p></div>
+                </div>
+                <div class="card p-6 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-green-600 text-xl"></i></div>
+                    <div><p class="text-gray-500 text-sm">Usuários Ativos</p><p class="text-2xl font-bold text-gray-800" id="totalUsuarios">0</p></div>
+                </div>
+                <div class="card p-6 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-purple-600 text-xl"></i></div>
+                    <div><p class="text-gray-500 text-sm">Total de Vendas</p><p class="text-2xl font-bold text-gray-800" id="totalVendas">R$ 0</p></div>
+                </div>
             </div>
             
-            <div class="flex justify-end mb-4"><button onclick="logoutAdmin()" class="btn-danger text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i class="fas fa-sign-out-alt"></i> Sair do Admin</button></div>
+            <div class="flex justify-end mb-4">
+                <button onclick="logoutAdmin()" class="btn-danger text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                    <i class="fas fa-sign-out-alt"></i> Sair do Admin
+                </button>
+            </div>
 
             <div class="flex gap-2 mb-6">
                 <button onclick="mostrarTab('pedidos')" id="tabPedidosBtn" class="tab-active px-6 py-2 rounded-lg font-medium transition">📦 Pedidos Pendentes</button>
@@ -52,8 +86,20 @@
                 <button onclick="mostrarTab('criar')" id="tabCriarBtn" class="tab-inactive px-6 py-2 rounded-lg font-medium transition">➕ Criar Usuário</button>
             </div>
 
-            <div id="tabPedidos" class="card p-6"><h2 class="text-xl font-bold text-gray-800 mb-4">📦 Pedidos Aguardando Aprovação</h2><div id="listaPedidos" class="space-y-3"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
-            <div id="tabUsuarios" class="card p-6 hidden"><h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários Cadastrados</h2><div id="listaUsuarios" class="space-y-2"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
+            <div id="tabPedidos" class="card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">📦 Pedidos Aguardando Aprovação</h2>
+                <div id="listaPedidos" class="space-y-3">
+                    <p class="text-gray-500 text-center py-8">Carregando...</p>
+                </div>
+            </div>
+
+            <div id="tabUsuarios" class="card p-6 hidden">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários Cadastrados</h2>
+                <div id="listaUsuarios" class="space-y-2">
+                    <p class="text-gray-500 text-center py-8">Carregando...</p>
+                </div>
+            </div>
+
             <div id="tabCriar" class="card p-6 hidden">
                 <h2 class="text-xl font-bold text-gray-800 mb-4">➕ Criar Novo Usuário</h2>
                 <p class="text-gray-500 text-sm mb-6">Crie manualmente o acesso para o cliente. A senha padrão será: <strong class="text-indigo-600">NOME123</strong></p>
@@ -68,11 +114,23 @@
     </div>
 
     <script>
+        // ============================================
+        // CONFIGURAÇÕES
+        // ============================================
         const ADMIN_SENHA = '1357';
         const STORAGE_USERS = 'usuarios_autorizados';
-        const STORAGE_PEDIDOS = 'pedidos_pendentes';
+        
+        // GitHub API Configuration
+        const GITHUB_TOKEN = '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';  // ⚠️ 
+        const REPO_OWNER = 'DuarTecnologia';
+        const REPO_NAME = 'gerador-estrategico-lotofacil';
+        const PEDIDOS_FILE = 'pedidos.json';
+        
         let tentativas = 0, bloqueado = false;
         
+        // ============================================
+        // FUNÇÕES DE AUTENTICAÇÃO
+        // ============================================
         function logarAdmin() {
             if (bloqueado) { alert('❌ Muitas tentativas! Aguarde 15 minutos.'); return; }
             const senha = document.getElementById('senhaAdmin').value;
@@ -104,23 +162,109 @@
             carregarTodosOsDados();
         }
         
-        function getUsuarios() { const u = localStorage.getItem(STORAGE_USERS); return u ? JSON.parse(u) : []; }
-        function salvarUsuarios(u) { localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); }
+        // ============================================
+        // GITHUB API - PEDIDOS
+        // ============================================
+        async function getPedidosFromGitHub() {
+            try {
+                const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PEDIDOS_FILE}`;
+                const response = await fetch(url, {
+                    headers: { 
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        // Arquivo não existe, criar vazio
+                        await criarArquivoPedidos();
+                        return [];
+                    }
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const fileData = await response.json();
+                const content = atob(fileData.content);
+                return JSON.parse(content);
+            } catch(error) {
+                console.error('Erro ao ler pedidos:', error);
+                return [];
+            }
+        }
         
-        function getPedidos() { 
-    const p = localStorage.getItem('pedidos_pendentes'); 
-    console.log('📋 Lendo pedidos do localStorage:', p);
-    if (!p) return [];
-    try {
-        const pedidos = JSON.parse(p);
-        console.log('📋 Pedidos encontrados:', pedidos.length);
-        return pedidos;
-    } catch(e) {
-        console.error('❌ Erro ao parsear pedidos:', e);
-        return [];
-    }
-}
-        function salvarPedidos(p) { localStorage.setItem(STORAGE_PEDIDOS, JSON.stringify(p)); }
+        async function criarArquivoPedidos() {
+            try {
+                const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PEDIDOS_FILE}`;
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Criar arquivo de pedidos',
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify([], null, 2))))
+                    })
+                });
+                return response.ok;
+            } catch(error) {
+                console.error('Erro ao criar arquivo:', error);
+                return false;
+            }
+        }
+        
+        async function salvarPedidosNoGitHub(pedidos) {
+            try {
+                // Primeiro, obter o SHA atual
+                const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PEDIDOS_FILE}`;
+                const getResponse = await fetch(getUrl, {
+                    headers: { 
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                let sha = null;
+                if (getResponse.ok) {
+                    const fileData = await getResponse.json();
+                    sha = fileData.sha;
+                }
+                
+                // Salvar novo conteúdo
+                const putResponse = await fetch(getUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Atualizar pedidos',
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify(pedidos, null, 2)))),
+                        sha: sha
+                    })
+                });
+                
+                return putResponse.ok;
+            } catch(error) {
+                console.error('Erro ao salvar pedidos:', error);
+                return false;
+            }
+        }
+        
+        // ============================================
+        // GERENCIAR USUÁRIOS (localStorage)
+        // ============================================
+        function getUsuarios() { 
+            const u = localStorage.getItem(STORAGE_USERS); 
+            return u ? JSON.parse(u) : []; 
+        }
+        
+        function salvarUsuarios(u) { 
+            localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); 
+        }
         
         function gerarSenhaPorNome(nome) {
             const primeiroNome = nome.trim().split(' ')[0];
@@ -128,6 +272,9 @@
             return nomeLimpo + '123';
         }
         
+        // ============================================
+        // CRIAR USUÁRIO
+        // ============================================
         function criarUsuario() {
             const nome = document.getElementById('novoNome').value.trim();
             let email = document.getElementById('novoEmail').value.trim().toLowerCase();
@@ -160,15 +307,28 @@
             mostrarTab('usuarios');
         }
         
-        function aprovarPedido(pedidoId) {
-            let pedidos = getPedidos();
-            const pedido = pedidos.find(p => p.id === pedidoId);
-            console.log('📦 Aprovando pedido:', pedido);
+        // ============================================
+        // APROVAR PEDIDO
+        // ============================================
+        async function aprovarPedido(pedidoId) {
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
             
-            if (pedido) {
-                pedidos = pedidos.filter(p => p.id !== pedidoId);
-                salvarPedidos(pedidos);
+            try {
+                let pedidos = await getPedidosFromGitHub();
+                const pedido = pedidos.find(p => p.id === pedidoId);
                 
+                if (!pedido) {
+                    alert('Pedido não encontrado!');
+                    loading.classList.remove('active');
+                    return;
+                }
+                
+                // Remover pedido
+                pedidos = pedidos.filter(p => p.id !== pedidoId);
+                await salvarPedidosNoGitHub(pedidos);
+                
+                // Criar usuário
                 const usuarios = getUsuarios();
                 const senha = gerarSenhaPorNome(pedido.nome);
                 const email = pedido.email.trim().toLowerCase();
@@ -184,35 +344,68 @@
                         ativo: true
                     });
                     salvarUsuarios(usuarios);
-                    console.log('✅ Usuário criado:', { email, senha });
-                } else {
-                    console.log('⚠️ Usuário já existe:', email);
                 }
                 
                 const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://gerador.xyz/sistema.html`;
                 navigator.clipboard.writeText(credenciais);
                 alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
-                carregarTodosOsDados();
-            } else {
-                console.log('❌ Pedido não encontrado:', pedidoId);
-                alert('Erro: Pedido não encontrado!');
+                
+                await carregarTodosOsDados();
+            } catch(error) {
+                console.error('Erro:', error);
+                alert('Erro ao aprovar pedido. Tente novamente.');
+            }
+            
+            loading.classList.remove('active');
+        }
+        
+        async function removerPedido(pedidoId) {
+            if (confirm('Remover este pedido?')) {
+                const pedidos = await getPedidosFromGitHub();
+                const novosPedidos = pedidos.filter(p => p.id !== pedidoId);
+                await salvarPedidosNoGitHub(novosPedidos);
+                await carregarTodosOsDados();
             }
         }
         
-        function removerPedido(pedidoId) { if (confirm('Remover este pedido?')) { let pedidos = getPedidos(); salvarPedidos(pedidos.filter(p => p.id !== pedidoId)); carregarTodosOsDados(); } }
-        function removerUsuario(id) { if (confirm('Remover acesso deste usuário?')) { let usuarios = getUsuarios(); salvarUsuarios(usuarios.filter(u => u.id !== id)); carregarTodosOsDados(); mostrarTab('usuarios'); } }
-        function copiarCredenciais(email, senha, nome) { const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 ${email}\n🔑 ${senha}\n\nLink: https://gerador.xyz/sistema.html`; navigator.clipboard.writeText(credenciais); alert('Credenciais copiadas!'); }
+        function removerUsuario(id) {
+            if (confirm('Remover acesso deste usuário?')) {
+                let usuarios = getUsuarios();
+                usuarios = usuarios.filter(u => u.id !== id);
+                salvarUsuarios(usuarios);
+                carregarTodosOsDados();
+                mostrarTab('usuarios');
+            }
+        }
         
-        function carregarPedidos() {
-            const pedidos = getPedidos();
-            console.log('📋 Carregando pedidos pendentes:', pedidos.length);
+        function copiarCredenciais(email, senha, nome) {
+            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 ${email}\n🔑 ${senha}\n\nLink: https://gerador.xyz/sistema.html`;
+            navigator.clipboard.writeText(credenciais);
+            alert('Credenciais copiadas!');
+        }
+        
+        // ============================================
+        // CARREGAR DADOS
+        // ============================================
+        async function carregarPedidos() {
+            const pedidos = await getPedidosFromGitHub();
+            console.log('📋 Pedidos carregados:', pedidos.length);
+            
             if (pedidos.length === 0) {
                 document.getElementById('listaPedidos').innerHTML = '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>';
             } else {
                 document.getElementById('listaPedidos').innerHTML = pedidos.map(p => `
                     <div class="border rounded-xl p-4 flex justify-between items-center">
-                        <div><p class="font-bold">${p.nome}</p><p class="text-sm text-gray-600">${p.email}</p><p class="text-xs text-indigo-600">${p.plano} - R$ ${p.valor.toFixed(2).replace('.', ',')}</p><p class="text-xs text-gray-400">${new Date(p.data).toLocaleString()}</p></div>
-                        <div class="flex gap-2"><button onclick="aprovarPedido(${p.id})" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button><button onclick="removerPedido(${p.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button></div>
+                        <div>
+                            <p class="font-bold">${p.nome}</p>
+                            <p class="text-sm text-gray-600">${p.email}</p>
+                            <p class="text-xs text-indigo-600">${p.plano} - R$ ${p.valor.toFixed(2).replace('.', ',')}</p>
+                            <p class="text-xs text-gray-400">${new Date(p.data).toLocaleString()}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="aprovarPedido(${p.id})" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button>
+                            <button onclick="removerPedido(${p.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button>
+                        </div>
                     </div>
                 `).join('');
             }
@@ -226,8 +419,16 @@
             } else {
                 document.getElementById('listaUsuarios').innerHTML = usuarios.map(u => `
                     <div class="border rounded-xl p-4 flex justify-between items-center">
-                        <div><p class="font-bold">${u.nome}</p><p class="text-sm text-gray-600">${u.email}</p><p class="text-xs text-indigo-600">${u.plano}</p><p class="text-xs text-gray-400">Criado: ${new Date(u.dataCriacao).toLocaleDateString()}</p></div>
-                        <div class="flex gap-2"><button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-copy"></i> Copiar</button><button onclick="removerUsuario(${u.id})" class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-trash"></i> Remover</button></div>
+                        <div>
+                            <p class="font-bold">${u.nome}</p>
+                            <p class="text-sm text-gray-600">${u.email}</p>
+                            <p class="text-xs text-indigo-600">${u.plano}</p>
+                            <p class="text-xs text-gray-400">Criado: ${new Date(u.dataCriacao).toLocaleDateString()}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-copy"></i> Copiar</button>
+                            <button onclick="removerUsuario(${u.id})" class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-trash"></i> Remover</button>
+                        </div>
                     </div>
                 `).join('');
             }
@@ -235,21 +436,54 @@
             document.getElementById('totalVendas').innerHTML = `R$ ${(usuarios.length * 24.90).toFixed(2).replace('.', ',')}`;
         }
         
-        function carregarTodosOsDados() { carregarPedidos(); carregarUsuarios(); }
+        async function carregarTodosOsDados() {
+            await carregarPedidos();
+            carregarUsuarios();
+        }
         
         function mostrarTab(tab) {
             document.getElementById('tabPedidos').classList.add('hidden');
             document.getElementById('tabUsuarios').classList.add('hidden');
             document.getElementById('tabCriar').classList.add('hidden');
-            document.getElementById('tabPedidosBtn').classList.remove('tab-active'); document.getElementById('tabPedidosBtn').classList.add('tab-inactive');
-            document.getElementById('tabUsuariosBtn').classList.remove('tab-active'); document.getElementById('tabUsuariosBtn').classList.add('tab-inactive');
-            document.getElementById('tabCriarBtn').classList.remove('tab-active'); document.getElementById('tabCriarBtn').classList.add('tab-inactive');
-            if (tab === 'pedidos') { document.getElementById('tabPedidos').classList.remove('hidden'); document.getElementById('tabPedidosBtn').classList.remove('tab-inactive'); document.getElementById('tabPedidosBtn').classList.add('tab-active'); carregarPedidos(); }
-            else if (tab === 'usuarios') { document.getElementById('tabUsuarios').classList.remove('hidden'); document.getElementById('tabUsuariosBtn').classList.remove('tab-inactive'); document.getElementById('tabUsuariosBtn').classList.add('tab-active'); carregarUsuarios(); }
-            else if (tab === 'criar') { document.getElementById('tabCriar').classList.remove('hidden'); document.getElementById('tabCriarBtn').classList.remove('tab-inactive'); document.getElementById('tabCriarBtn').classList.add('tab-active'); }
+            
+            document.getElementById('tabPedidosBtn').classList.remove('tab-active');
+            document.getElementById('tabPedidosBtn').classList.add('tab-inactive');
+            document.getElementById('tabUsuariosBtn').classList.remove('tab-active');
+            document.getElementById('tabUsuariosBtn').classList.add('tab-inactive');
+            document.getElementById('tabCriarBtn').classList.remove('tab-active');
+            document.getElementById('tabCriarBtn').classList.add('tab-inactive');
+            
+            if (tab === 'pedidos') {
+                document.getElementById('tabPedidos').classList.remove('hidden');
+                document.getElementById('tabPedidosBtn').classList.remove('tab-inactive');
+                document.getElementById('tabPedidosBtn').classList.add('tab-active');
+                carregarPedidos();
+            } else if (tab === 'usuarios') {
+                document.getElementById('tabUsuarios').classList.remove('hidden');
+                document.getElementById('tabUsuariosBtn').classList.remove('tab-inactive');
+                document.getElementById('tabUsuariosBtn').classList.add('tab-active');
+                carregarUsuarios();
+            } else if (tab === 'criar') {
+                document.getElementById('tabCriar').classList.remove('hidden');
+                document.getElementById('tabCriarBtn').classList.remove('tab-inactive');
+                document.getElementById('tabCriarBtn').classList.add('tab-active');
+            }
         }
         
-        function initDados() { if (getUsuarios().length === 0) salvarUsuarios([{ id: 1, nome: 'Administrador', email: 'admin@exemplo.com', senha: 'admin123', plano: 'Administrador', dataCriacao: new Date().toISOString(), ativo: true }]); }
+        function initDados() {
+            if (getUsuarios().length === 0) {
+                salvarUsuarios([{
+                    id: 1,
+                    nome: 'Administrador',
+                    email: 'admin@exemplo.com',
+                    senha: 'admin123',
+                    plano: 'Administrador',
+                    dataCriacao: new Date().toISOString(),
+                    ativo: true
+                }]);
+            }
+        }
+        
         initDados();
         carregarTodosOsDados();
     </script>
