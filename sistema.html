@@ -24,7 +24,7 @@
             <label class="block text-gray-700 mb-2">Senha</label>
             <input type="password" id="senha" class="w-full p-3 border rounded-xl">
         </div>
-        <button id="btnLogin" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700">
+        <button id="btnLogin" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700 transition">
             <i class="fas fa-sign-in-alt mr-2"></i> Entrar
         </button>
         
@@ -42,7 +42,7 @@
         // Verificar se já está logado
         const usuarioLogado = localStorage.getItem('usuario_logado');
         if (usuarioLogado) {
-            window.location.href = 'index.html';
+            window.location.href = 'gerador.html';
         }
         
         document.getElementById('btnLogin').addEventListener('click', async () => {
@@ -68,7 +68,7 @@
                 
                 if (data.success) {
                     localStorage.setItem('usuario_logado', JSON.stringify(data.user));
-                    window.location.href = 'index.html';
+                    window.location.href = 'gerador.html';
                 } else {
                     erroDiv.innerText = data.error || 'E-mail ou senha inválidos';
                     erroDiv.classList.remove('hidden');
