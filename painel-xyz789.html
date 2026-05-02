@@ -77,18 +77,15 @@
         }
         
         async function aprovarPedido(id) {
-            // Buscar pedido
             const response = await fetch(`${WORKER_URL}/pedidos`);
             const data = await response.json();
             const pedido = data.pedidos.find(p => p.id === id);
             
             if (!pedido) return;
             
-            // Gerar senha (nome + 123)
             const primeiroNome = pedido.nome.split(' ')[0].toLowerCase();
             const senha = primeiroNome + '123';
             
-            // Criar usuário
             const userResponse = await fetch(`${WORKER_URL}/usuarios`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -103,7 +100,6 @@
             const userData = await userResponse.json();
             
             if (userData.success) {
-                // Remover pedido
                 await fetch(`${WORKER_URL}/pedidos/${id}`, { method: 'DELETE' });
                 
                 alert(`✅ Usuário criado!\n\nE-mail: ${pedido.email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
