@@ -2,81 +2,22 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Gerador Estratégico Lotofácil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         * { font-family: 'Poppins', sans-serif; }
         body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-        
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        .loading.active { display: flex; }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid white;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
+        .payment-option { transition: all 0.2s ease; cursor: pointer; border: 2px solid #e5e7eb; }
+        .payment-option:hover { transform: translateY(-2px); }
+        .selected-payment { border-color: #10b981; background-color: #f0fdf4; }
+        .pix-card { background: white; border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center; border: 2px solid #10b981; }
+        .chave-pix { background: #f3f4f6; padding: 12px; border-radius: 8px; font-family: monospace; word-break: break-all; cursor: pointer; }
         .input-erro { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
-        
-        .payment-option {
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: 2px solid #e5e7eb;
-        }
-        .payment-option:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .selected-payment {
-            border-color: #10b981;
-            background-color: #f0fdf4;
-        }
-        
-        .pix-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: center;
-            border: 2px solid #10b981;
-        }
-        
-        .chave-pix {
-            background: #f3f4f6;
-            padding: 12px;
-            border-radius: 8px;
-            font-family: monospace;
-            word-break: break-all;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
-    
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <p class="text-white mt-4">Processando...</p>
-    </div>
 
     <div class="w-full max-w-4xl">
         <div class="text-center mb-8">
@@ -91,232 +32,82 @@
             <div class="grid md:grid-cols-2">
                 <div class="p-6 md:p-8">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Dados pessoais</h2>
-                    
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Nome completo *</label>
-                        <input type="text" id="nome" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">E-mail *</label>
-                        <input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">As credenciais serão enviadas para este e-mail após pagamento</p>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Telefone (WhatsApp)</label>
-                        <input type="tel" id="telefone" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="(11) 99999-9999">
-                    </div>
-                    
-                    <div class="mb-6">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Como nos conheceu?</label>
-                        <select id="origem" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none">
-                            <option value="">Selecione...</option>
-                            <option value="google">Google</option>
-                            <option value="instagram">Instagram</option>
-                            <option value="tiktok">TikTok</option>
-                            <option value="facebook">Facebook</option>
-                            <option value="indicacao">Indicação</option>
-                        </select>
-                    </div>
+                    <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Nome completo *</label><input type="text" id="nome" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"></div>
+                    <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">E-mail *</label><input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"><p class="text-xs text-gray-500 mt-1">As credenciais serão enviadas para este e-mail</p></div>
+                    <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Telefone (WhatsApp)</label><input type="tel" id="telefone" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl" placeholder="(11) 99999-9999"></div>
+                    <div class="mb-6"><label class="block text-gray-700 text-sm font-bold mb-2">Como nos conheceu?</label><select id="origem" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"><option value="">Selecione...</option><option value="google">Google</option><option value="instagram">Instagram</option><option value="tiktok">TikTok</option><option value="facebook">Facebook</option><option value="indicacao">Indicação</option></select></div>
                 </div>
 
                 <div class="bg-gray-50 p-6 md:p-8 border-l border-gray-200">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Resumo do Pedido</h2>
-                    
                     <div id="resumoPlano" class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl"></div>
-                    
-                    <div class="border-t border-gray-200 pt-4 mt-4">
-                        <div class="flex justify-between font-bold text-lg">
-                            <span>Total</span>
-                            <span id="totalPreco" class="text-indigo-600">R$ 0</span>
-                        </div>
-                    </div>
+                    <div class="border-t border-gray-200 pt-4 mt-4"><div class="flex justify-between font-bold text-lg"><span>Total</span><span id="totalPreco" class="text-indigo-600">R$ 0</span></div></div>
 
-                    <!-- Opções de Pagamento -->
-                    <div class="mt-6">
-                        <label class="block text-sm font-bold text-gray-700 mb-3">Forma de pagamento</label>
+                    <div class="mt-6"><label class="block text-sm font-bold text-gray-700 mb-3">Forma de pagamento</label>
                         <div class="grid grid-cols-2 gap-3 mb-4">
-                            <div id="opcaoPix" class="payment-option rounded-xl p-3 text-center cursor-pointer">
-                                <i class="fas fa-qrcode text-2xl text-green-600 mb-1"></i>
-                                <p class="text-sm font-medium">PIX</p>
-                                <p class="text-xs text-gray-500">Taxa zero</p>
-                            </div>
-                            <div id="opcaoCartao" class="payment-option rounded-xl p-3 text-center cursor-pointer selected-payment">
-                                <i class="fas fa-credit-card text-2xl text-indigo-600 mb-1"></i>
-                                <p class="text-sm font-medium">Cartão de Crédito</p>
-                                <p class="text-xs text-gray-500">Parcelamento em até 12x</p>
-                            </div>
+                            <div id="opcaoPix" class="payment-option rounded-xl p-3 text-center cursor-pointer"><i class="fas fa-qrcode text-2xl text-green-600 mb-1"></i><p class="text-sm font-medium">PIX</p><p class="text-xs text-gray-500">Taxa zero</p></div>
+                            <div id="opcaoCartao" class="payment-option rounded-xl p-3 text-center cursor-pointer selected-payment"><i class="fas fa-credit-card text-2xl text-indigo-600 mb-1"></i><p class="text-sm font-medium">Cartão de Crédito</p><p class="text-xs text-gray-500">Parcelamento em até 12x</p></div>
                         </div>
                     </div>
                     
-                    <!-- Área PIX (inicialmente escondida) -->
                     <div id="areaPix" class="hidden mt-4">
-                        <div class="pix-card">
-                            <i class="fas fa-qrcode text-4xl text-green-600 mb-3"></i>
-                            <h3 class="font-bold text-gray-800 mb-2">Pagamento via PIX</h3>
-                            <p class="text-sm text-gray-600 mb-3">Use a chave PIX abaixo:</p>
-                            <div class="chave-pix" onclick="copiarChavePix()">
-                                <code id="chavePix">cff1a61d-2273-4e77-bc7c-1ca9cf351885</code>
-                            </div>
-                            <p class="text-xs text-green-600 mt-2">✅ Clique na chave para copiar</p>
-                            <button id="confirmarPixBtn" class="w-full mt-4 bg-green-500 text-white py-2 rounded-lg font-bold hover:bg-green-600 transition">
-                                Já paguei! Confirmar pedido
-                            </button>
-                        </div>
+                        <div class="pix-card"><i class="fas fa-qrcode text-4xl text-green-600 mb-3"></i><h3 class="font-bold text-gray-800 mb-2">Pagamento via PIX</h3><p class="text-sm text-gray-600 mb-3">Use a chave PIX abaixo:</p><div class="chave-pix" onclick="copiarChavePix()"><code id="chavePix">cff1a61d-2273-4e77-bc7c-1ca9cf351885</code></div><p class="text-xs text-green-600 mt-2">✅ Clique na chave para copiar</p><button id="confirmarPixBtn" class="w-full mt-4 bg-green-500 text-white py-2 rounded-lg font-bold hover:bg-green-600 transition">Já paguei! Confirmar pedido</button></div>
                     </div>
                     
-                    <button id="btnFinalizarCartao" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-credit-card"></i> Pagar com Cartão (R$ 24,90)
-                    </button>
-                    
-                    <p class="text-center text-xs text-gray-500 mt-4">
-                        🔒 Pagamento 100% seguro<br>
-                        Acesso vitalício garantido
-                    </p>
+                    <button id="btnFinalizarCartao" class="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2"><i class="fas fa-credit-card"></i> Pagar com Cartão (R$ 24,90)</button>
+                    <p class="text-center text-xs text-gray-500 mt-4">🔒 Pagamento 100% seguro<br>Acesso vitalício garantido</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // LINK DE PAGAMENTO INFINITEPAY (CARTÃO)
-        // ============================================
         const LINK_CARTAO = 'https://link.infinitepay.io/edipo_/VC1DLUMtSQ-e3g5keb4Z-24,90';
-        
-        // ============================================
-        // CHAVE PIX
-        // ============================================
         const CHAVE_PIX = 'cff1a61d-2273-4e77-bc7c-1ca9cf351885';
         
-        // ============================================
-        // CARREGAR DADOS DO PLANO
-        // ============================================
         const urlParams = new URLSearchParams(window.location.search);
         const plano = urlParams.get('plano');
         const preco = parseFloat(urlParams.get('preco'));
         const nomePlano = urlParams.get('nome');
-        
         let formaPagamento = 'cartao';
         
         if (nomePlano && preco) {
-            document.getElementById('resumoPlano').innerHTML = `
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-gray-800">${decodeURIComponent(nomePlano)}</p>
-                        <p class="text-sm text-gray-500">Acesso vitalício - Pagamento único</p>
-                        <p class="text-xs text-green-600 mt-1">🔥 Oferta de lançamento</p>
-                    </div>
-                    <div class="text-xl font-bold text-indigo-600">R$ ${preco.toFixed(2).replace('.', ',')}</div>
-                </div>
-            `;
+            document.getElementById('resumoPlano').innerHTML = `<div class="flex justify-between items-center"><div><p class="font-bold text-gray-800">${decodeURIComponent(nomePlano)}</p><p class="text-sm text-gray-500">Acesso vitalício - Pagamento único</p></div><div class="text-xl font-bold text-indigo-600">R$ ${preco.toFixed(2).replace('.', ',')}</div></div>`;
             document.getElementById('totalPreco').innerHTML = `R$ ${preco.toFixed(2).replace('.', ',')}`;
         } else {
             window.location.href = 'index.html';
         }
         
-        function copiarChavePix() {
-            navigator.clipboard.writeText(CHAVE_PIX);
-            alert('✅ Chave PIX copiada! Cole no seu aplicativo bancário para pagar.');
-        }
+        function copiarChavePix() { navigator.clipboard.writeText(CHAVE_PIX); alert('✅ Chave PIX copiada!'); }
         
-        // ============================================
-        // SALVAR PEDIDO (COM VERIFICAÇÃO)
-        // ============================================
-        function salvarPedido(status = 'pendente') {
+        function salvarPedido(status) {
             const nome = document.getElementById('nome').value.trim();
             const email = document.getElementById('email').value.trim().toLowerCase();
             const telefone = document.getElementById('telefone').value.trim();
             const origem = document.getElementById('origem').value;
             
-            const pedido = {
-                id: Date.now(),
-                nome: nome,
-                email: email,
-                telefone: telefone,
-                origem: origem,
-                plano: decodeURIComponent(nomePlano),
-                valor: preco,
-                data: new Date().toISOString(),
-                formaPagamento: formaPagamento,
-                status: status
-            };
+            if (!nome || !email) { alert('⚠️ Preencha nome e e-mail'); return null; }
+            if (!email.includes('@')) { alert('⚠️ E-mail inválido'); return null; }
             
-            // Pegar pedidos existentes
+            const pedido = { id: Date.now(), nome, email, telefone, origem, plano: decodeURIComponent(nomePlano), valor: preco, data: new Date().toISOString(), formaPagamento, status };
+            
             let pedidos = localStorage.getItem('pedidos_pendentes');
-            if (!pedidos) {
-                pedidos = [];
-            } else {
-                pedidos = JSON.parse(pedidos);
-            }
-            
+            pedidos = pedidos ? JSON.parse(pedidos) : [];
             pedidos.push(pedido);
             localStorage.setItem('pedidos_pendentes', JSON.stringify(pedidos));
             
             console.log('✅ Pedido salvo:', pedido);
-            console.log('📋 Total de pedidos pendentes:', pedidos.length);
-            console.log('📋 LocalStorage:', localStorage.getItem('pedidos_pendentes'));
-            
+            console.log('📋 Total de pedidos:', pedidos.length);
+            alert(`✅ Pedido registrado!\n\nCliente: ${nome}\nE-mail: ${email}\nValor: R$ ${preco.toFixed(2).replace('.', ',')}\n\nAguardando confirmação do pagamento.`);
             return pedido;
         }
         
-        // ============================================
-        // VALIDAR CAMPOS
-        // ============================================
-        function validarCampos() {
-            let valido = true;
-            const nome = document.getElementById('nome');
-            const email = document.getElementById('email');
-            
-            if (!nome.value.trim()) {
-                nome.classList.add('input-erro');
-                valido = false;
-            } else {
-                nome.classList.remove('input-erro');
-            }
-            
-            if (!email.value.trim() || !email.value.includes('@') || !email.value.includes('.')) {
-                email.classList.add('input-erro');
-                valido = false;
-            } else {
-                email.classList.remove('input-erro');
-            }
-            
-            return valido;
-        }
-        
-        // ============================================
-        // PAGAMENTO COM CARTÃO
-        // ============================================
-        document.getElementById('btnFinalizarCartao').addEventListener('click', async () => {
-            if (!validarCampos()) {
-                alert('⚠️ Preencha corretamente nome e e-mail');
-                return;
-            }
-            
+        document.getElementById('btnFinalizarCartao').addEventListener('click', () => {
             formaPagamento = 'cartao';
-            const loading = document.getElementById('loading');
-            loading.classList.add('active');
-            
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
             const pedido = salvarPedido('pagamento_iniciado');
-            console.log('📦 Pedido salvo para cartão:', pedido);
-            
-            loading.classList.remove('active');
-            
-            if (LINK_CARTAO) {
-                window.open(LINK_CARTAO, '_blank');
-                alert(`✅ Redirecionamos você para o pagamento com Cartão!\n\n💰 Valor: R$ 24,90\n\nApós o pagamento, aguarde a confirmação e aprovação do acesso.\n\nVocê receberá as credenciais por e-mail.`);
-            } else {
-                alert('❌ Erro ao gerar link de pagamento');
-            }
+            if (pedido && LINK_CARTAO) { window.open(LINK_CARTAO, '_blank'); }
         });
         
-        // ============================================
-        // PAGAMENTO COM PIX
-        // ============================================
         document.getElementById('opcaoPix').addEventListener('click', () => {
             formaPagamento = 'pix';
             document.getElementById('opcaoPix').classList.add('selected-payment');
@@ -333,36 +124,10 @@
             document.getElementById('btnFinalizarCartao').classList.remove('hidden');
         });
         
-        document.getElementById('confirmarPixBtn').addEventListener('click', () => {
-            if (!validarCampos()) {
-                alert('⚠️ Preencha corretamente nome e e-mail');
-                return;
-            }
-            
-            const pedido = salvarPedido('aguardando_pagamento_pix');
-            console.log('📦 Pedido salvo para PIX:', pedido);
-            
-            alert(`✅ Pedido registrado! Aguardando confirmação do PIX.\n\n📧 Enviaremos o acesso para ${document.getElementById('email').value} assim que o pagamento for confirmado.\n\n💰 Valor: R$ 24,90\n\nApós pagar, avise no WhatsApp para agilizar a liberação.`);
-            
-            // Limpar formulário
-            document.getElementById('nome').value = '';
-            document.getElementById('email').value = '';
-            document.getElementById('telefone').value = '';
-            document.getElementById('origem').value = '';
-            
-            // Esconder área PIX
-            document.getElementById('areaPix').classList.add('hidden');
-            document.getElementById('btnFinalizarCartao').classList.remove('hidden');
-            document.getElementById('opcaoCartao').click();
-        });
+        document.getElementById('confirmarPixBtn').addEventListener('click', () => { salvarPedido('aguardando_pagamento_pix'); });
         
-        // Remover erro ao digitar
-        document.getElementById('nome').addEventListener('input', function() {
-            this.classList.remove('input-erro');
-        });
-        document.getElementById('email').addEventListener('input', function() {
-            this.classList.remove('input-erro');
-        });
+        document.getElementById('nome').addEventListener('input', function() { this.classList.remove('input-erro'); });
+        document.getElementById('email').addEventListener('input', function() { this.classList.remove('input-erro'); });
     </script>
 </body>
 </html>
