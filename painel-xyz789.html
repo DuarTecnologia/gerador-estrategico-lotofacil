@@ -126,18 +126,27 @@
         // FUNÇÕES PARA PEDIDOS (WORKER)
         // ============================================
         async function carregarPedidosDoWorker() {
-            const loading = document.getElementById('loading');
-            loading.classList.add('active');
             try {
                 const response = await fetch(WORKER_URL);
                 const resultado = await response.json();
-                loading.classList.remove('active');
                 if (resultado.success) return resultado.pedidos;
                 return [];
             } catch(error) {
-                loading.classList.remove('active');
-                console.error('❌ Erro:', error);
+                console.error('❌ Erro ao carregar pedidos:', error);
                 return [];
+            }
+        }
+        
+        async function removerPedidoDoWorker(pedidoId) {
+            try {
+                const response = await fetch(`${WORKER_URL}/${pedidoId}`, {
+                    method: 'DELETE'
+                });
+                const resultado = await response.json();
+                return resultado.success;
+            } catch(error) {
+                console.error('❌ Erro ao remover pedido:', error);
+                return false;
             }
         }
         
@@ -151,7 +160,7 @@
         
         function salvarUsuarios(u) { 
             localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); 
-            console.log('✅ Usuários salvos:', u.length);
+            console.log('💾 Usuários salvos:', u.length);
         }
         
         function gerarSenhaPorNome(nome) {
@@ -204,22 +213,25 @@
             loading.classList.add('active');
             
             try {
+                // 1. Buscar pedidos
                 const pedidos = await carregarPedidosDoWorker();
                 const pedido = pedidos.find(p => p.id === pedidoId);
                 
                 if (!pedido) {
-                    alert('Pedido não encontrado!');
+                    alert('❌ Pedido não encontrado!');
                     loading.classList.remove('active');
                     return;
                 }
                 
+                // 2. Criar usuário
                 const usuarios = getUsuarios();
                 const senha = gerarSenhaPorNome(pedido.nome);
                 const email = pedido.email.trim().toLowerCase();
                 
                 console.log('📝 Criando usuário:', { nome: pedido.nome, email, senha });
                 
-                if (!usuarios.find(u => u.email === email)) {
+                const usuarioExistente = usuarios.find(u => u.email === email);
+                if (!usuarioExistente) {
                     usuarios.push({
                         id: Date.now(),
                         nome: pedido.nome,
@@ -235,19 +247,36 @@
                     console.log('⚠️ Usuário já existe:', email);
                 }
                 
-                // Remover pedido (opcional - se quiser manter histórico, comente esta parte)
-                // await fetch(`${WORKER_URL}/${pedidoId}`, { method: 'DELETE' });
+                // 3. Remover pedido do Worker
+                const removido = await removerPedidoDoWorker(pedidoId);
+                if (removido) {
+                    console.log('✅ Pedido removido do Worker');
+                } else {
+                    console.log('⚠️ Pedido não removido do Worker, mas usuário foi criado');
+                }
                 
-                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
+                // 4. Copiar credenciais
+                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html\n\n⚠️ Recomendamos alterar sua senha após o primeiro acesso.`;
                 navigator.clipboard.writeText(credenciais);
-                alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas para área de transferência.\n\n⚠️ IMPORTANTE: Envie estas credenciais para o cliente por e-mail ou WhatsApp.`);
                 
+                alert(`✅ Pedido aprovado com sucesso!\n\n👤 Cliente: ${pedido.nome}\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n📋 Credenciais copiadas para a área de transferência.\n\n✉️ Envie para o cliente por e-mail ou WhatsApp.`);
+                
+                // 5. Recarregar dados
                 await carregarTodosOsDados();
+                
             } catch(error) {
-                console.error('❌ Erro:', error);
+                console.error('❌ Erro detalhado:', error);
                 alert('Erro ao aprovar pedido. Tente novamente.');
             }
+            
             loading.classList.remove('active');
+        }
+        
+        async function removerPedido(pedidoId) {
+            if (confirm('Remover este pedido?')) {
+                await removerPedidoDoWorker(pedidoId);
+                await carregarTodosOsDados();
+            }
         }
         
         function removerUsuario(id) {
@@ -271,6 +300,8 @@
         // ============================================
         async function carregarPedidos() {
             const pedidos = await carregarPedidosDoWorker();
+            console.log('📋 Pedidos carregados:', pedidos.length);
+            
             if (pedidos.length === 0) {
                 document.getElementById('listaPedidos').innerHTML = '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>';
             } else {
@@ -285,7 +316,7 @@
                         </div>
                         <div class="flex gap-2">
                             <button onclick="aprovarPedido('${p.id}')" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button>
-                            <button onclick="removerPedido(${p.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button>
+                            <button onclick="removerPedido('${p.id}')" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button>
                         </div>
                     </div>
                 `).join('');
