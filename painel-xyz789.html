@@ -7,24 +7,73 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         * { font-family: 'Poppins', sans-serif; }
         body { background: #0f172a; }
-        .card { background: white; border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-        .btn-primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
-        .btn-primary:hover { transform: scale(1.02); }
-        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
-        .tab-active { background: #4f46e5; color: white; }
-        .tab-inactive { background: #e2e8f0; color: #64748b; }
-        .loading { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        .btn-danger:hover {
+            transform: scale(1.02);
+        }
+        
+        .tab-active {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .tab-inactive {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+        
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
         .loading.active { display: flex; }
-        .spinner { width: 50px; height: 50px; border: 4px solid white; border-top-color: #4f46e5; border-radius: 50%; animation: spin 1s linear infinite; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid white;
+            border-top-color: #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <!-- Loading -->
-    <div id="loading" class="loading"><div class="spinner"></div><p class="text-white mt-4">Carregando...</p></div>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p class="text-white mt-4">Carregando...</p>
+    </div>
 
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8">
@@ -115,16 +164,15 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÕES
+        // CONFIGURAÇÃO DA API (WORKER)
+        // ============================================
+        const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev/pedidos';
+        
+        // ============================================
+        // CONFIGURAÇÃO DE SEGURANÇA
         // ============================================
         const ADMIN_SENHA = '1357';
         const STORAGE_USERS = 'usuarios_autorizados';
-        
-        // GitHub API Configuration
-        const GITHUB_TOKEN = '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';  // ⚠️ 
-        const REPO_OWNER = 'DuarTecnologia';
-        const REPO_NAME = 'gerador-estrategico-lotofacil';
-        const PEDIDOS_FILE = 'pedidos.json';
         
         let tentativas = 0, bloqueado = false;
         
@@ -163,93 +211,38 @@
         }
         
         // ============================================
-        // GITHUB API - PEDIDOS
+        // FUNÇÕES PARA PEDIDOS (WORKER)
         // ============================================
-        async function getPedidosFromGitHub() {
+        async function carregarPedidosDoWorker() {
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            
             try {
-                const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PEDIDOS_FILE}`;
-                const response = await fetch(url, {
-                    headers: { 
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
+                const response = await fetch(WORKER_URL);
+                const resultado = await response.json();
+                loading.classList.remove('active');
                 
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        // Arquivo não existe, criar vazio
-                        await criarArquivoPedidos();
-                        return [];
-                    }
-                    throw new Error(`HTTP ${response.status}`);
+                if (resultado.success) {
+                    console.log('📋 Pedidos carregados:', resultado.pedidos.length);
+                    return resultado.pedidos;
                 }
-                
-                const fileData = await response.json();
-                const content = atob(fileData.content);
-                return JSON.parse(content);
+                return [];
             } catch(error) {
-                console.error('Erro ao ler pedidos:', error);
+                loading.classList.remove('active');
+                console.error('❌ Erro ao carregar pedidos:', error);
                 return [];
             }
         }
         
-        async function criarArquivoPedidos() {
+        async function removerPedidoDoWorker(pedidoId) {
             try {
-                const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PEDIDOS_FILE}`;
-                const response = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json'
-                    },
-                    body: JSON.stringify({
-                        message: 'Criar arquivo de pedidos',
-                        content: btoa(unescape(encodeURIComponent(JSON.stringify([], null, 2))))
-                    })
+                const response = await fetch(`${WORKER_URL}/${pedidoId}`, {
+                    method: 'DELETE'
                 });
-                return response.ok;
+                const resultado = await response.json();
+                return resultado.success;
             } catch(error) {
-                console.error('Erro ao criar arquivo:', error);
-                return false;
-            }
-        }
-        
-        async function salvarPedidosNoGitHub(pedidos) {
-            try {
-                // Primeiro, obter o SHA atual
-                const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PEDIDOS_FILE}`;
-                const getResponse = await fetch(getUrl, {
-                    headers: { 
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                
-                let sha = null;
-                if (getResponse.ok) {
-                    const fileData = await getResponse.json();
-                    sha = fileData.sha;
-                }
-                
-                // Salvar novo conteúdo
-                const putResponse = await fetch(getUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json'
-                    },
-                    body: JSON.stringify({
-                        message: 'Atualizar pedidos',
-                        content: btoa(unescape(encodeURIComponent(JSON.stringify(pedidos, null, 2)))),
-                        sha: sha
-                    })
-                });
-                
-                return putResponse.ok;
-            } catch(error) {
-                console.error('Erro ao salvar pedidos:', error);
+                console.error('❌ Erro ao remover pedido:', error);
                 return false;
             }
         }
@@ -257,14 +250,8 @@
         // ============================================
         // GERENCIAR USUÁRIOS (localStorage)
         // ============================================
-        function getUsuarios() { 
-            const u = localStorage.getItem(STORAGE_USERS); 
-            return u ? JSON.parse(u) : []; 
-        }
-        
-        function salvarUsuarios(u) { 
-            localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); 
-        }
+        function getUsuarios() { const u = localStorage.getItem(STORAGE_USERS); return u ? JSON.parse(u) : []; }
+        function salvarUsuarios(u) { localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); }
         
         function gerarSenhaPorNome(nome) {
             const primeiroNome = nome.trim().split(' ')[0];
@@ -272,13 +259,9 @@
             return nomeLimpo + '123';
         }
         
-        // ============================================
-        // CRIAR USUÁRIO
-        // ============================================
         function criarUsuario() {
             const nome = document.getElementById('novoNome').value.trim();
             let email = document.getElementById('novoEmail').value.trim().toLowerCase();
-            
             if (!nome || !email) { alert('Preencha nome e e-mail'); return; }
             if (!email.includes('@') || !email.includes('.')) { alert('E-mail inválido'); return; }
             
@@ -300,22 +283,19 @@
             document.getElementById('novoNome').value = '';
             document.getElementById('novoEmail').value = '';
             
-            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://gerador.xyz/sistema.html`;
+            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://gerador-estrategico-lotofacil.pages.dev/sistema.html`;
             navigator.clipboard.writeText(credenciais);
             alert(`✅ Usuário criado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nCredenciais copiadas!`);
             carregarTodosOsDados();
             mostrarTab('usuarios');
         }
         
-        // ============================================
-        // APROVAR PEDIDO
-        // ============================================
         async function aprovarPedido(pedidoId) {
             const loading = document.getElementById('loading');
             loading.classList.add('active');
             
             try {
-                let pedidos = await getPedidosFromGitHub();
+                const pedidos = await carregarPedidosDoWorker();
                 const pedido = pedidos.find(p => p.id === pedidoId);
                 
                 if (!pedido) {
@@ -324,9 +304,8 @@
                     return;
                 }
                 
-                // Remover pedido
-                pedidos = pedidos.filter(p => p.id !== pedidoId);
-                await salvarPedidosNoGitHub(pedidos);
+                // Remover pedido do Worker
+                await removerPedidoDoWorker(pedidoId);
                 
                 // Criar usuário
                 const usuarios = getUsuarios();
@@ -346,7 +325,7 @@
                     salvarUsuarios(usuarios);
                 }
                 
-                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://gerador.xyz/sistema.html`;
+                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://gerador-estrategico-lotofacil.pages.dev/sistema.html`;
                 navigator.clipboard.writeText(credenciais);
                 alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
                 
@@ -355,17 +334,7 @@
                 console.error('Erro:', error);
                 alert('Erro ao aprovar pedido. Tente novamente.');
             }
-            
             loading.classList.remove('active');
-        }
-        
-        async function removerPedido(pedidoId) {
-            if (confirm('Remover este pedido?')) {
-                const pedidos = await getPedidosFromGitHub();
-                const novosPedidos = pedidos.filter(p => p.id !== pedidoId);
-                await salvarPedidosNoGitHub(novosPedidos);
-                await carregarTodosOsDados();
-            }
         }
         
         function removerUsuario(id) {
@@ -379,37 +348,38 @@
         }
         
         function copiarCredenciais(email, senha, nome) {
-            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 ${email}\n🔑 ${senha}\n\nLink: https://gerador.xyz/sistema.html`;
+            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 ${email}\n🔑 ${senha}\n\nLink: https://gerador-estrategico-lotofacil.pages.dev/sistema.html`;
             navigator.clipboard.writeText(credenciais);
             alert('Credenciais copiadas!');
         }
         
         // ============================================
-        // CARREGAR DADOS
+        // CARREGAR DADOS NA TELA
         // ============================================
         async function carregarPedidos() {
-            const pedidos = await getPedidosFromGitHub();
-            console.log('📋 Pedidos carregados:', pedidos.length);
+            const pedidos = await carregarPedidosDoWorker();
+            const pendentes = pedidos.filter(p => p.status === 'pendente' || p.status === 'aguardando_pagamento_pix' || p.status === 'pagamento_iniciado');
             
-            if (pedidos.length === 0) {
+            if (pendentes.length === 0) {
                 document.getElementById('listaPedidos').innerHTML = '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>';
             } else {
-                document.getElementById('listaPedidos').innerHTML = pedidos.map(p => `
+                document.getElementById('listaPedidos').innerHTML = pendentes.map(p => `
                     <div class="border rounded-xl p-4 flex justify-between items-center">
                         <div>
                             <p class="font-bold">${p.nome}</p>
                             <p class="text-sm text-gray-600">${p.email}</p>
                             <p class="text-xs text-indigo-600">${p.plano} - R$ ${p.valor.toFixed(2).replace('.', ',')}</p>
                             <p class="text-xs text-gray-400">${new Date(p.data).toLocaleString()}</p>
+                            <p class="text-xs text-gray-400">Forma: ${p.formaPagamento}</p>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="aprovarPedido(${p.id})" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button>
-                            <button onclick="removerPedido(${p.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button>
+                            <button onclick="aprovarPedido('${p.id}')" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button>
+                            <button onclick="removerPedido('${p.id}')" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button>
                         </div>
                     </div>
                 `).join('');
             }
-            document.getElementById('totalPendentes').innerText = pedidos.length;
+            document.getElementById('totalPendentes').innerText = pendentes.length;
         }
         
         function carregarUsuarios() {
@@ -445,13 +415,9 @@
             document.getElementById('tabPedidos').classList.add('hidden');
             document.getElementById('tabUsuarios').classList.add('hidden');
             document.getElementById('tabCriar').classList.add('hidden');
-            
-            document.getElementById('tabPedidosBtn').classList.remove('tab-active');
-            document.getElementById('tabPedidosBtn').classList.add('tab-inactive');
-            document.getElementById('tabUsuariosBtn').classList.remove('tab-active');
-            document.getElementById('tabUsuariosBtn').classList.add('tab-inactive');
-            document.getElementById('tabCriarBtn').classList.remove('tab-active');
-            document.getElementById('tabCriarBtn').classList.add('tab-inactive');
+            document.getElementById('tabPedidosBtn').classList.remove('tab-active'); document.getElementById('tabPedidosBtn').classList.add('tab-inactive');
+            document.getElementById('tabUsuariosBtn').classList.remove('tab-active'); document.getElementById('tabUsuariosBtn').classList.add('tab-inactive');
+            document.getElementById('tabCriarBtn').classList.remove('tab-active'); document.getElementById('tabCriarBtn').classList.add('tab-inactive');
             
             if (tab === 'pedidos') {
                 document.getElementById('tabPedidos').classList.remove('hidden');
