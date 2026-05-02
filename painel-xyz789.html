@@ -2,398 +2,187 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Gerador Estratégico Lotofácil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { font-family: 'Poppins', sans-serif; }
-        body { background: #0f172a; }
-        .card { background: white; border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-        .btn-primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
-        .btn-primary:hover { transform: scale(1.02); }
-        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
-        .tab-active { background: #4f46e5; color: white; }
-        .tab-inactive { background: #e2e8f0; color: #64748b; }
-        .loading { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
-        .loading.active { display: flex; }
-        .spinner { width: 50px; height: 50px; border: 4px solid white; border-top-color: #4f46e5; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
 </head>
-<body class="min-h-screen">
-
-    <div id="loading" class="loading"><div class="spinner"></div><p class="text-white mt-4">Carregando...</p></div>
-
-    <div class="container mx-auto px-4 py-8">
+<body class="bg-gray-900 min-h-screen p-8">
+    <div class="container mx-auto">
         <div class="flex justify-between items-center mb-8">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center shadow-md">
-                    <i class="fas fa-crown text-white text-xl"></i>
-                </div>
-                <div><h1 class="text-2xl font-bold text-white">Painel Administrativo</h1><p class="text-gray-400 text-sm">Gerencie clientes e acessos</p></div>
-            </div>
-            <a href="index.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm"><i class="fas fa-arrow-left mr-2"></i> Voltar ao site</a>
+            <h1 class="text-2xl font-bold text-white">Painel Administrativo</h1>
+            <a href="index.html" class="bg-gray-700 text-white px-4 py-2 rounded-lg">Voltar</a>
         </div>
 
-        <div id="loginAdmin" class="max-w-md mx-auto card p-8">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-lock text-white text-2xl"></i></div>
-                <h2 class="text-2xl font-bold text-gray-800">Acesso Restrito</h2>
-                <p class="text-gray-500 text-sm">Digite a senha de administrador</p>
-            </div>
-            <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none mb-4">
-            <button onclick="logarAdmin()" class="btn-primary w-full text-white font-bold py-3 rounded-xl"><i class="fas fa-sign-in-alt mr-2"></i> Entrar</button>
+        <div id="login" class="max-w-md mx-auto bg-white rounded-xl p-8">
+            <h2 class="text-xl font-bold mb-4">Acesso Restrito</h2>
+            <input type="password" id="senha" placeholder="Senha" class="w-full p-3 border rounded-lg mb-4">
+            <button onclick="logar()" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-bold">Entrar</button>
         </div>
 
-        <div id="painelAdmin" class="hidden">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-shopping-cart text-blue-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Pedidos Pendentes</p><p class="text-2xl font-bold text-gray-800" id="totalPendentes">0</p></div></div>
-                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-green-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Usuários Ativos</p><p class="text-2xl font-bold text-gray-800" id="totalUsuarios">0</p></div></div>
-                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-purple-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Total de Vendas</p><p class="text-2xl font-bold text-gray-800" id="totalVendas">R$ 0</p></div></div>
-            </div>
-            
-            <div class="flex justify-end mb-4"><button onclick="logoutAdmin()" class="btn-danger text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i class="fas fa-sign-out-alt"></i> Sair do Admin</button></div>
-
-            <div class="flex gap-2 mb-6">
-                <button onclick="mostrarTab('pedidos')" id="tabPedidosBtn" class="tab-active px-6 py-2 rounded-lg font-medium transition">📦 Pedidos Pendentes</button>
-                <button onclick="mostrarTab('usuarios')" id="tabUsuariosBtn" class="tab-inactive px-6 py-2 rounded-lg font-medium transition">👥 Usuários Cadastrados</button>
-                <button onclick="mostrarTab('criar')" id="tabCriarBtn" class="tab-inactive px-6 py-2 rounded-lg font-medium transition">➕ Criar Usuário</button>
+        <div id="admin" class="hidden">
+            <div class="flex gap-4 mb-6">
+                <button onclick="mostrarTab('pedidos')" id="tabPedidos" class="bg-indigo-600 text-white px-6 py-2 rounded-lg">📦 Pedidos</button>
+                <button onclick="mostrarTab('usuarios')" id="tabUsuarios" class="bg-gray-700 text-white px-6 py-2 rounded-lg">👥 Usuários</button>
+                <button onclick="mostrarTab('criar')" id="tabCriar" class="bg-gray-700 text-white px-6 py-2 rounded-lg">➕ Criar</button>
             </div>
 
-            <div id="tabPedidos" class="card p-6"><h2 class="text-xl font-bold text-gray-800 mb-4">📦 Pedidos Aguardando Aprovação</h2><div id="listaPedidos" class="space-y-3"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
-            <div id="tabUsuarios" class="card p-6 hidden"><h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários Cadastrados</h2><div id="listaUsuarios" class="space-y-2"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
-            <div id="tabCriar" class="card p-6 hidden">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">➕ Criar Novo Usuário</h2>
-                <p class="text-gray-500 text-sm mb-6">Crie manualmente o acesso para o cliente. A senha padrão será: <strong class="text-indigo-600">NOME123</strong></p>
-                <div class="grid md:grid-cols-2 gap-4 mb-4">
-                    <div><label class="block text-sm font-medium text-gray-700 mb-2">Nome completo *</label><input type="text" id="novoNome" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="João Silva"></div>
-                    <div><label class="block text-sm font-medium text-gray-700 mb-2">E-mail *</label><input type="email" id="novoEmail" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="cliente@email.com"></div>
-                </div>
-                <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Plano</label><select id="novoPlano" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none"><option value="vitalicio">Plano Vitalício - R$ 24,90</option></select></div>
-                <button onclick="criarUsuario()" class="btn-primary w-full text-white font-bold py-3 rounded-xl"><i class="fas fa-user-plus mr-2"></i> Criar Usuário</button>
+            <div id="pedidosTab" class="bg-white rounded-xl p-6"></div>
+            <div id="usuariosTab" class="bg-white rounded-xl p-6 hidden"></div>
+            <div id="criarTab" class="bg-white rounded-xl p-6 hidden">
+                <h3 class="text-xl font-bold mb-4">Criar Usuário</h3>
+                <input type="text" id="nome" placeholder="Nome" class="w-full p-3 border rounded-lg mb-3">
+                <input type="email" id="email" placeholder="E-mail" class="w-full p-3 border rounded-lg mb-3">
+                <button onclick="criarUsuario()" class="bg-green-600 text-white px-6 py-2 rounded-lg">Criar</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // CONFIGURAÇÕES
-        // ============================================
-        const ADMIN_SENHA = '1357';
-        const STORAGE_USERS = 'usuarios_autorizados';
+        const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev';
+        const SENHA_ADMIN = '1357';
         
-        // Worker API
-        const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev/pedidos';
-        
-        let tentativas = 0, bloqueado = false;
-        
-        // ============================================
-        // FUNÇÕES DE AUTENTICAÇÃO
-        // ============================================
-        function logarAdmin() {
-            if (bloqueado) { alert('❌ Muitas tentativas! Aguarde 15 minutos.'); return; }
-            const senha = document.getElementById('senhaAdmin').value;
-            if (senha === ADMIN_SENHA) {
-                tentativas = 0;
-                sessionStorage.setItem('admin_logado', 'true');
-                document.getElementById('loginAdmin').style.display = 'none';
-                document.getElementById('painelAdmin').classList.remove('hidden');
-                carregarTodosOsDados();
+        function logar() {
+            const senha = document.getElementById('senha').value;
+            if (senha === SENHA_ADMIN) {
+                document.getElementById('login').classList.add('hidden');
+                document.getElementById('admin').classList.remove('hidden');
+                carregarPedidos();
+                carregarUsuarios();
             } else {
-                tentativas++;
-                const restantes = 5 - tentativas;
-                if (restantes <= 0) { bloqueado = true; alert('❌ Senha incorreta! Acesso bloqueado por 15 minutos.'); setTimeout(() => { bloqueado = false; tentativas = 0; }, 900000); }
-                else { alert(`❌ Senha incorreta! Você tem mais ${restantes} tentativa(s).`); }
-                document.getElementById('senhaAdmin').value = '';
+                alert('Senha incorreta!');
             }
         }
         
-        function logoutAdmin() {
-            sessionStorage.removeItem('admin_logado');
-            document.getElementById('loginAdmin').style.display = 'block';
-            document.getElementById('painelAdmin').classList.add('hidden');
-            document.getElementById('senhaAdmin').value = '';
-        }
-        
-        if (sessionStorage.getItem('admin_logado') === 'true') {
-            document.getElementById('loginAdmin').style.display = 'none';
-            document.getElementById('painelAdmin').classList.remove('hidden');
-            carregarTodosOsDados();
-        }
-        
-        // ============================================
-        // FUNÇÕES PARA PEDIDOS (WORKER)
-        // ============================================
-        async function carregarPedidosDoWorker() {
-            try {
-                const response = await fetch(WORKER_URL);
-                const resultado = await response.json();
-                if (resultado.success) return resultado.pedidos;
-                return [];
-            } catch(error) {
-                console.error('❌ Erro ao carregar pedidos:', error);
-                return [];
+        async function carregarPedidos() {
+            const response = await fetch(`${WORKER_URL}/pedidos`);
+            const data = await response.json();
+            const div = document.getElementById('pedidosTab');
+            
+            if (!data.success || data.pedidos.length === 0) {
+                div.innerHTML = '<p class="text-gray-500 text-center py-8">✅ Nenhum pedido pendente</p>';
+                return;
             }
-        }
-        
-        async function removerPedidoDoWorker(pedidoId) {
-            try {
-                const response = await fetch(`${WORKER_URL}/${pedidoId}`, {
-                    method: 'DELETE'
-                });
-                const resultado = await response.json();
-                return resultado.success;
-            } catch(error) {
-                console.error('❌ Erro ao remover pedido:', error);
-                return false;
-            }
-        }
-        
-        // ============================================
-        // GERENCIAR USUÁRIOS (localStorage)
-        // ============================================
-        function getUsuarios() { 
-            const u = localStorage.getItem(STORAGE_USERS); 
-            return u ? JSON.parse(u) : []; 
-        }
-        
-        function salvarUsuarios(u) { 
-            localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); 
-            console.log('💾 Usuários salvos:', u.length);
-        }
-        
-        function gerarSenhaPorNome(nome) {
-            const primeiroNome = nome.trim().split(' ')[0];
-            const nomeLimpo = primeiroNome.toLowerCase().replace(/[^a-z]/g, '');
-            return nomeLimpo + '123';
-        }
-        
-        // ============================================
-        // CRIAR USUÁRIO MANUAL
-        // ============================================
-        function criarUsuario() {
-            const nome = document.getElementById('novoNome').value.trim();
-            let email = document.getElementById('novoEmail').value.trim().toLowerCase();
             
-            if (!nome || !email) { alert('Preencha nome e e-mail'); return; }
-            if (!email.includes('@') || !email.includes('.')) { alert('E-mail inválido'); return; }
+            div.innerHTML = data.pedidos.map(p => `
+                <div class="border rounded-lg p-4 mb-3 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold">${p.nome}</p>
+                        <p class="text-sm text-gray-600">${p.email}</p>
+                        <p class="text-sm">R$ ${p.valor} - ${p.formaPagamento || 'Pendente'}</p>
+                    </div>
+                    <button onclick="aprovarPedido('${p.id}')" class="bg-green-500 text-white px-4 py-2 rounded-lg">✅ Aprovar</button>
+                </div>
+            `).join('');
+        }
+        
+        async function aprovarPedido(id) {
+            // Buscar pedido
+            const response = await fetch(`${WORKER_URL}/pedidos`);
+            const data = await response.json();
+            const pedido = data.pedidos.find(p => p.id === id);
             
-            const senha = gerarSenhaPorNome(nome);
-            const usuarios = getUsuarios();
+            if (!pedido) return;
             
-            if (usuarios.find(u => u.email === email)) { alert('Este e-mail já está cadastrado!'); return; }
+            // Gerar senha (nome + 123)
+            const primeiroNome = pedido.nome.split(' ')[0].toLowerCase();
+            const senha = primeiroNome + '123';
             
-            usuarios.push({
-                id: Date.now(),
-                nome: nome,
-                email: email,
-                senha: senha,
-                plano: 'Plano Vitalício (R$24,90)',
-                dataCriacao: new Date().toISOString(),
-                ativo: true
+            // Criar usuário
+            const userResponse = await fetch(`${WORKER_URL}/usuarios`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nome: pedido.nome,
+                    email: pedido.email,
+                    senha: senha,
+                    plano: 'Vitalício'
+                })
             });
-            salvarUsuarios(usuarios);
             
-            document.getElementById('novoNome').value = '';
-            document.getElementById('novoEmail').value = '';
+            const userData = await userResponse.json();
             
-            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
-            navigator.clipboard.writeText(credenciais);
-            alert(`✅ Usuário criado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nCredenciais copiadas!`);
-            carregarTodosOsDados();
-            mostrarTab('usuarios');
-        }
-        
-        // ============================================
-        // APROVAR PEDIDO
-        // ============================================
-        async function aprovarPedido(pedidoId) {
-            const loading = document.getElementById('loading');
-            loading.classList.add('active');
-            
-            try {
-                // 1. Buscar pedidos
-                const pedidos = await carregarPedidosDoWorker();
-                const pedido = pedidos.find(p => p.id === pedidoId);
+            if (userData.success) {
+                // Remover pedido
+                await fetch(`${WORKER_URL}/pedidos/${id}`, { method: 'DELETE' });
                 
-                if (!pedido) {
-                    alert('❌ Pedido não encontrado!');
-                    loading.classList.remove('active');
-                    return;
-                }
+                alert(`✅ Usuário criado!\n\nE-mail: ${pedido.email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
+                navigator.clipboard.writeText(`🔐 Acesso Gerador Lotofácil\n\nE-mail: ${pedido.email}\nSenha: ${senha}\n\nLink: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`);
                 
-                // 2. Criar usuário
-                const usuarios = getUsuarios();
-                const senha = gerarSenhaPorNome(pedido.nome);
-                const email = pedido.email.trim().toLowerCase();
-                
-                console.log('📝 Criando usuário:', { nome: pedido.nome, email, senha });
-                
-                const usuarioExistente = usuarios.find(u => u.email === email);
-                if (!usuarioExistente) {
-                    usuarios.push({
-                        id: Date.now(),
-                        nome: pedido.nome,
-                        email: email,
-                        senha: senha,
-                        plano: 'Plano Vitalício (R$24,90)',
-                        dataCriacao: new Date().toISOString(),
-                        ativo: true
-                    });
-                    salvarUsuarios(usuarios);
-                    console.log('✅ Usuário salvo com sucesso!');
-                } else {
-                    console.log('⚠️ Usuário já existe:', email);
-                }
-                
-                // 3. Remover pedido do Worker
-                const removido = await removerPedidoDoWorker(pedidoId);
-                if (removido) {
-                    console.log('✅ Pedido removido do Worker');
-                } else {
-                    console.log('⚠️ Pedido não removido do Worker, mas usuário foi criado');
-                }
-                
-                // 4. Copiar credenciais
-                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html\n\n⚠️ Recomendamos alterar sua senha após o primeiro acesso.`;
-                navigator.clipboard.writeText(credenciais);
-                
-                alert(`✅ Pedido aprovado com sucesso!\n\n👤 Cliente: ${pedido.nome}\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n📋 Credenciais copiadas para a área de transferência.\n\n✉️ Envie para o cliente por e-mail ou WhatsApp.`);
-                
-                // 5. Recarregar dados
-                await carregarTodosOsDados();
-                
-            } catch(error) {
-                console.error('❌ Erro detalhado:', error);
-                alert('Erro ao aprovar pedido. Tente novamente.');
-            }
-            
-            loading.classList.remove('active');
-        }
-        
-        async function removerPedido(pedidoId) {
-            if (confirm('Remover este pedido?')) {
-                await removerPedidoDoWorker(pedidoId);
-                await carregarTodosOsDados();
+                carregarPedidos();
+                carregarUsuarios();
+            } else {
+                alert('Erro: ' + userData.error);
             }
         }
         
-        function removerUsuario(id) {
-            if (confirm('Remover acesso deste usuário?')) {
-                let usuarios = getUsuarios();
-                usuarios = usuarios.filter(u => u.id !== id);
-                salvarUsuarios(usuarios);
-                carregarTodosOsDados();
-                mostrarTab('usuarios');
+        async function carregarUsuarios() {
+            const response = await fetch(`${WORKER_URL}/usuarios`);
+            const data = await response.json();
+            const div = document.getElementById('usuariosTab');
+            
+            if (!data.success || data.usuarios.length === 0) {
+                div.innerHTML = '<p class="text-gray-500 text-center py-8">👥 Nenhum usuário cadastrado</p>';
+                return;
+            }
+            
+            div.innerHTML = data.usuarios.map(u => `
+                <div class="border rounded-lg p-4 mb-3 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold">${u.nome}</p>
+                        <p class="text-sm text-gray-600">${u.email}</p>
+                        <p class="text-sm">Senha: ${u.senha}</p>
+                    </div>
+                    <button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-4 py-2 rounded-lg">📋 Copiar</button>
+                </div>
+            `).join('');
+        }
+        
+        async function criarUsuario() {
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const primeiroNome = nome.split(' ')[0].toLowerCase();
+            const senha = primeiroNome + '123';
+            
+            const response = await fetch(`${WORKER_URL}/usuarios`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, email, senha, plano: 'Vitalício' })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert(`✅ Usuário criado!\n\nE-mail: ${email}\nSenha: ${senha}`);
+                document.getElementById('nome').value = '';
+                document.getElementById('email').value = '';
+                carregarUsuarios();
+            } else {
+                alert('Erro: ' + data.error);
             }
         }
         
         function copiarCredenciais(email, senha, nome) {
-            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
-            navigator.clipboard.writeText(credenciais);
+            const texto = `🔐 Acesso Gerador Lotofácil\n\nOlá ${nome},\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
+            navigator.clipboard.writeText(texto);
             alert('Credenciais copiadas!');
         }
         
-        // ============================================
-        // CARREGAR DADOS NA TELA
-        // ============================================
-        async function carregarPedidos() {
-            const pedidos = await carregarPedidosDoWorker();
-            console.log('📋 Pedidos carregados:', pedidos.length);
-            
-            if (pedidos.length === 0) {
-                document.getElementById('listaPedidos').innerHTML = '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>';
-            } else {
-                document.getElementById('listaPedidos').innerHTML = pedidos.map(p => `
-                    <div class="border rounded-xl p-4 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold">${p.nome}</p>
-                            <p class="text-sm text-gray-600">${p.email}</p>
-                            <p class="text-xs text-indigo-600">${p.plano} - R$ ${p.valor.toFixed(2).replace('.', ',')}</p>
-                            <p class="text-xs text-gray-400">${new Date(p.data).toLocaleString()}</p>
-                            <p class="text-xs text-gray-400">Forma: ${p.formaPagamento}</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="aprovarPedido('${p.id}')" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button>
-                            <button onclick="removerPedido('${p.id}')" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            document.getElementById('totalPendentes').innerText = pedidos.length;
-        }
-        
-        function carregarUsuarios() {
-            const usuarios = getUsuarios();
-            if (usuarios.length === 0) {
-                document.getElementById('listaUsuarios').innerHTML = '<div class="text-center text-gray-500 py-8"><i class="fas fa-users text-4xl mb-2"></i><p>Nenhum usuário cadastrado</p></div>';
-            } else {
-                document.getElementById('listaUsuarios').innerHTML = usuarios.map(u => `
-                    <div class="border rounded-xl p-4 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold">${u.nome}</p>
-                            <p class="text-sm text-gray-600">${u.email}</p>
-                            <p class="text-xs text-indigo-600">${u.plano}</p>
-                            <p class="text-xs text-gray-400">Criado: ${new Date(u.dataCriacao).toLocaleDateString()}</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-copy"></i> Copiar</button>
-                            <button onclick="removerUsuario(${u.id})" class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-trash"></i> Remover</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            document.getElementById('totalUsuarios').innerText = usuarios.length;
-            document.getElementById('totalVendas').innerHTML = `R$ ${(usuarios.length * 24.90).toFixed(2).replace('.', ',')}`;
-        }
-        
-        async function carregarTodosOsDados() {
-            await carregarPedidos();
-            carregarUsuarios();
-        }
-        
         function mostrarTab(tab) {
-            document.getElementById('tabPedidos').classList.add('hidden');
-            document.getElementById('tabUsuarios').classList.add('hidden');
-            document.getElementById('tabCriar').classList.add('hidden');
-            document.getElementById('tabPedidosBtn').classList.remove('tab-active'); document.getElementById('tabPedidosBtn').classList.add('tab-inactive');
-            document.getElementById('tabUsuariosBtn').classList.remove('tab-active'); document.getElementById('tabUsuariosBtn').classList.add('tab-inactive');
-            document.getElementById('tabCriarBtn').classList.remove('tab-active'); document.getElementById('tabCriarBtn').classList.add('tab-inactive');
+            document.getElementById('pedidosTab').classList.add('hidden');
+            document.getElementById('usuariosTab').classList.add('hidden');
+            document.getElementById('criarTab').classList.add('hidden');
             
             if (tab === 'pedidos') {
-                document.getElementById('tabPedidos').classList.remove('hidden');
-                document.getElementById('tabPedidosBtn').classList.remove('tab-inactive');
-                document.getElementById('tabPedidosBtn').classList.add('tab-active');
+                document.getElementById('pedidosTab').classList.remove('hidden');
                 carregarPedidos();
             } else if (tab === 'usuarios') {
-                document.getElementById('tabUsuarios').classList.remove('hidden');
-                document.getElementById('tabUsuariosBtn').classList.remove('tab-inactive');
-                document.getElementById('tabUsuariosBtn').classList.add('tab-active');
+                document.getElementById('usuariosTab').classList.remove('hidden');
                 carregarUsuarios();
             } else if (tab === 'criar') {
-                document.getElementById('tabCriar').classList.remove('hidden');
-                document.getElementById('tabCriarBtn').classList.remove('tab-inactive');
-                document.getElementById('tabCriarBtn').classList.add('tab-active');
+                document.getElementById('criarTab').classList.remove('hidden');
             }
         }
-        
-        function initDados() {
-            if (getUsuarios().length === 0) {
-                salvarUsuarios([{
-                    id: 1,
-                    nome: 'Administrador',
-                    email: 'admin@exemplo.com',
-                    senha: 'admin123',
-                    plano: 'Administrador',
-                    dataCriacao: new Date().toISOString(),
-                    ativo: true
-                }]);
-            }
-        }
-        
-        initDados();
-        carregarTodosOsDados();
     </script>
 </body>
 </html>
