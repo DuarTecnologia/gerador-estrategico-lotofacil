@@ -6,6 +6,12 @@
     <title>Admin - Gerador Estratégico Lotofácil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .btn-recusar { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .btn-recusar:hover { transform: scale(1.02); }
+        .btn-excluir-user { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .btn-excluir-user:hover { transform: scale(1.02); }
+    </style>
 </head>
 <body class="bg-gray-900 min-h-screen p-8">
     <div class="container mx-auto">
@@ -24,7 +30,6 @@
 
         <!-- Painel Admin -->
         <div id="admin" class="hidden">
-            <!-- Stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white rounded-xl p-6 text-center">
                     <i class="fas fa-shopping-cart text-3xl text-blue-500 mb-2"></i>
@@ -43,14 +48,12 @@
                 </div>
             </div>
 
-            <!-- Tabs -->
             <div class="flex gap-4 mb-6">
                 <button onclick="mostrarTab('pedidos')" id="tabPedidosBtn" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">📦 Pedidos Pendentes</button>
                 <button onclick="mostrarTab('usuarios')" id="tabUsuariosBtn" class="bg-gray-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-600">👥 Usuários Cadastrados</button>
                 <button onclick="mostrarTab('criar')" id="tabCriarBtn" class="bg-gray-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-600">➕ Criar Usuário</button>
             </div>
 
-            <!-- Conteúdo das Tabs -->
             <div id="pedidosTab" class="bg-white rounded-xl p-6">
                 <div id="listaPedidos" class="space-y-3">
                     <p class="text-gray-500 text-center py-8">Carregando pedidos...</p>
@@ -119,7 +122,10 @@
                             <p class="text-xs text-gray-400">${new Date(p.data).toLocaleString()}</p>
                             <p class="text-xs text-gray-400">Forma: ${p.formaPagamento || 'Pendente'}</p>
                         </div>
-                        <button onclick="aprovarPedido('${p.id}')" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">✅ Aprovar</button>
+                        <div class="flex gap-2">
+                            <button onclick="aprovarPedido('${p.id}')" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">✅ Aprovar</button>
+                            <button onclick="recusarPedido('${p.id}')" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">❌ Recusar</button>
+                        </div>
                     </div>
                 `).join('');
                 document.getElementById('totalPendentes').innerText = data.pedidos.length;
@@ -130,6 +136,8 @@
         }
         
         async function aprovarPedido(id) {
+            if (!confirm('Confirmar aprovação deste pedido?')) return;
+            
             try {
                 const response = await fetch(`${WORKER_URL}/pedidos`);
                 const data = await response.json();
@@ -176,6 +184,19 @@
             }
         }
         
+        async function recusarPedido(id) {
+            if (!confirm('❌ Tem certeza que deseja RECUSAR este pedido? Esta ação não pode ser desfeita.')) return;
+            
+            try {
+                await fetch(`${WORKER_URL}/pedidos/${id}`, { method: 'DELETE' });
+                alert('✅ Pedido recusado e removido com sucesso!');
+                carregarPedidos();
+            } catch(error) {
+                console.error('Erro:', error);
+                alert('Erro ao recusar pedido. Tente novamente.');
+            }
+        }
+        
         async function carregarUsuarios() {
             try {
                 const response = await fetch(`${WORKER_URL}/usuarios`);
@@ -198,7 +219,10 @@
                             <p class="text-xs text-gray-400">Criado: ${new Date(u.dataCriacao).toLocaleDateString()}</p>
                             <p class="text-xs text-gray-400">Senha: ${u.senha}</p>
                         </div>
-                        <button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition">📋 Copiar</button>
+                        <div class="flex gap-2">
+                            <button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition">📋 Copiar</button>
+                            <button onclick="excluirUsuario('${u.email}')" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">🗑️ Excluir</button>
+                        </div>
                     </div>
                 `).join('');
                 document.getElementById('totalUsuarios').innerText = data.usuarios.length;
@@ -206,6 +230,25 @@
             } catch(error) {
                 console.error('Erro:', error);
                 document.getElementById('listaUsuarios').innerHTML = '<p class="text-red-500 text-center py-8">❌ Erro ao carregar usuários</p>';
+            }
+        }
+        
+        async function excluirUsuario(email) {
+            if (!confirm(`❌ Tem certeza que deseja EXCLUIR o usuário ${email}? Esta ação não pode ser desfeita.`)) return;
+            
+            try {
+                const response = await fetch(`${WORKER_URL}/usuarios/${encodeURIComponent(email)}`, { method: 'DELETE' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ Usuário excluído com sucesso!');
+                    carregarUsuarios();
+                } else {
+                    alert('Erro ao excluir usuário: ' + data.error);
+                }
+            } catch(error) {
+                console.error('Erro:', error);
+                alert('Erro ao excluir usuário. Tente novamente.');
             }
         }
         
