@@ -7,73 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         * { font-family: 'Poppins', sans-serif; }
         body { background: #0f172a; }
-        
-        .card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-        .btn-danger:hover {
-            transform: scale(1.02);
-        }
-        
-        .tab-active {
-            background: #4f46e5;
-            color: white;
-        }
-        
-        .tab-inactive {
-            background: #e2e8f0;
-            color: #64748b;
-        }
-        
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
+        .card { background: white; border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .btn-primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+        .btn-primary:hover { transform: scale(1.02); }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .tab-active { background: #4f46e5; color: white; }
+        .tab-inactive { background: #e2e8f0; color: #64748b; }
+        .loading { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .loading.active { display: flex; }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid white;
-            border-top-color: #4f46e5;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+        .spinner { width: 50px; height: 50px; border: 4px solid white; border-top-color: #4f46e5; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <p class="text-white mt-4">Carregando...</p>
-    </div>
+    <div id="loading" class="loading"><div class="spinner"></div><p class="text-white mt-4">Carregando...</p></div>
 
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8">
@@ -81,53 +31,29 @@
                 <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center shadow-md">
                     <i class="fas fa-crown text-white text-xl"></i>
                 </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-white">Painel Administrativo</h1>
-                    <p class="text-gray-400 text-sm">Gerencie clientes e acessos</p>
-                </div>
+                <div><h1 class="text-2xl font-bold text-white">Painel Administrativo</h1><p class="text-gray-400 text-sm">Gerencie clientes e acessos</p></div>
             </div>
-            <a href="index.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm">
-                <i class="fas fa-arrow-left mr-2"></i> Voltar ao site
-            </a>
+            <a href="index.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm"><i class="fas fa-arrow-left mr-2"></i> Voltar ao site</a>
         </div>
 
-        <!-- Login do Admin -->
         <div id="loginAdmin" class="max-w-md mx-auto card p-8">
             <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-lock text-white text-2xl"></i>
-                </div>
+                <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-lock text-white text-2xl"></i></div>
                 <h2 class="text-2xl font-bold text-gray-800">Acesso Restrito</h2>
                 <p class="text-gray-500 text-sm">Digite a senha de administrador</p>
             </div>
             <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none mb-4">
-            <button onclick="logarAdmin()" class="btn-primary w-full text-white font-bold py-3 rounded-xl">
-                <i class="fas fa-sign-in-alt mr-2"></i> Entrar
-            </button>
+            <button onclick="logarAdmin()" class="btn-primary w-full text-white font-bold py-3 rounded-xl"><i class="fas fa-sign-in-alt mr-2"></i> Entrar</button>
         </div>
 
-        <!-- Painel Admin -->
         <div id="painelAdmin" class="hidden">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="card p-6 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-shopping-cart text-blue-600 text-xl"></i></div>
-                    <div><p class="text-gray-500 text-sm">Pedidos Pendentes</p><p class="text-2xl font-bold text-gray-800" id="totalPendentes">0</p></div>
-                </div>
-                <div class="card p-6 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-green-600 text-xl"></i></div>
-                    <div><p class="text-gray-500 text-sm">Usuários Ativos</p><p class="text-2xl font-bold text-gray-800" id="totalUsuarios">0</p></div>
-                </div>
-                <div class="card p-6 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-purple-600 text-xl"></i></div>
-                    <div><p class="text-gray-500 text-sm">Total de Vendas</p><p class="text-2xl font-bold text-gray-800" id="totalVendas">R$ 0</p></div>
-                </div>
+                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-shopping-cart text-blue-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Pedidos Pendentes</p><p class="text-2xl font-bold text-gray-800" id="totalPendentes">0</p></div></div>
+                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-green-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Usuários Ativos</p><p class="text-2xl font-bold text-gray-800" id="totalUsuarios">0</p></div></div>
+                <div class="card p-6 flex items-center gap-4"><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-purple-600 text-xl"></i></div><div><p class="text-gray-500 text-sm">Total de Vendas</p><p class="text-2xl font-bold text-gray-800" id="totalVendas">R$ 0</p></div></div>
             </div>
             
-            <div class="flex justify-end mb-4">
-                <button onclick="logoutAdmin()" class="btn-danger text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2">
-                    <i class="fas fa-sign-out-alt"></i> Sair do Admin
-                </button>
-            </div>
+            <div class="flex justify-end mb-4"><button onclick="logoutAdmin()" class="btn-danger text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i class="fas fa-sign-out-alt"></i> Sair do Admin</button></div>
 
             <div class="flex gap-2 mb-6">
                 <button onclick="mostrarTab('pedidos')" id="tabPedidosBtn" class="tab-active px-6 py-2 rounded-lg font-medium transition">📦 Pedidos Pendentes</button>
@@ -135,20 +61,8 @@
                 <button onclick="mostrarTab('criar')" id="tabCriarBtn" class="tab-inactive px-6 py-2 rounded-lg font-medium transition">➕ Criar Usuário</button>
             </div>
 
-            <div id="tabPedidos" class="card p-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">📦 Pedidos Aguardando Aprovação</h2>
-                <div id="listaPedidos" class="space-y-3">
-                    <p class="text-gray-500 text-center py-8">Carregando...</p>
-                </div>
-            </div>
-
-            <div id="tabUsuarios" class="card p-6 hidden">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários Cadastrados</h2>
-                <div id="listaUsuarios" class="space-y-2">
-                    <p class="text-gray-500 text-center py-8">Carregando...</p>
-                </div>
-            </div>
-
+            <div id="tabPedidos" class="card p-6"><h2 class="text-xl font-bold text-gray-800 mb-4">📦 Pedidos Aguardando Aprovação</h2><div id="listaPedidos" class="space-y-3"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
+            <div id="tabUsuarios" class="card p-6 hidden"><h2 class="text-xl font-bold text-gray-800 mb-4">👥 Usuários Cadastrados</h2><div id="listaUsuarios" class="space-y-2"><p class="text-gray-500 text-center py-8">Carregando...</p></div></div>
             <div id="tabCriar" class="card p-6 hidden">
                 <h2 class="text-xl font-bold text-gray-800 mb-4">➕ Criar Novo Usuário</h2>
                 <p class="text-gray-500 text-sm mb-6">Crie manualmente o acesso para o cliente. A senha padrão será: <strong class="text-indigo-600">NOME123</strong></p>
@@ -164,15 +78,13 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÃO DA API (WORKER)
-        // ============================================
-        const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev/pedidos';
-        
-        // ============================================
-        // CONFIGURAÇÃO DE SEGURANÇA
+        // CONFIGURAÇÕES
         // ============================================
         const ADMIN_SENHA = '1357';
         const STORAGE_USERS = 'usuarios_autorizados';
+        
+        // Worker API
+        const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev/pedidos';
         
         let tentativas = 0, bloqueado = false;
         
@@ -216,42 +128,31 @@
         async function carregarPedidosDoWorker() {
             const loading = document.getElementById('loading');
             loading.classList.add('active');
-            
             try {
                 const response = await fetch(WORKER_URL);
                 const resultado = await response.json();
                 loading.classList.remove('active');
-                
-                if (resultado.success) {
-                    console.log('📋 Pedidos carregados:', resultado.pedidos.length);
-                    return resultado.pedidos;
-                }
+                if (resultado.success) return resultado.pedidos;
                 return [];
             } catch(error) {
                 loading.classList.remove('active');
-                console.error('❌ Erro ao carregar pedidos:', error);
+                console.error('❌ Erro:', error);
                 return [];
-            }
-        }
-        
-        async function removerPedidoDoWorker(pedidoId) {
-            try {
-                const response = await fetch(`${WORKER_URL}/${pedidoId}`, {
-                    method: 'DELETE'
-                });
-                const resultado = await response.json();
-                return resultado.success;
-            } catch(error) {
-                console.error('❌ Erro ao remover pedido:', error);
-                return false;
             }
         }
         
         // ============================================
         // GERENCIAR USUÁRIOS (localStorage)
         // ============================================
-        function getUsuarios() { const u = localStorage.getItem(STORAGE_USERS); return u ? JSON.parse(u) : []; }
-        function salvarUsuarios(u) { localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); }
+        function getUsuarios() { 
+            const u = localStorage.getItem(STORAGE_USERS); 
+            return u ? JSON.parse(u) : []; 
+        }
+        
+        function salvarUsuarios(u) { 
+            localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); 
+            console.log('✅ Usuários salvos:', u.length);
+        }
         
         function gerarSenhaPorNome(nome) {
             const primeiroNome = nome.trim().split(' ')[0];
@@ -259,14 +160,19 @@
             return nomeLimpo + '123';
         }
         
+        // ============================================
+        // CRIAR USUÁRIO MANUAL
+        // ============================================
         function criarUsuario() {
             const nome = document.getElementById('novoNome').value.trim();
             let email = document.getElementById('novoEmail').value.trim().toLowerCase();
+            
             if (!nome || !email) { alert('Preencha nome e e-mail'); return; }
             if (!email.includes('@') || !email.includes('.')) { alert('E-mail inválido'); return; }
             
             const senha = gerarSenhaPorNome(nome);
             const usuarios = getUsuarios();
+            
             if (usuarios.find(u => u.email === email)) { alert('Este e-mail já está cadastrado!'); return; }
             
             usuarios.push({
@@ -283,13 +189,16 @@
             document.getElementById('novoNome').value = '';
             document.getElementById('novoEmail').value = '';
             
-            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://gerador-estrategico-lotofacil.pages.dev/sistema.html`;
+            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
             navigator.clipboard.writeText(credenciais);
             alert(`✅ Usuário criado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nCredenciais copiadas!`);
             carregarTodosOsDados();
             mostrarTab('usuarios');
         }
         
+        // ============================================
+        // APROVAR PEDIDO
+        // ============================================
         async function aprovarPedido(pedidoId) {
             const loading = document.getElementById('loading');
             loading.classList.add('active');
@@ -304,13 +213,11 @@
                     return;
                 }
                 
-                // Remover pedido do Worker
-                await removerPedidoDoWorker(pedidoId);
-                
-                // Criar usuário
                 const usuarios = getUsuarios();
                 const senha = gerarSenhaPorNome(pedido.nome);
                 const email = pedido.email.trim().toLowerCase();
+                
+                console.log('📝 Criando usuário:', { nome: pedido.nome, email, senha });
                 
                 if (!usuarios.find(u => u.email === email)) {
                     usuarios.push({
@@ -323,15 +230,21 @@
                         ativo: true
                     });
                     salvarUsuarios(usuarios);
+                    console.log('✅ Usuário salvo com sucesso!');
+                } else {
+                    console.log('⚠️ Usuário já existe:', email);
                 }
                 
-                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://gerador-estrategico-lotofacil.pages.dev/sistema.html`;
+                // Remover pedido (opcional - se quiser manter histórico, comente esta parte)
+                // await fetch(`${WORKER_URL}/${pedidoId}`, { method: 'DELETE' });
+                
+                const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${pedido.nome},\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
                 navigator.clipboard.writeText(credenciais);
-                alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
+                alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas para área de transferência.\n\n⚠️ IMPORTANTE: Envie estas credenciais para o cliente por e-mail ou WhatsApp.`);
                 
                 await carregarTodosOsDados();
             } catch(error) {
-                console.error('Erro:', error);
+                console.error('❌ Erro:', error);
                 alert('Erro ao aprovar pedido. Tente novamente.');
             }
             loading.classList.remove('active');
@@ -348,7 +261,7 @@
         }
         
         function copiarCredenciais(email, senha, nome) {
-            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 ${email}\n🔑 ${senha}\n\nLink: https://gerador-estrategico-lotofacil.pages.dev/sistema.html`;
+            const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\nLink: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
             navigator.clipboard.writeText(credenciais);
             alert('Credenciais copiadas!');
         }
@@ -358,12 +271,10 @@
         // ============================================
         async function carregarPedidos() {
             const pedidos = await carregarPedidosDoWorker();
-            const pendentes = pedidos.filter(p => p.status === 'pendente' || p.status === 'aguardando_pagamento_pix' || p.status === 'pagamento_iniciado');
-            
-            if (pendentes.length === 0) {
+            if (pedidos.length === 0) {
                 document.getElementById('listaPedidos').innerHTML = '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>';
             } else {
-                document.getElementById('listaPedidos').innerHTML = pendentes.map(p => `
+                document.getElementById('listaPedidos').innerHTML = pedidos.map(p => `
                     <div class="border rounded-xl p-4 flex justify-between items-center">
                         <div>
                             <p class="font-bold">${p.nome}</p>
@@ -374,12 +285,12 @@
                         </div>
                         <div class="flex gap-2">
                             <button onclick="aprovarPedido('${p.id}')" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm">✅ Aprovar</button>
-                            <button onclick="removerPedido('${p.id}')" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button>
+                            <button onclick="removerPedido(${p.id})" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm">❌</button>
                         </div>
                     </div>
                 `).join('');
             }
-            document.getElementById('totalPendentes').innerText = pendentes.length;
+            document.getElementById('totalPendentes').innerText = pedidos.length;
         }
         
         function carregarUsuarios() {
