@@ -11,6 +11,10 @@
         .btn-recusar:hover { transform: scale(1.02); }
         .btn-excluir-user { background: linear-gradient(135deg, #ef4444, #dc2626); }
         .btn-excluir-user:hover { transform: scale(1.02); }
+        .loading { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .loading.active { display: flex; }
+        .spinner { width: 50px; height: 50px; border: 4px solid white; border-top-color: #4f46e5; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen p-8">
@@ -18,6 +22,11 @@
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-bold text-white">Painel Administrativo</h1>
             <a href="index.html" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Voltar ao site</a>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p class="text-white mt-4">Carregando...</p>
         </div>
 
         <!-- Tela de Login -->
@@ -30,6 +39,7 @@
 
         <!-- Painel Admin -->
         <div id="admin" class="hidden">
+            <!-- Stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white rounded-xl p-6 text-center">
                     <i class="fas fa-shopping-cart text-3xl text-blue-500 mb-2"></i>
@@ -88,6 +98,15 @@
         const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev';
         const SENHA_ADMIN = '1357';
         
+        function mostrarLoading(mostrar) {
+            const loading = document.getElementById('loading');
+            if (mostrar) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+        }
+        
         function logar() {
             const senha = document.getElementById('senha').value;
             if (senha === SENHA_ADMIN) {
@@ -102,6 +121,7 @@
         }
         
         async function carregarPedidos() {
+            mostrarLoading(true);
             try {
                 const response = await fetch(`${WORKER_URL}/pedidos`);
                 const data = await response.json();
@@ -110,6 +130,7 @@
                 if (!data.success || data.pedidos.length === 0) {
                     div.innerHTML = '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>';
                     document.getElementById('totalPendentes').innerText = '0';
+                    mostrarLoading(false);
                     return;
                 }
                 
@@ -133,10 +154,12 @@
                 console.error('Erro:', error);
                 document.getElementById('listaPedidos').innerHTML = '<p class="text-red-500 text-center py-8">❌ Erro ao carregar pedidos</p>';
             }
+            mostrarLoading(false);
         }
         
         async function aprovarPedido(id) {
             if (!confirm('Confirmar aprovação deste pedido?')) return;
+            mostrarLoading(true);
             
             try {
                 const response = await fetch(`${WORKER_URL}/pedidos`);
@@ -145,6 +168,7 @@
                 
                 if (!pedido) {
                     alert('Pedido não encontrado!');
+                    mostrarLoading(false);
                     return;
                 }
                 
@@ -168,13 +192,13 @@
                 if (userData.success) {
                     await fetch(`${WORKER_URL}/pedidos/${id}`, { method: 'DELETE' });
                     
-                    const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
+                    const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/index.html`;
                     navigator.clipboard.writeText(credenciais);
                     
                     alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas!`);
                     
-                    carregarPedidos();
-                    carregarUsuarios();
+                    await carregarPedidos();
+                    await carregarUsuarios();
                 } else {
                     alert('Erro ao criar usuário: ' + userData.error);
                 }
@@ -182,22 +206,26 @@
                 console.error('Erro:', error);
                 alert('Erro ao aprovar pedido. Tente novamente.');
             }
+            mostrarLoading(false);
         }
         
         async function recusarPedido(id) {
             if (!confirm('❌ Tem certeza que deseja RECUSAR este pedido? Esta ação não pode ser desfeita.')) return;
+            mostrarLoading(true);
             
             try {
                 await fetch(`${WORKER_URL}/pedidos/${id}`, { method: 'DELETE' });
                 alert('✅ Pedido recusado e removido com sucesso!');
-                carregarPedidos();
+                await carregarPedidos();
             } catch(error) {
                 console.error('Erro:', error);
                 alert('Erro ao recusar pedido. Tente novamente.');
             }
+            mostrarLoading(false);
         }
         
         async function carregarUsuarios() {
+            mostrarLoading(true);
             try {
                 const response = await fetch(`${WORKER_URL}/usuarios`);
                 const data = await response.json();
@@ -207,6 +235,7 @@
                     div.innerHTML = '<div class="text-center text-gray-500 py-8"><i class="fas fa-users text-4xl mb-2"></i><p>👥 Nenhum usuário cadastrado</p></div>';
                     document.getElementById('totalUsuarios').innerText = '0';
                     document.getElementById('totalVendas').innerHTML = 'R$ 0';
+                    mostrarLoading(false);
                     return;
                 }
                 
@@ -231,10 +260,12 @@
                 console.error('Erro:', error);
                 document.getElementById('listaUsuarios').innerHTML = '<p class="text-red-500 text-center py-8">❌ Erro ao carregar usuários</p>';
             }
+            mostrarLoading(false);
         }
         
         async function excluirUsuario(email) {
             if (!confirm(`❌ Tem certeza que deseja EXCLUIR o usuário ${email}? Esta ação não pode ser desfeita.`)) return;
+            mostrarLoading(true);
             
             try {
                 const response = await fetch(`${WORKER_URL}/usuarios/${encodeURIComponent(email)}`, { method: 'DELETE' });
@@ -242,14 +273,15 @@
                 
                 if (data.success) {
                     alert('✅ Usuário excluído com sucesso!');
-                    carregarUsuarios();
+                    await carregarUsuarios();
                 } else {
-                    alert('Erro ao excluir usuário: ' + data.error);
+                    alert('Erro ao excluir usuário: ' + (data.error || 'Erro desconhecido'));
                 }
             } catch(error) {
                 console.error('Erro:', error);
                 alert('Erro ao excluir usuário. Tente novamente.');
             }
+            mostrarLoading(false);
         }
         
         async function criarUsuario() {
@@ -263,6 +295,8 @@
             
             const primeiroNome = nome.split(' ')[0].toLowerCase();
             const senha = primeiroNome + '123';
+            
+            mostrarLoading(true);
             
             try {
                 const response = await fetch(`${WORKER_URL}/usuarios`, {
@@ -282,17 +316,18 @@
                     alert(`✅ Usuário criado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}`);
                     document.getElementById('novoNome').value = '';
                     document.getElementById('novoEmail').value = '';
-                    carregarUsuarios();
+                    await carregarUsuarios();
                 } else {
                     alert('Erro: ' + data.error);
                 }
             } catch(error) {
                 alert('Erro ao criar usuário. Tente novamente.');
             }
+            mostrarLoading(false);
         }
         
         function copiarCredenciais(email, senha, nome) {
-            const texto = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
+            const texto = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/index.html`;
             navigator.clipboard.writeText(texto);
             alert('✅ Credenciais copiadas! Envie para o cliente.');
         }
