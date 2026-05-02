@@ -39,6 +39,12 @@
     <script>
         const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev';
         
+        // Verificar se já está logado
+        const usuarioLogado = localStorage.getItem('usuario_logado');
+        if (usuarioLogado) {
+            window.location.href = 'https://sistema-gerador-estrategico.edipo-8aa.workers.dev/gerador.html';
+        }
+        
         document.getElementById('btnLogin').addEventListener('click', async () => {
             const email = document.getElementById('email').value.trim().toLowerCase();
             const senha = document.getElementById('senha').value.trim();
@@ -62,7 +68,8 @@
                 
                 if (data.success) {
                     localStorage.setItem('usuario_logado', JSON.stringify(data.user));
-                    window.location.href = 'dashboard.html';
+                    // Redirecionar para o gerador real
+                    window.location.href = 'https://sistema-gerador-estrategico.edipo-8aa.workers.dev/gerador.html';
                 } else {
                     erroDiv.innerText = data.error || 'E-mail ou senha inválidos';
                     erroDiv.classList.remove('hidden');
