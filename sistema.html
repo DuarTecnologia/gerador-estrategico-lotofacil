@@ -118,7 +118,7 @@
             }
             
             const usuarios = getUsuarios();
-            console.log('📋 Usuários cadastrados:', usuarios.map(u => ({ email: u.email, senha: u.senha })));
+            console.log('📋 Usuários cadastrados:', usuarios.map(u => ({ nome: u.nome, email: u.email, senha: u.senha, ativo: u.ativo })));
             
             const user = usuarios.find(u => u.email === email && u.senha === senha && u.ativo === true);
             
@@ -158,7 +158,7 @@
         document.getElementById('btnLogin').addEventListener('click', fazerLogin);
         document.getElementById('loginSenha').addEventListener('keypress', e => { if (e.key === 'Enter') fazerLogin(); });
         
-        // FUNÇÕES DO GERADOR
+        // FUNÇÕES DO GERADOR (mantidas originais)
         const precosPorDezena = { 15:3.50,16:14.00,17:24.50,18:36.00,19:63.00,20:98.00 };
         const frequenciaDezenas = { 1:85,2:78,3:92,4:71,5:88,6:95,7:82,8:76,9:91,10:84,11:79,12:93,13:87,14:81,15:89,16:77,17:83,18:90,19:86,20:94,21:75,22:80,23:88,24:82,25:79 };
         
@@ -168,7 +168,11 @@
             const total = ordenadas.length;
             const qtdQuentes = Math.ceil(total * 0.33);
             const qtdFrias = Math.floor(total * 0.33);
-            return { quentes: ordenadas.slice(0, qtdQuentes).map(([num]) => parseInt(num)), neutras: ordenadas.slice(qtdQuentes, total - qtdFrias).map(([num]) => parseInt(num)), frias: ordenadas.slice(total - qtdFrias).map(([num]) => parseInt(num)) };
+            return {
+                quentes: ordenadas.slice(0, qtdQuentes).map(([num]) => parseInt(num)),
+                neutras: ordenadas.slice(qtdQuentes, total - qtdFrias).map(([num]) => parseInt(num)),
+                frias: ordenadas.slice(total - qtdFrias).map(([num]) => parseInt(num))
+            };
         }
         
         function selecionarAleatorios(arr, q) { if (!arr || arr.length === 0) return []; const shuffled = [...arr]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled.slice(0, q); }
@@ -179,15 +183,39 @@
             for (let i = 0; i < qtdJogos; i++) {
                 let dezenas = [];
                 switch(estrategia) {
-                    case 'balanceada': const qQuentes = Math.floor(qtdDezenas * 0.6); const qNeutras = Math.floor(qtdDezenas * 0.2); const qFrias = qtdDezenas - qQuentes - qNeutras; dezenas.push(...selecionarAleatorios(quentes, qQuentes)); dezenas.push(...selecionarAleatorios(neutras, qNeutras)); dezenas.push(...selecionarAleatorios(frias, qFrias)); break;
+                    case 'balanceada':
+                        const qQuentes = Math.floor(qtdDezenas * 0.6);
+                        const qNeutras = Math.floor(qtdDezenas * 0.2);
+                        const qFrias = qtdDezenas - qQuentes - qNeutras;
+                        dezenas.push(...selecionarAleatorios(quentes, qQuentes));
+                        dezenas.push(...selecionarAleatorios(neutras, qNeutras));
+                        dezenas.push(...selecionarAleatorios(frias, qFrias));
+                        break;
                     case 'quentes': dezenas.push(...selecionarAleatorios(quentes, qtdDezenas)); break;
                     case 'frias': dezenas.push(...selecionarAleatorios(frias, qtdDezenas)); break;
-                    case 'parImpar': const qPares = Math.floor(qtdDezenas / 2); const qImpares = qtdDezenas - qPares; const pares = [2,4,6,8,10,12,14,16,18,20,22,24]; const impares = [1,3,5,7,9,11,13,15,17,19,21,23,25]; dezenas.push(...selecionarAleatorios(pares, qPares)); dezenas.push(...selecionarAleatorios(impares, qImpares)); break;
-                    case 'sequencial': const passo = 25 / qtdDezenas; for (let j = 0; j < qtdDezenas; j++) { let num = Math.floor(j * passo) + 1; num = Math.min(25, Math.max(1, num + Math.floor(Math.random() * 3) - 1)); dezenas.push(num); } break;
+                    case 'parImpar':
+                        const qPares = Math.floor(qtdDezenas / 2);
+                        const qImpares = qtdDezenas - qPares;
+                        const pares = [2,4,6,8,10,12,14,16,18,20,22,24];
+                        const impares = [1,3,5,7,9,11,13,15,17,19,21,23,25];
+                        dezenas.push(...selecionarAleatorios(pares, qPares));
+                        dezenas.push(...selecionarAleatorios(impares, qImpares));
+                        break;
+                    case 'sequencial':
+                        const passo = 25 / qtdDezenas;
+                        for (let j = 0; j < qtdDezenas; j++) {
+                            let num = Math.floor(j * passo) + 1;
+                            num = Math.min(25, Math.max(1, num + Math.floor(Math.random() * 3) - 1));
+                            dezenas.push(num);
+                        }
+                        break;
                     default: dezenas = selecionarAleatorios(Array.from({length:25}, (_,i)=>i+1), qtdDezenas);
                 }
                 dezenas = [...new Set(dezenas)];
-                while (dezenas.length < qtdDezenas) { const novoNum = Math.floor(Math.random() * 25) + 1; if (!dezenas.includes(novoNum)) dezenas.push(novoNum); }
+                while (dezenas.length < qtdDezenas) {
+                    const novoNum = Math.floor(Math.random() * 25) + 1;
+                    if (!dezenas.includes(novoNum)) dezenas.push(novoNum);
+                }
                 dezenas.sort((a,b) => a-b);
                 jogos.push(dezenas);
             }
