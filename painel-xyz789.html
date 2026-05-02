@@ -11,29 +11,72 @@
     <div class="container mx-auto">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-bold text-white">Painel Administrativo</h1>
-            <a href="index.html" class="bg-gray-700 text-white px-4 py-2 rounded-lg">Voltar</a>
+            <a href="index.html" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Voltar ao site</a>
         </div>
 
-        <div id="login" class="max-w-md mx-auto bg-white rounded-xl p-8">
-            <h2 class="text-xl font-bold mb-4">Acesso Restrito</h2>
-            <input type="password" id="senha" placeholder="Senha" class="w-full p-3 border rounded-lg mb-4">
-            <button onclick="logar()" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-bold">Entrar</button>
+        <!-- Tela de Login -->
+        <div id="login" class="max-w-md mx-auto bg-white rounded-xl p-8 shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-center">Acesso Restrito</h2>
+            <p class="text-gray-500 text-center mb-6">Digite a senha de administrador</p>
+            <input type="password" id="senha" placeholder="Senha" class="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button onclick="logar()" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-bold hover:bg-indigo-700 transition">Entrar</button>
         </div>
 
+        <!-- Painel Admin -->
         <div id="admin" class="hidden">
-            <div class="flex gap-4 mb-6">
-                <button onclick="mostrarTab('pedidos')" id="tabPedidos" class="bg-indigo-600 text-white px-6 py-2 rounded-lg">📦 Pedidos</button>
-                <button onclick="mostrarTab('usuarios')" id="tabUsuarios" class="bg-gray-700 text-white px-6 py-2 rounded-lg">👥 Usuários</button>
-                <button onclick="mostrarTab('criar')" id="tabCriar" class="bg-gray-700 text-white px-6 py-2 rounded-lg">➕ Criar</button>
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 text-center">
+                    <i class="fas fa-shopping-cart text-3xl text-blue-500 mb-2"></i>
+                    <p class="text-gray-500 text-sm">Pedidos Pendentes</p>
+                    <p class="text-3xl font-bold" id="totalPendentes">0</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 text-center">
+                    <i class="fas fa-users text-3xl text-green-500 mb-2"></i>
+                    <p class="text-gray-500 text-sm">Usuários Ativos</p>
+                    <p class="text-3xl font-bold" id="totalUsuarios">0</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 text-center">
+                    <i class="fas fa-chart-line text-3xl text-purple-500 mb-2"></i>
+                    <p class="text-gray-500 text-sm">Total de Vendas</p>
+                    <p class="text-3xl font-bold" id="totalVendas">R$ 0</p>
+                </div>
             </div>
 
-            <div id="pedidosTab" class="bg-white rounded-xl p-6"></div>
-            <div id="usuariosTab" class="bg-white rounded-xl p-6 hidden"></div>
+            <!-- Tabs -->
+            <div class="flex gap-4 mb-6">
+                <button onclick="mostrarTab('pedidos')" id="tabPedidosBtn" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">📦 Pedidos Pendentes</button>
+                <button onclick="mostrarTab('usuarios')" id="tabUsuariosBtn" class="bg-gray-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-600">👥 Usuários Cadastrados</button>
+                <button onclick="mostrarTab('criar')" id="tabCriarBtn" class="bg-gray-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-600">➕ Criar Usuário</button>
+            </div>
+
+            <!-- Conteúdo das Tabs -->
+            <div id="pedidosTab" class="bg-white rounded-xl p-6">
+                <div id="listaPedidos" class="space-y-3">
+                    <p class="text-gray-500 text-center py-8">Carregando pedidos...</p>
+                </div>
+            </div>
+
+            <div id="usuariosTab" class="bg-white rounded-xl p-6 hidden">
+                <div id="listaUsuarios" class="space-y-3">
+                    <p class="text-gray-500 text-center py-8">Carregando usuários...</p>
+                </div>
+            </div>
+
             <div id="criarTab" class="bg-white rounded-xl p-6 hidden">
-                <h3 class="text-xl font-bold mb-4">Criar Usuário</h3>
-                <input type="text" id="nome" placeholder="Nome" class="w-full p-3 border rounded-lg mb-3">
-                <input type="email" id="email" placeholder="E-mail" class="w-full p-3 border rounded-lg mb-3">
-                <button onclick="criarUsuario()" class="bg-green-600 text-white px-6 py-2 rounded-lg">Criar</button>
+                <h3 class="text-xl font-bold mb-4">➕ Criar Novo Usuário</h3>
+                <p class="text-gray-500 text-sm mb-4">A senha será gerada automaticamente como: <strong class="text-indigo-600">PRIMEIRO NOME + 123</strong></p>
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">Nome completo</label>
+                        <input type="text" id="novoNome" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="João Silva">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">E-mail</label>
+                        <input type="email" id="novoEmail" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="cliente@email.com">
+                    </div>
+                </div>
+                <button onclick="criarUsuario()" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700 transition">✅ Criar Usuário</button>
             </div>
         </div>
     </div>
@@ -51,132 +94,198 @@
                 carregarUsuarios();
             } else {
                 alert('Senha incorreta!');
+                document.getElementById('senha').value = '';
             }
         }
         
         async function carregarPedidos() {
-            const response = await fetch(`${WORKER_URL}/pedidos`);
-            const data = await response.json();
-            const div = document.getElementById('pedidosTab');
-            
-            if (!data.success || data.pedidos.length === 0) {
-                div.innerHTML = '<p class="text-gray-500 text-center py-8">✅ Nenhum pedido pendente</p>';
-                return;
-            }
-            
-            div.innerHTML = data.pedidos.map(p => `
-                <div class="border rounded-lg p-4 mb-3 flex justify-between items-center">
-                    <div>
-                        <p class="font-bold">${p.nome}</p>
-                        <p class="text-sm text-gray-600">${p.email}</p>
-                        <p class="text-sm">R$ ${p.valor} - ${p.formaPagamento || 'Pendente'}</p>
+            try {
+                const response = await fetch(`${WORKER_URL}/pedidos`);
+                const data = await response.json();
+                const div = document.getElementById('listaPedidos');
+                
+                if (!data.success || data.pedidos.length === 0) {
+                    div.innerHTML = '<div class="text-center text-green-600 py-8"><i class="fas fa-check-circle text-4xl mb-2"></i><p>✅ Nenhum pedido pendente</p></div>';
+                    document.getElementById('totalPendentes').innerText = '0';
+                    return;
+                }
+                
+                div.innerHTML = data.pedidos.map(p => `
+                    <div class="border rounded-lg p-4 flex justify-between items-center hover:shadow-md transition">
+                        <div>
+                            <p class="font-bold text-lg">${p.nome}</p>
+                            <p class="text-sm text-gray-600">${p.email}</p>
+                            <p class="text-sm text-indigo-600 font-medium">${p.plano} - R$ ${p.valor}</p>
+                            <p class="text-xs text-gray-400">${new Date(p.data).toLocaleString()}</p>
+                            <p class="text-xs text-gray-400">Forma: ${p.formaPagamento || 'Pendente'}</p>
+                        </div>
+                        <button onclick="aprovarPedido('${p.id}')" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">✅ Aprovar</button>
                     </div>
-                    <button onclick="aprovarPedido('${p.id}')" class="bg-green-500 text-white px-4 py-2 rounded-lg">✅ Aprovar</button>
-                </div>
-            `).join('');
+                `).join('');
+                document.getElementById('totalPendentes').innerText = data.pedidos.length;
+            } catch(error) {
+                console.error('Erro:', error);
+                document.getElementById('listaPedidos').innerHTML = '<p class="text-red-500 text-center py-8">❌ Erro ao carregar pedidos</p>';
+            }
         }
         
         async function aprovarPedido(id) {
-            const response = await fetch(`${WORKER_URL}/pedidos`);
-            const data = await response.json();
-            const pedido = data.pedidos.find(p => p.id === id);
-            
-            if (!pedido) return;
-            
-            const primeiroNome = pedido.nome.split(' ')[0].toLowerCase();
-            const senha = primeiroNome + '123';
-            
-            const userResponse = await fetch(`${WORKER_URL}/usuarios`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    nome: pedido.nome,
-                    email: pedido.email,
-                    senha: senha,
-                    plano: 'Vitalício'
-                })
-            });
-            
-            const userData = await userResponse.json();
-            
-            if (userData.success) {
-                await fetch(`${WORKER_URL}/pedidos/${id}`, { method: 'DELETE' });
+            try {
+                // Buscar pedido
+                const response = await fetch(`${WORKER_URL}/pedidos`);
+                const data = await response.json();
+                const pedido = data.pedidos.find(p => p.id === id);
                 
-                alert(`✅ Usuário criado!\n\nE-mail: ${pedido.email}\nSenha: ${senha}\n\nCredenciais copiadas.`);
-                navigator.clipboard.writeText(`🔐 Acesso Gerador Lotofácil\n\nE-mail: ${pedido.email}\nSenha: ${senha}\n\nLink: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`);
+                if (!pedido) {
+                    alert('Pedido não encontrado!');
+                    return;
+                }
                 
-                carregarPedidos();
-                carregarUsuarios();
-            } else {
-                alert('Erro: ' + userData.error);
+                // Gerar senha (primeiro nome + 123)
+                const primeiroNome = pedido.nome.split(' ')[0].toLowerCase();
+                const senha = primeiroNome + '123';
+                const email = pedido.email.toLowerCase();
+                
+                // Criar usuário
+                const userResponse = await fetch(`${WORKER_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nome: pedido.nome,
+                        email: email,
+                        senha: senha,
+                        plano: 'Plano Vitalício'
+                    })
+                });
+                
+                const userData = await userResponse.json();
+                
+                if (userData.success) {
+                    // Remover pedido
+                    await fetch(`${WORKER_URL}/pedidos/${id}`, { method: 'DELETE' });
+                    
+                    const credenciais = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\n✅ Pagamento confirmado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
+                    navigator.clipboard.writeText(credenciais);
+                    
+                    alert(`✅ Pedido aprovado!\n\nUsuário: ${pedido.nome}\nE-mail: ${email}\nSenha: ${senha}\n\nCredenciais copiadas!`);
+                    
+                    carregarPedidos();
+                    carregarUsuarios();
+                } else {
+                    alert('Erro ao criar usuário: ' + userData.error);
+                }
+            } catch(error) {
+                console.error('Erro:', error);
+                alert('Erro ao aprovar pedido. Tente novamente.');
             }
         }
         
         async function carregarUsuarios() {
-            const response = await fetch(`${WORKER_URL}/usuarios`);
-            const data = await response.json();
-            const div = document.getElementById('usuariosTab');
-            
-            if (!data.success || data.usuarios.length === 0) {
-                div.innerHTML = '<p class="text-gray-500 text-center py-8">👥 Nenhum usuário cadastrado</p>';
-                return;
-            }
-            
-            div.innerHTML = data.usuarios.map(u => `
-                <div class="border rounded-lg p-4 mb-3 flex justify-between items-center">
-                    <div>
-                        <p class="font-bold">${u.nome}</p>
-                        <p class="text-sm text-gray-600">${u.email}</p>
-                        <p class="text-sm">Senha: ${u.senha}</p>
+            try {
+                const response = await fetch(`${WORKER_URL}/usuarios`);
+                const data = await response.json();
+                const div = document.getElementById('listaUsuarios');
+                
+                if (!data.success || data.usuarios.length === 0) {
+                    div.innerHTML = '<div class="text-center text-gray-500 py-8"><i class="fas fa-users text-4xl mb-2"></i><p>👥 Nenhum usuário cadastrado</p></div>';
+                    document.getElementById('totalUsuarios').innerText = '0';
+                    document.getElementById('totalVendas').innerHTML = 'R$ 0';
+                    return;
+                }
+                
+                div.innerHTML = data.usuarios.map(u => `
+                    <div class="border rounded-lg p-4 flex justify-between items-center hover:shadow-md transition">
+                        <div>
+                            <p class="font-bold text-lg">${u.nome}</p>
+                            <p class="text-sm text-gray-600">${u.email}</p>
+                            <p class="text-sm text-indigo-600">${u.plano}</p>
+                            <p class="text-xs text-gray-400">Criado: ${new Date(u.dataCriacao).toLocaleDateString()}</p>
+                            <p class="text-xs text-gray-400">Senha: ${u.senha}</p>
+                        </div>
+                        <button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition">📋 Copiar</button>
                     </div>
-                    <button onclick="copiarCredenciais('${u.email}', '${u.senha}', '${u.nome}')" class="bg-indigo-500 text-white px-4 py-2 rounded-lg">📋 Copiar</button>
-                </div>
-            `).join('');
+                `).join('');
+                document.getElementById('totalUsuarios').innerText = data.usuarios.length;
+                document.getElementById('totalVendas').innerHTML = `R$ ${(data.usuarios.length * 24.90).toFixed(2)}`;
+            } catch(error) {
+                console.error('Erro:', error);
+                document.getElementById('listaUsuarios').innerHTML = '<p class="text-red-500 text-center py-8">❌ Erro ao carregar usuários</p>';
+            }
         }
         
         async function criarUsuario() {
-            const nome = document.getElementById('nome').value;
-            const email = document.getElementById('email').value;
+            const nome = document.getElementById('novoNome').value.trim();
+            let email = document.getElementById('novoEmail').value.trim().toLowerCase();
+            
+            if (!nome || !email) {
+                alert('Preencha nome e e-mail');
+                return;
+            }
+            
             const primeiroNome = nome.split(' ')[0].toLowerCase();
             const senha = primeiroNome + '123';
             
-            const response = await fetch(`${WORKER_URL}/usuarios`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome, email, senha, plano: 'Vitalício' })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                alert(`✅ Usuário criado!\n\nE-mail: ${email}\nSenha: ${senha}`);
-                document.getElementById('nome').value = '';
-                document.getElementById('email').value = '';
-                carregarUsuarios();
-            } else {
-                alert('Erro: ' + data.error);
+            try {
+                const response = await fetch(`${WORKER_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nome: nome,
+                        email: email,
+                        senha: senha,
+                        plano: 'Plano Vitalício'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`✅ Usuário criado!\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}`);
+                    document.getElementById('novoNome').value = '';
+                    document.getElementById('novoEmail').value = '';
+                    carregarUsuarios();
+                } else {
+                    alert('Erro: ' + data.error);
+                }
+            } catch(error) {
+                alert('Erro ao criar usuário. Tente novamente.');
             }
         }
         
         function copiarCredenciais(email, senha, nome) {
-            const texto = `🔐 Acesso Gerador Lotofácil\n\nOlá ${nome},\n\nE-mail: ${email}\nSenha: ${senha}\n\nLink: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
+            const texto = `🔐 Acesso ao Gerador Estratégico Lotofácil\n\nOlá ${nome},\n\n📧 E-mail: ${email}\n🔑 Senha: ${senha}\n\n🔗 Link: https://sistema-gerador-estrategico.edipo-8aa.workers.dev/sistema.html`;
             navigator.clipboard.writeText(texto);
-            alert('Credenciais copiadas!');
+            alert('✅ Credenciais copiadas! Envie para o cliente.');
         }
         
         function mostrarTab(tab) {
+            // Esconder todas
             document.getElementById('pedidosTab').classList.add('hidden');
             document.getElementById('usuariosTab').classList.add('hidden');
             document.getElementById('criarTab').classList.add('hidden');
             
+            // Mudar estilos dos botões
+            document.getElementById('tabPedidosBtn').classList.remove('bg-indigo-600');
+            document.getElementById('tabPedidosBtn').classList.add('bg-gray-700');
+            document.getElementById('tabUsuariosBtn').classList.remove('bg-indigo-600');
+            document.getElementById('tabUsuariosBtn').classList.add('bg-gray-700');
+            document.getElementById('tabCriarBtn').classList.remove('bg-indigo-600');
+            document.getElementById('tabCriarBtn').classList.add('bg-gray-700');
+            
             if (tab === 'pedidos') {
                 document.getElementById('pedidosTab').classList.remove('hidden');
+                document.getElementById('tabPedidosBtn').classList.remove('bg-gray-700');
+                document.getElementById('tabPedidosBtn').classList.add('bg-indigo-600');
                 carregarPedidos();
             } else if (tab === 'usuarios') {
                 document.getElementById('usuariosTab').classList.remove('hidden');
+                document.getElementById('tabUsuariosBtn').classList.remove('bg-gray-700');
+                document.getElementById('tabUsuariosBtn').classList.add('bg-indigo-600');
                 carregarUsuarios();
             } else if (tab === 'criar') {
                 document.getElementById('criarTab').classList.remove('hidden');
+                document.getElementById('tabCriarBtn').classList.remove('bg-gray-700');
+                document.getElementById('tabCriarBtn').classList.add('bg-indigo-600');
             }
         }
     </script>
