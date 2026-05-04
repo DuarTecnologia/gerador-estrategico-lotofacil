@@ -11,11 +11,11 @@
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; border-radius: 16px; padding: 24px; max-width: 400px; width: 90%; }
-        .logout-btn { position: fixed; bottom: 20px; right: 20px; background: #ef4444; color: white; padding: 10px 20px; border-radius: 50px; cursor: pointer; z-index: 100; }
         .dezena-card { transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; width: 55px; height: 55px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; font-weight: bold; border-radius: 12px; margin: 4px; }
         .dezena-card:hover { transform: translateY(-3px) scale(1.05); }
         .jogo-card { border-left: 4px solid transparent; transition: all 0.3s; }
         .jogo-card:hover { border-left-color: #4f46e5; transform: translateX(4px); }
+        .campo-personalizado { background: #f8fafc; border-radius: 12px; padding: 12px; margin-top: 12px; }
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen">
@@ -57,28 +57,66 @@
 
         <!-- Gerador -->
         <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <div class="grid md:grid-cols-2 gap-4 mb-6">
-                <div>
-                    <label class="block font-bold mb-2">Quantidade de Dezenas</label>
-                    <select id="quantidadeDezenas" class="w-full p-3 border rounded-lg">
-                        <option value="15">15 dezenas (1 jogo - R$ 3,50)</option>
-                        <option value="16">16 dezenas (4 jogos - R$ 14,00)</option>
-                        <option value="17" selected>17 dezenas (7 jogos - R$ 24,50)</option>
-                        <option value="18">18 dezenas (12 jogos - R$ 36,00)</option>
-                        <option value="19">19 dezenas (21 jogos - R$ 63,00)</option>
-                        <option value="20">20 dezenas (28 jogos - R$ 98,00)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-bold mb-2">Estratégia de Geração</label>
-                    <select id="estrategiaGeracao" class="w-full p-3 border rounded-lg">
-                        <option value="balanceada">⚖️ Balanceada (Recomendada)</option>
-                        <option value="quentes">🔥 Dezenas Quentes (Mais Sorteadas)</option>
-                        <option value="frias">❄️ Dezenas Frias (Menos Sorteadas)</option>
-                        <option value="parImpar">🔄 Pares x Ímpares Equilibrado</option>
-                    </select>
+            <div class="mb-6">
+                <label class="block font-bold mb-3">Configuração do Jogo</label>
+                
+                <!-- Opção Padrão -->
+                <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-indigo-50 transition mb-3">
+                    <input type="radio" name="tipoConfig" value="padrao" checked class="w-5 h-5 text-indigo-600">
+                    <div>
+                        <span class="font-bold text-gray-800">📌 Padrão</span>
+                        <p class="text-sm text-gray-500">15 dezenas (1 jogo) - R$ 3,50</p>
+                    </div>
+                </label>
+                
+                <!-- Opção Personalizada -->
+                <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-indigo-50 transition">
+                    <input type="radio" name="tipoConfig" value="personalizado" class="w-5 h-5 text-indigo-600">
+                    <div>
+                        <span class="font-bold text-gray-800">🎲 Personalizado</span>
+                        <p class="text-sm text-gray-500">Escolha quantidade de dezenas e jogos</p>
+                    </div>
+                </label>
+                
+                <!-- Campos Personalizados (inicialmente ocultos) -->
+                <div id="camposPersonalizados" class="campo-personalizado hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantidade de Dezenas</label>
+                            <select id="personalizarDezenas" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white">
+                                <option value="15">15 dezenas - R$ 3,50</option>
+                                <option value="16">16 dezenas - R$ 14,00</option>
+                                <option value="17">17 dezenas - R$ 24,50</option>
+                                <option value="18">18 dezenas - R$ 36,00</option>
+                                <option value="19">19 dezenas - R$ 63,00</option>
+                                <option value="20">20 dezenas - R$ 98,00</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantidade de Jogos</label>
+                            <input type="number" id="personalizarJogos" min="1" max="50" value="1" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white">
+                            <p class="text-xs text-gray-500 mt-1">Máximo de 50 jogos por vez</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 p-3 bg-indigo-50 rounded-lg">
+                        <p class="text-sm text-indigo-800">
+                            <i class="fas fa-calculator mr-2"></i>
+                            Valor total: <strong id="valorTotalPersonalizado">R$ 3,50</strong>
+                        </p>
+                    </div>
                 </div>
             </div>
+            
+            <div class="mb-6">
+                <label class="block font-bold mb-2">Estratégia de Geração</label>
+                <select id="estrategiaGeracao" class="w-full p-3 border rounded-lg">
+                    <option value="balanceada">⚖️ Balanceada (Recomendada)</option>
+                    <option value="quentes">🔥 Dezenas Quentes (Mais Sorteadas)</option>
+                    <option value="frias">❄️ Dezenas Frias (Menos Sorteadas)</option>
+                    <option value="parImpar">🔄 Pares x Ímpares Equilibrado</option>
+                </select>
+            </div>
+            
             <button id="gerarBtn" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-bold hover:bg-indigo-700 transition">
                 ✨ Gerar Estratégia Inteligente
             </button>
@@ -129,8 +167,32 @@
         <!-- Resultados dos Jogos -->
         <div id="resultados" class="space-y-3"></div>
 
-        <!-- Planos (para não logados) -->
-        <div id="planosSection" class="max-w-md mx-auto mt-8">
+        <!-- Planos (APENAS PARA NÃO LOGADOS) -->
+        <div id="planosSection" class="max-w-md mx-auto mt-8"></div>
+    </main>
+
+    <script>
+        const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev';
+        let isLoggedIn = false;
+        let currentUser = null;
+        
+        // Preços por quantidade de dezenas
+        const precosPorDezena = {
+            15: 3.50,
+            16: 14.00,
+            17: 24.50,
+            18: 36.00,
+            19: 63.00,
+            20: 98.00
+        };
+        
+        // Dados estatísticos
+        const dezenasQuentes = [6, 12, 20, 18, 3, 5, 9, 13, 14, 15, 17, 19, 23, 25];
+        const dezenasNeutras = [2, 4, 7, 8, 10, 11, 16, 21, 22, 24];
+        const dezenasFrias = [1, 2, 4, 7, 8, 11, 16, 21, 22, 24];
+        
+        // HTML do plano (para não logados)
+        const htmlPlano = `
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div class="bg-gradient-to-r from-indigo-600 to-violet-600 p-6 text-white text-center">
                     <span class="bg-red-500 px-3 py-1 rounded-full text-sm">🔥 PROMOÇÃO</span>
@@ -147,18 +209,7 @@
                     <a href="checkout.html" class="block mt-6 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition">🔥 Garantir acesso</a>
                 </div>
             </div>
-        </div>
-    </main>
-
-    <script>
-        const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev';
-        let isLoggedIn = false;
-        let currentUser = null;
-        
-        // Dados estatísticos
-        const dezenasQuentes = [6, 12, 20, 18, 3, 5, 9, 13, 14, 15, 17, 19, 23, 25];
-        const dezenasNeutras = [2, 4, 7, 8, 10, 11, 16, 21, 22, 24];
-        const dezenasFrias = [1, 2, 4, 7, 8, 11, 16, 21, 22, 24];
+        `;
         
         // Verificar login ao carregar
         const savedUser = localStorage.getItem('usuario_logado');
@@ -170,8 +221,39 @@
                 document.getElementById('userBar').classList.remove('hidden');
                 document.getElementById('userNome').innerHTML = `👤 ${currentUser.nome}`;
                 document.getElementById('avisoLogin').innerHTML = '✅ Você está logado! Os números serão gerados sem bloqueio.';
-            } catch(e) {}
+                document.getElementById('planosSection').innerHTML = '';
+            } else {
+                document.getElementById('planosSection').innerHTML = htmlPlano;
+            }
+        } else {
+            document.getElementById('planosSection').innerHTML = htmlPlano;
         }
+        
+        // Mostrar/esconder campos personalizados
+        const radios = document.querySelectorAll('input[name="tipoConfig"]');
+        const camposPersonalizados = document.getElementById('camposPersonalizados');
+        
+        radios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'personalizado') {
+                    camposPersonalizados.classList.remove('hidden');
+                } else {
+                    camposPersonalizados.classList.add('hidden');
+                }
+                atualizarValorPersonalizado();
+            });
+        });
+        
+        function atualizarValorPersonalizado() {
+            const dezenas = parseInt(document.getElementById('personalizarDezenas').value);
+            const jogos = parseInt(document.getElementById('personalizarJogos').value);
+            const precoUnitario = precosPorDezena[dezenas] || 3.50;
+            const valorTotal = precoUnitario * (isNaN(jogos) ? 1 : jogos);
+            document.getElementById('valorTotalPersonalizado').innerHTML = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+        }
+        
+        document.getElementById('personalizarDezenas').addEventListener('change', atualizarValorPersonalizado);
+        document.getElementById('personalizarJogos').addEventListener('input', atualizarValorPersonalizado);
         
         // Modal
         const modal = document.getElementById('loginModal');
@@ -228,15 +310,10 @@
             return shuffled.slice(0, quantidade);
         }
         
-        function gerarJogos(quantidadeDezenas, estrategia) {
-            const totalJogos = quantidadeDezenas === 15 ? 1 :
-                              quantidadeDezenas === 16 ? 4 :
-                              quantidadeDezenas === 17 ? 7 :
-                              quantidadeDezenas === 18 ? 12 :
-                              quantidadeDezenas === 19 ? 21 : 28;
+        function gerarJogos(quantidadeDezenas, quantidadeJogos, estrategia) {
             const jogos = [];
             
-            for (let i = 0; i < totalJogos; i++) {
+            for (let i = 0; i < quantidadeJogos; i++) {
                 let dezenas = [];
                 if (estrategia === 'balanceada') {
                     const qQuentes = Math.floor(quantidadeDezenas * 0.6);
@@ -295,6 +372,17 @@
             `).join('');
         }
         
+        function obterQuantidadeJogos() {
+            const tipo = document.querySelector('input[name="tipoConfig"]:checked').value;
+            if (tipo === 'personalizado') {
+                const dezenas = parseInt(document.getElementById('personalizarDezenas').value);
+                const jogos = parseInt(document.getElementById('personalizarJogos').value);
+                return { dezenas, jogos: isNaN(jogos) ? 1 : jogos };
+            } else {
+                return { dezenas: 15, jogos: 1 };
+            }
+        }
+        
         // Classificação das dezenas
         function exibirClassificacao() {
             document.getElementById('quentes').innerHTML = dezenasQuentes.map(n => `<span class="inline-flex items-center justify-center w-8 h-8 bg-red-500 text-white font-bold rounded-lg text-xs">${n}</span>`).join('');
@@ -303,14 +391,15 @@
         }
         
         document.getElementById('gerarBtn').addEventListener('click', () => {
-            const quantidade = parseInt(document.getElementById('quantidadeDezenas').value);
+            const { dezenas, jogos } = obterQuantidadeJogos();
             const estrategia = document.getElementById('estrategiaGeracao').value;
-            const jogos = gerarJogos(quantidade, estrategia);
-            exibirJogos(jogos);
+            const jogosGerados = gerarJogos(dezenas, jogos, estrategia);
+            exibirJogos(jogosGerados);
         });
         
         // Inicializar classificação
         exibirClassificacao();
+        atualizarValorPersonalizado();
     </script>
 </body>
 </html>
