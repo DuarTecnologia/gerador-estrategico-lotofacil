@@ -10,11 +10,13 @@
         .blur-numbers { filter: blur(8px); pointer-events: none; user-select: none; }
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 16px; padding: 24px; max-width: 400px; width: 90%; }
+        .modal-content { background: white; border-radius: 16px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
         .dezena-card { transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; width: 55px; height: 55px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; font-weight: bold; border-radius: 12px; margin: 4px; }
         .dezena-card:hover { transform: translateY(-3px) scale(1.05); }
         .jogo-card { border-left: 4px solid transparent; transition: all 0.3s; }
         .jogo-card:hover { border-left-color: #4f46e5; transform: translateX(4px); }
+        .aviso-legal { border-left: 4px solid #f59e0b; background-color: #fffbeb; padding: 12px; border-radius: 8px; margin-bottom: 16px; }
+        .termos-link { color: #4f46e5; text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen">
@@ -47,6 +49,45 @@
         </div>
     </div>
 
+    <!-- Modal de Aviso Legal (Termos de Uso) -->
+    <div id="termosModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">📋 Termos de Uso e Responsabilidade</h2>
+                <button onclick="fecharTermosModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+            </div>
+            <div class="space-y-4 text-sm text-gray-700">
+                <div class="aviso-legal">
+                    <p class="font-bold text-amber-700 mb-2">⚠️ AVISO IMPORTANTE</p>
+                    <p>Este sistema é uma ferramenta educacional e estatística. <strong>NÃO GARANTIMOS</strong> ganhos em loterias.</p>
+                </div>
+                
+                <p><strong class="text-indigo-600">1. Natureza do Serviço:</strong><br>
+                O Gerador Estratégico Lotofácil utiliza análises estatísticas baseadas em concursos anteriores para gerar combinações de números. As loterias são jogos de azar regulamentados pela Caixa Econômica Federal.</p>
+                
+                <p><strong class="text-indigo-600">2. Sem Garantia de Ganhos:</strong><br>
+                Este sistema <strong>NÃO GARANTE</strong> acertos ou premiações. Os números são gerados probabilisticamente com base em dados históricos, mas cada sorteio é um evento independente e aleatório.</p>
+                
+                <p><strong class="text-indigo-600">3. Isenção de Responsabilidade:</strong><br>
+                Ao utilizar este sistema, você concorda que a empresa não se responsabiliza por eventuais perdas financeiras decorrentes do uso das combinações geradas. O usuário é o único responsável pelas apostas realizadas.</p>
+                
+                <p><strong class="text-indigo-600">4. Natureza Estatística:</strong><br>
+                As análises e classificações ("dezenas quentes", "dezenas frias", etc.) são baseadas exclusivamente em dados históricos e não garantem resultados futuros. Probabilidades não são certezas.</p>
+                
+                <p><strong class="text-indigo-600">5. Conformidade Legal:</strong><br>
+                Este site não é afiliado à Caixa Econômica Federal. A Lotofácil é uma marca registrada da Caixa. Nosso serviço é independente e educacional.</p>
+                
+                <div class="bg-gray-100 p-3 rounded-lg mt-4">
+                    <p class="text-xs text-gray-500">Ao clicar em "ACEITO", você declara que leu, compreendeu e concorda com estes termos.</p>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="aceitarTermos()" class="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700 transition">✅ ACEITO</button>
+                <button onclick="recusarTermos()" class="flex-1 bg-red-600 text-white py-2 rounded-lg font-bold hover:bg-red-700 transition">❌ RECUSO</button>
+            </div>
+        </div>
+    </div>
+
     <main class="container mx-auto p-8">
         <div class="bg-amber-100 border-l-4 border-amber-500 p-4 mb-6 rounded text-sm">
             <i class="fas fa-info-circle mr-2"></i>
@@ -54,7 +95,7 @@
         </div>
 
         <!-- Gerador -->
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6" id="geradorContainer">
             <div class="mb-6">
                 <label class="block font-bold mb-3">Configuração do Jogo</label>
                 
@@ -152,6 +193,7 @@
     <script>
         const WORKER_URL = 'https://api-pedidos.edipo-8aa.workers.dev';
         let isLoggedIn = false;
+        let termosAceitos = false;
         
         const precosPorDezena = { 15: 3.50, 16: 14.00, 17: 24.50, 18: 36.00, 19: 63.00, 20: 98.00 };
         const dezenasQuentes = [6,12,20,18,3,5,9,13,14,15,17,19,23,25];
@@ -159,6 +201,41 @@
         const dezenasFrias = [1,2,4,7,8,11,16,21,22,24];
         
         const htmlPlano = `<div class="bg-white rounded-xl shadow-lg overflow-hidden"><div class="bg-gradient-to-r from-indigo-600 to-violet-600 p-6 text-white text-center"><span class="bg-red-500 px-3 py-1 rounded-full text-sm">🔥 PROMOÇÃO</span><h2 class="text-2xl font-bold mt-2">Plano Vitalício</h2></div><div class="p-6 text-center"><div class="text-4xl font-bold">R$ 24,90<small class="text-sm">/único</small></div><div class="text-sm text-red-500 line-through">De R$ 97,90</div><ul class="mt-4 text-left space-y-2"><li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Acesso vitalício</li><li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Gerador ilimitado</li><li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Todas as estratégias</li></ul><a href="checkout.html" class="block mt-6 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700">🔥 Garantir acesso</a></div></div>`;
+        
+        // Verificar se os termos já foram aceitos
+        const termosJaAceitos = localStorage.getItem('termos_aceitos');
+        if (!termosJaAceitos) {
+            document.getElementById('termosModal').classList.add('active');
+        } else {
+            termosAceitos = true;
+        }
+        
+        function aceitarTermos() {
+            localStorage.setItem('termos_aceitos', 'true');
+            termosAceitos = true;
+            fecharTermosModal();
+            // Recarregar para habilitar o sistema
+            window.location.reload();
+        }
+        
+        function recusarTermos() {
+            // Redirecionar para uma página de recusa ou mostrar mensagem
+            document.getElementById('termosModal').classList.remove('active');
+            document.body.innerHTML = `
+                <div class="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-xl p-8 max-w-md text-center">
+                        <i class="fas fa-gavel text-6xl text-red-500 mb-4"></i>
+                        <h1 class="text-2xl font-bold mb-4">Você não aceitou os termos</h1>
+                        <p class="text-gray-600 mb-6">Para utilizar o Gerador Estratégico Lotofácil, você precisa aceitar os termos de uso e responsabilidade.</p>
+                        <button onclick="window.location.reload()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg">Voltar e Aceitar Termos</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function fecharTermosModal() {
+            document.getElementById('termosModal').classList.remove('active');
+        }
         
         // Verificar login
         const savedUser = localStorage.getItem('usuario_logado');
@@ -178,7 +255,7 @@
             document.getElementById('planosSection').innerHTML = htmlPlano;
         }
         
-        // Modal
+        // Modal de Login
         const modal = document.getElementById('loginModal');
         document.getElementById('btnAbrirLogin').onclick = () => modal.classList.add('active');
         document.getElementById('btnFecharModal').onclick = () => modal.classList.remove('active');
@@ -232,7 +309,11 @@
         function obterQuantidadeJogos() {
             const tipo = document.querySelector('input[name="tipoConfig"]:checked').value;
             if (tipo === 'personalizado') {
-                return { dezenas: parseInt(document.getElementById('personalizarDezenas').value), jogos: parseInt(document.getElementById('personalizarJogos').value) || 1 };
+                const dezenas = parseInt(document.getElementById('personalizarDezenas').value);
+                let jogos = parseInt(document.getElementById('personalizarJogos').value);
+                if (isNaN(jogos) || jogos < 1) jogos = 1;
+                if (jogos > 50) jogos = 50;
+                return { dezenas, jogos };
             }
             return { dezenas: 15, jogos: 1 };
         }
@@ -279,6 +360,10 @@
         }
         
         document.getElementById('gerarBtn').addEventListener('click', () => {
+            if (!termosAceitos) {
+                document.getElementById('termosModal').classList.add('active');
+                return;
+            }
             const { dezenas, jogos } = obterQuantidadeJogos();
             const jogosGerados = gerarJogos(dezenas, jogos, document.getElementById('estrategiaGeracao').value);
             exibirJogos(jogosGerados);
