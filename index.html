@@ -78,8 +78,8 @@
                     </div>
                 </label>
                 
-                <!-- Campos Personalizados (inicialmente ocultos) -->
-                <div id="camposPersonalizados" class="campo-personalizado hidden">
+                <!-- Campos Personalizados -->
+                <div id="camposPersonalizados" class="bg-gray-50 rounded-lg p-4 mt-3 hidden">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Quantidade de Dezenas</label>
@@ -98,7 +98,7 @@
                             <p class="text-xs text-gray-500 mt-1">Máximo de 50 jogos por vez</p>
                         </div>
                     </div>
-                    <div class="mt-3 p-3 bg-indigo-50 rounded-lg">
+                    <div class="mt-3 p-3 bg-indigo-100 rounded-lg">
                         <p class="text-sm text-indigo-800">
                             <i class="fas fa-calculator mr-2"></i>
                             Valor total: <strong id="valorTotalPersonalizado">R$ 3,50</strong>
@@ -211,7 +211,9 @@
             </div>
         `;
         
-        // Verificar login ao carregar
+        // ============================================
+        // VERIFICAR LOGIN
+        // ============================================
         const savedUser = localStorage.getItem('usuario_logado');
         if (savedUser) {
             try {
@@ -229,38 +231,13 @@
             document.getElementById('planosSection').innerHTML = htmlPlano;
         }
         
-        // Mostrar/esconder campos personalizados
-        const radios = document.querySelectorAll('input[name="tipoConfig"]');
-        const camposPersonalizados = document.getElementById('camposPersonalizados');
-        
-        radios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === 'personalizado') {
-                    camposPersonalizados.classList.remove('hidden');
-                } else {
-                    camposPersonalizados.classList.add('hidden');
-                }
-                atualizarValorPersonalizado();
-            });
-        });
-        
-        function atualizarValorPersonalizado() {
-            const dezenas = parseInt(document.getElementById('personalizarDezenas').value);
-            const jogos = parseInt(document.getElementById('personalizarJogos').value);
-            const precoUnitario = precosPorDezena[dezenas] || 3.50;
-            const valorTotal = precoUnitario * (isNaN(jogos) ? 1 : jogos);
-            document.getElementById('valorTotalPersonalizado').innerHTML = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
-        }
-        
-        document.getElementById('personalizarDezenas').addEventListener('change', atualizarValorPersonalizado);
-        document.getElementById('personalizarJogos').addEventListener('input', atualizarValorPersonalizado);
-        
-        // Modal
+        // ============================================
+        // FUNÇÕES DO MODAL DE LOGIN
+        // ============================================
         const modal = document.getElementById('loginModal');
         document.getElementById('btnAbrirLogin').addEventListener('click', () => modal.classList.add('active'));
         document.getElementById('btnFecharModal').addEventListener('click', () => modal.classList.remove('active'));
         
-        // Login
         document.getElementById('btnLogin').addEventListener('click', async () => {
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const senha = document.getElementById('loginSenha').value.trim();
@@ -294,14 +271,54 @@
             }
         });
         
-        // Logout
         document.getElementById('btnLogout')?.addEventListener('click', () => {
             localStorage.removeItem('usuario_logado');
             window.location.reload();
         });
         
+        // ============================================
         // FUNÇÕES DO GERADOR
+        // ============================================
+        
+        // Mostrar/esconder campos personalizados
+        const radios = document.querySelectorAll('input[name="tipoConfig"]');
+        const camposPersonalizados = document.getElementById('camposPersonalizados');
+        
+        radios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'personalizado') {
+                    camposPersonalizados.classList.remove('hidden');
+                } else {
+                    camposPersonalizados.classList.add('hidden');
+                }
+                atualizarValorPersonalizado();
+            });
+        });
+        
+        function atualizarValorPersonalizado() {
+            const dezenas = parseInt(document.getElementById('personalizarDezenas').value);
+            const jogos = parseInt(document.getElementById('personalizarJogos').value);
+            const precoUnitario = precosPorDezena[dezenas] || 3.50;
+            const valorTotal = precoUnitario * (isNaN(jogos) ? 1 : jogos);
+            document.getElementById('valorTotalPersonalizado').innerHTML = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+        }
+        
+        document.getElementById('personalizarDezenas').addEventListener('change', atualizarValorPersonalizado);
+        document.getElementById('personalizarJogos').addEventListener('input', atualizarValorPersonalizado);
+        
+        function obterQuantidadeJogos() {
+            const tipo = document.querySelector('input[name="tipoConfig"]:checked').value;
+            if (tipo === 'personalizado') {
+                const dezenas = parseInt(document.getElementById('personalizarDezenas').value);
+                const jogos = parseInt(document.getElementById('personalizarJogos').value);
+                return { dezenas, jogos: isNaN(jogos) ? 1 : jogos };
+            } else {
+                return { dezenas: 15, jogos: 1 };
+            }
+        }
+        
         function selecionarAleatorios(array, quantidade) {
+            if (!array || array.length === 0) return [];
             const shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -372,17 +389,6 @@
             `).join('');
         }
         
-        function obterQuantidadeJogos() {
-            const tipo = document.querySelector('input[name="tipoConfig"]:checked').value;
-            if (tipo === 'personalizado') {
-                const dezenas = parseInt(document.getElementById('personalizarDezenas').value);
-                const jogos = parseInt(document.getElementById('personalizarJogos').value);
-                return { dezenas, jogos: isNaN(jogos) ? 1 : jogos };
-            } else {
-                return { dezenas: 15, jogos: 1 };
-            }
-        }
-        
         // Classificação das dezenas
         function exibirClassificacao() {
             document.getElementById('quentes').innerHTML = dezenasQuentes.map(n => `<span class="inline-flex items-center justify-center w-8 h-8 bg-red-500 text-white font-bold rounded-lg text-xs">${n}</span>`).join('');
@@ -390,6 +396,7 @@
             document.getElementById('frias').innerHTML = dezenasFrias.map(n => `<span class="inline-flex items-center justify-center w-8 h-8 bg-blue-400 text-white font-bold rounded-lg text-xs">${n}</span>`).join('');
         }
         
+        // Evento do botão Gerar
         document.getElementById('gerarBtn').addEventListener('click', () => {
             const { dezenas, jogos } = obterQuantidadeJogos();
             const estrategia = document.getElementById('estrategiaGeracao').value;
@@ -397,7 +404,7 @@
             exibirJogos(jogosGerados);
         });
         
-        // Inicializar classificação
+        // Inicializar
         exibirClassificacao();
         atualizarValorPersonalizado();
     </script>
