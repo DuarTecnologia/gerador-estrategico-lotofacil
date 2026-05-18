@@ -1,25 +1,36 @@
-import { createClient } from '@supabase/supabase-js'
-import { NextResponse } from 'next/server'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+// app/api/lotofacil/latest/route.ts
+import { NextResponse } from "next/server"
 
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from('palpites')
-      .select('*')
-      .order('data_criacao', { ascending: false })
+    // Buscar do último concurso da Caixa Econômica Federal
+    const response = await fetch(
+      "https://servicebus2.caixa.gov.br/portaldeloterias/api/lotofacil/1",
+      {
+        next: { revalidate: 3600 } // Cache por 1 hora
+      }
+    )
     
-    if (error) throw error
+    if (!response.ok) {
+      throw new Error("Erro ao buscar resultado")
+    }
     
-    return NextResponse.json(data || [])
+    const data = await response.json()
+    
+    return NextResponse.json({
+      concurso: data.numero,
+      data: data.dataApuracao,
+      dezenas: data.listaDezenas,
+      premiacao: data.listaRateioPremio.map((premio: any) => ({
+        acertos: premio.descricaoFaixa,
+        ganhadores: premio.numeroGanhadores,
+        premio: `R$ ${premio.valorPremio.toFixed(2).replace('.', ',')}`
+      }))
+    })
   } catch (error) {
-    console.error('Erro ao buscar:', error)
+    console.error("Erro ao buscar resultado:", error)
     return NextResponse.json(
-      { error: 'Erro ao buscar palpites' },
+      { error: "Erro ao buscar resultado" },
       { status: 500 }
     )
   }
